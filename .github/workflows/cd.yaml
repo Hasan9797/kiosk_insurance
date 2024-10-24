@@ -14,13 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20"
-
-      # Step 3: Setup SSH and deploy with correct PATH
+      # Step 2: Setup SSH and deploy with tool installation
       - name: Setup SSH and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -29,18 +23,22 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd ~/kiosk_insurance/  # Bu joyda "~" root katalogiga mos keladi
-            export PATH="$(npm bin -g):$PATH"
-            echo $PATH  # PATH'ni tekshirish
+            cd ~/kiosk_insurance/  # Loyihaga kirish
+            echo "Installing Node.js and necessary tools..."
+            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -  # Node.js ni o'rnatish
+            sudo apt-get install -y nodejs  # Node.js va npm o'rnatish
+            npm install -g pnpm pm2  # Global pnpm va pm2 o'rnatish
+            export PATH="$(npm bin -g):$PATH"  # Global binarlarni PATHga qo'shish
+            echo $PATH  # PATH ni tekshirish
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
-            pnpm install
-            pnpm build
-            npx prisma migrate dev --name migrated
-            npx prisma generate
-            pm2 restart insurance
+            pnpm install  # Dependencies o'rnatish
+            pnpm build  # Loyiha build qilish
+            npx prisma migrate dev --name migrated  # Prisma migratsiya
+            npx prisma generate  # Prisma fayllarini generatsiya qilish
+            pm2 restart insurance  # PM2 orqali restart qilish
 
-      # Step 4: Notify Telegram on success
+      # Step 3: Notify Telegram on success
       - name: Notify Telegram on success
         if: success()
         run: |
@@ -50,7 +48,7 @@ jobs:
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d text="CD Successfully.\\nCommit: $COMMIT_MESSAGE\\nAuthor: $COMMIT_AUTHOR"
 
-      # Step 5: Notify Telegram on failure
+      # Step 4: Notify Telegram on failure
       - name: Notify Telegram on failure
         if: failure()
         run: |
