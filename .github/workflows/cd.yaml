@@ -14,20 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup SSH and install pnpm, pm2 globally
-      - name: Install pnpm and pm2 globally
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            npm install -g pnpm
-            npm install -g pm2
-
-      # Step 3: Install dependencies and run commands on the server
-      - name: Install dependencies and run commands
+      # Step 2: Setup SSH, enter the project directory, and set PATH
+      - name: Setup and set PATH for local binaries
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -36,6 +24,9 @@ jobs:
           port: 22
           script: |
             cd ~/kiosk_insurance/
+            # Qo'shamiz: node_modules/.bin katalogini PATH ga qo'shamiz
+            export PATH="$PWD/node_modules/.bin:$PATH"
+            echo $PATH  # PATH ni tekshirish
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install
@@ -44,7 +35,7 @@ jobs:
             pnpm build
             pm2 restart insurance
 
-      # Step 4: Notify Telegram on success
+      # Step 3: Notify Telegram on success
       - name: Notify Telegram on success
         if: success()
         run: |
@@ -54,7 +45,7 @@ jobs:
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d text="CD Successfully.\\nCommit: $COMMIT_MESSAGE\\nAuthor: $COMMIT_AUTHOR"
 
-      # Step 5: Notify Telegram on failure
+      # Step 4: Notify Telegram on failure
       - name: Notify Telegram on failure
         if: failure()
         run: |
