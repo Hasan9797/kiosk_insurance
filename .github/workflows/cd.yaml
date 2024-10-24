@@ -14,8 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup SSH and set PATH for pm2 and pnpm in the project directory
-      - name: Set PATH for pm2 and pnpm in the project directory
+      # Step 2: Setup SSH and set PATH for pnpm, npx, and pm2 in the project directory
+      - name: Set PATH for pnpm, npx, and pm2 in the project directory
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -25,6 +25,7 @@ jobs:
           script: |
             cd ~/kiosk_insurance/
             export PATH="$PWD/node_modules/.bin:$PATH"
+            echo $PATH  # Check if PATH includes the project node_modules/.bin
             source ~/.bashrc
 
       # Step 3: Install dependencies and run commands on the server
