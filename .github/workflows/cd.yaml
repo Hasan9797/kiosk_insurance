@@ -14,8 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup SSH and set PATH for pnpm, npx, and pm2 in the project directory
-      - name: Set PATH for pnpm, npx, and pm2 in the project directory
+      # Step 2: Setup SSH and install pnpm, pm2 globally
+      - name: Install pnpm and pm2 globally
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -23,10 +23,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd ~/kiosk_insurance/
-            export PATH="$PWD/node_modules/.bin:$PATH"
-            echo $PATH  # Check if PATH includes the project node_modules/.bin
-            source ~/.bashrc
+            npm install -g pnpm
+            npm install -g pm2
 
       # Step 3: Install dependencies and run commands on the server
       - name: Install dependencies and run commands
