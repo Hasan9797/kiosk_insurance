@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup SSH and run commands without reinstalling node/npm
+      # Step 2: Setup SSH and run necessary commands
       - name: Setup SSH and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -23,14 +23,14 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd ~/kiosk_insurance/  # Loyihaga kirish
+            cd ~/kiosk_insurance/  # To'g'ri papkaga kirish
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install  # Dependencies o'rnatish
             pnpm build  # Loyiha build qilish
             npx prisma migrate dev --name migrated  # Prisma migratsiya
             npx prisma generate  # Prisma fayllarini generatsiya qilish
-            pm2 restart insurance  # PM2 orqali restart qilish
+            pm2 restart 0  # PM2 orqali restart qilish
 
       # Step 3: Notify Telegram on success
       - name: Notify Telegram on success
