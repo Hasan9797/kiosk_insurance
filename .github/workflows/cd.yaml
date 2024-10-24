@@ -14,14 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20.17.0"
-
-      # Step 3: Install pnpm, pm2, and npx on Ubuntu 22.04
-      - name: Install pnpm, npx, and pm2 on Ubuntu 22.04
+      # Step 2: Setup SSH and set PATH for pm2 and pnpm in the project directory
+      - name: Set PATH for pm2 and pnpm in the project directory
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -29,11 +23,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            curl -fsSL https://get.pnpm.io/install.sh | sh -
-            npm install -g pm2
-            npm install -g npx
+            cd ~/kiosk_insurance/
+            export PATH="$PWD/node_modules/.bin:$PATH"
+            source ~/.bashrc
 
-      # Step 4: Install dependencies and run commands on the server
+      # Step 3: Install dependencies and run commands on the server
       - name: Install dependencies and run commands
         uses: appleboy/ssh-action@master
         with:
@@ -49,9 +43,9 @@ jobs:
             npx prisma migrate dev --name migrated
             npx prisma generate
             pnpm build
-            pm2 restart 0
+            pm2 restart insurance
 
-      # Step 5: Notify Telegram on success
+      # Step 4: Notify Telegram on success
       - name: Notify Telegram on success
         if: success()
         run: |
@@ -61,7 +55,7 @@ jobs:
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d text="CD Successfully.\\nCommit: $COMMIT_MESSAGE\\nAuthor: $COMMIT_AUTHOR"
 
-      # Step 6: Notify Telegram on failure
+      # Step 5: Notify Telegram on failure
       - name: Notify Telegram on failure
         if: failure()
         run: |
