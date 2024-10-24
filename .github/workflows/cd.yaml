@@ -40,7 +40,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}  # This is the private SSH key
           port: 22
           script: |
-            cd ~/KIOSK-INSURANCE/
+            cd ~/kiosk_insurance/
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install
