@@ -29,7 +29,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd /root/kiosk_insurance/
+            cd ~/kiosk_insurance/  # Bu joyda "~" root katalogiga mos keladi
             export PATH="$(npm bin -g):$PATH"
             echo $PATH  # PATH'ni tekshirish
             git stash || { echo "git stash failed"; exit 1; }
