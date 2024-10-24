@@ -18,20 +18,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20.17.0"  # Node versiyasi
+          node-version: "20.17.0"
 
-      # Step 3: Install pnpm globally
-      - name: Install pnpm
-        run: npm install -g pnpm
+      # Step 3: Install pnpm, pm2, and npx globally
+      - name: Install pnpm, pm2, and npx globally
+        run: |
+          npm install -g pnpm pm2
+          export PATH="$(npm bin -g):$PATH"
+          echo $PATH  # PATH'ni tekshirish uchun
 
-      # Step 4: Setup SSH and deploy
+      # Step 4: Setup SSH and deploy the project
       - name: Setup SSH
         uses: appleboy/ssh-action@master
         id: ssh
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.KEY }}
           port: 22
           script: |
             cd ~/kiosk_insurance/
@@ -41,7 +44,7 @@ jobs:
             pnpm build
             npx prisma migrate dev --name migrated
             npx prisma generate
-            pm2 restart 0
+            pm2 restart insurance
 
       # Step 5: Notify Telegram on success
       - name: Notify Telegram on success
