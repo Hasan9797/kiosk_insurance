@@ -23,7 +23,7 @@ jobs:
       # Step 3: Install pnpm manually
       - name: Install pnpm manually
         run: |
-          npm install -g pnpm@9.11.0
+          npm install -g pnpm
 
       # Step 4: Install dependencies
       - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
           pnpm install
           pnpm build
 
-      # Step 5: Add SSH Key (base64 dekodlash orqali)
+      # Step 5: Add SSH Key (without base64 encoding)
       - name: Add SSH Key
         run: |
           mkdir -p ~/.ssh
@@ -46,7 +46,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}  # SSH_KEY_BASE64 ishlatilmoqda
+          key: ${{ secrets.SSH_KEY }}  # Oddiy SSH kalit ishlatilmoqda
           port: 22
           script: |
             cd ~/KIOSK-INSURANCE/
