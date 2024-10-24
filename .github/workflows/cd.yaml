@@ -18,9 +18,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20.17.0"
+          node-version: "20"
 
-      # Step 3: Setup SSH and deploy with directory checks
+      # Step 3: Setup SSH and deploy with correct PATH
       - name: Setup SSH and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -29,14 +29,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            echo "Current working directory:"
-            pwd  # Hozirgi katalogni ko'rsatish
-            echo "Listing files in the current directory:"
-            ls -la  # Fayllarni ko'rsatish
             cd /root/kiosk_insurance/
-            echo "After changing directory:"
-            pwd  # Loyihaga o'tgandan keyin joriy katalogni ko'rsatish
-            ls -la  # Loyiha papkasidagi fayllarni ko'rsatish
+            export PATH="$(npm bin -g):$PATH"
+            echo $PATH  # PATH'ni tekshirish
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install
