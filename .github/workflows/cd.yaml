@@ -20,17 +20,9 @@ jobs:
         with:
           node-version: "20.17.0"
 
-      # Step 3: Install pnpm, pm2, and npx globally
-      - name: Install pnpm, pm2, and npx globally
-        run: |
-          npm install -g pnpm pm2
-          export PATH="$(npm bin -g):$PATH"
-          echo $PATH  # PATH'ni tekshirish uchun
-
-      # Step 4: Setup SSH and deploy the project
-      - name: Setup SSH
-        uses: appleboy/ssh-action@main
-        id: ssh
+      # Step 3: Setup SSH and deploy with pnpm and pm2
+      - name: Setup SSH and deploy
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -38,6 +30,8 @@ jobs:
           port: 22
           script: |
             cd ~/kiosk_insurance/
+            export PATH="$(npm bin -g):$PATH"
+            echo $PATH
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install
@@ -46,7 +40,7 @@ jobs:
             npx prisma generate
             pm2 restart insurance
 
-      # Step 5: Notify Telegram on success
+      # Step 4: Notify Telegram on success
       - name: Notify Telegram on success
         if: success()
         run: |
@@ -56,7 +50,7 @@ jobs:
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
           -d text="CD Successfully.\\nCommit: $COMMIT_MESSAGE\\nAuthor: $COMMIT_AUTHOR"
 
-      # Step 6: Notify Telegram on failure
+      # Step 5: Notify Telegram on failure
       - name: Notify Telegram on failure
         if: failure()
         run: |
