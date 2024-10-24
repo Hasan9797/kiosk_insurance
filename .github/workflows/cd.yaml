@@ -20,21 +20,18 @@ jobs:
         with:
           node-version: "20.17.0"
 
-      # Step 3: Setup SSH and deploy with pnpm and pm2
-      - name: Setup SSH and deploy
+      # Step 3: Setup SSH and deploy as root
+      - name: Setup SSH as root and deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
+          host: "128.199.65.33"
+          username: "root"
+          key: ${{ secrets.SSH_KEY }}  # Root uchun shaxsiy SSH kalit
           port: 22
           script: |
-            cd ~/kiosk_insurance/
-            export PATH="$(npm bin -g):$PATH"
-            echo $PATH
+            cd /root/kiosk_insurance/  # Root katalogidagi loyiha papkangiz
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
-            npm install -g pnpm pm2
             pnpm install
             pnpm build
             npx prisma migrate dev --name migrated
