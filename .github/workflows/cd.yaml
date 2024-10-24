@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Setup SSH and deploy with tool installation
+      # Step 2: Setup SSH and run commands without reinstalling node/npm
       - name: Setup SSH and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -24,12 +24,6 @@ jobs:
           port: 22
           script: |
             cd ~/kiosk_insurance/  # Loyihaga kirish
-            echo "Installing Node.js and necessary tools..."
-            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -  # Node.js ni o'rnatish
-            sudo apt-get install -y nodejs  # Node.js va npm o'rnatish
-            npm install -g pnpm pm2  # Global pnpm va pm2 o'rnatish
-            export PATH="$(npm bin -g):$PATH"  # Global binarlarni PATHga qo'shish
-            echo $PATH  # PATH ni tekshirish
             git stash || { echo "git stash failed"; exit 1; }
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install  # Dependencies o'rnatish
