@@ -47,7 +47,7 @@ jobs:
             npx prisma migrate dev --name migrated
             npx prisma generate
             pnpm build
-            pm2 restart insurance
+            pm2 restart 0
 
       # Step 6: Notify Telegram on success
       - name: Notify Telegram on success
