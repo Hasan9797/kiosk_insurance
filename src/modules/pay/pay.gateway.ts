@@ -13,7 +13,7 @@ import { Req, UseGuards } from '@nestjs/common'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
 
-@WebSocketGateway(Number(process.env.APP_PORT) || 3001, {
+@WebSocketGateway(3001, {
   cors: {
     origin: '*',
   },
