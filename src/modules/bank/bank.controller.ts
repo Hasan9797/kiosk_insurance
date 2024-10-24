@@ -14,7 +14,9 @@ export class BankController {
 
   @Get()
   findAll(@Query() query: any) {
-    return this.bankService.findAll(query)
+    return [
+      {karochi: 'Nimadur'}
+    ]; //this.bankService.findAll(query)
   }
 
   @Get(':id')
