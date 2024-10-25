@@ -3,6 +3,7 @@ import { BankService } from './bank.service'
 import { CreateBankDTO } from './dto'
 import { UpdateBankDTO } from './dto/update-bank.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { QueryParams } from '@interfaces'
 
 @ApiTags('Bank Service')
 @Controller({
@@ -10,7 +11,7 @@ import { ApiTags } from '@nestjs/swagger'
   path: 'banks',
 })
 export class BankController {
-  constructor(private readonly bankService: BankService) {}
+  constructor(private readonly bankService: BankService) { }
 
   @Get()
   findAll(@Query() query: any) {

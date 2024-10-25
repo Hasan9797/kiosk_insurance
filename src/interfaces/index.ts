@@ -24,4 +24,4 @@ export type {
 export type { CreateStructureRequest, UpdateStructureRequest } from './structure.interface'
 export type { CreateUserRequest } from './user.interface'
 export type { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from './deposit.interface'
-export type { QueryParams } from './filter.interface'
+export type { QueryParams, Filter, Sort } from './filter.interface'
