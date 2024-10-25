@@ -358,29 +358,6 @@ export class DepositService {
       },
     })
 
-    const userBalance = user?.balance
-
-    await this.prisma.userBalance.update({
-      where: {
-        userId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-      data: {
-        balance: 0,
-        updatedAt: new Date(),
-      },
-    })
-
-    await this.prisma.userBalanceHistory.create({
-      data: {
-        amount: Number(userBalance),
-        userId: userId,
-        type: UserBalanceHistoryStatus.MINUS,
-      },
-    })
-
     return {
       status: 201,
       message: 'Deposit succesfully sended via bank!',
