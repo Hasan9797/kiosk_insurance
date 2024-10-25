@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateDepositRequest } from '@interfaces'
+import { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { DepositStatus, DepositStatusOutPut } from 'enums/deposit.enum'
 import { FilterService } from '@helpers'
-import { FindAllDepositResponse } from 'interfaces/deposit.interface'
 import * as admin from 'firebase-admin'
+import { UserBalanceHistoryStatus } from '@enums'
 @Injectable()
 export class DepositService {
   constructor(private readonly prisma: PrismaService) {}
@@ -65,7 +65,7 @@ export class DepositService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<FindOneDepositResponse> {
     const deposit = await this.prisma.deposit.findUnique({
       where: {
         id: id,
@@ -193,6 +193,15 @@ export class DepositService {
         throw new NotFoundException('Operator not found!')
       }
 
+      const incasator = await prisma.user.findUnique({
+        where: {
+          id: incasatorId,
+          deletedAt: {
+            equals: null,
+          },
+        },
+      })
+
       const cashCount = opearatorExists?.cashCount
 
       await prisma.user.update({
@@ -205,6 +214,18 @@ export class DepositService {
         data: {
           cashCount: 0,
           updatedAt: new Date(),
+        },
+      })
+
+      await prisma.user.update({
+        where: {
+          id: incasatorId,
+          deletedAt: {
+            equals: null,
+          },
+        },
+        data: {
+          cashCount: Number(incasator.cashCount) + Number(cashCount),
         },
       })
 
@@ -262,6 +283,22 @@ export class DepositService {
         },
       })
 
+      await prisma.userBalanceHistory.create({
+        data: {
+          amount: Number(totalAmountInOperator.balance),
+          userId: incasatorId,
+          type: UserBalanceHistoryStatus.PLUS,
+        },
+      })
+
+      await prisma.userBalanceHistory.create({
+        data: {
+          amount: Number(totalAmountInOperator.balance),
+          userId: data?.operatorId,
+          type: UserBalanceHistoryStatus.MINUS,
+        },
+      })
+
       return {
         status: 201,
         message: 'Deposit succesfully created',
@@ -284,6 +321,18 @@ export class DepositService {
       throw new NotFoundException('Deposit not found with given ID!')
     }
 
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      data: {
+        cashCount: 0,
+      },
+    })
+
     await this.prisma.deposit.update({
       where: {
         id: id,
@@ -300,18 +349,20 @@ export class DepositService {
       },
     })
 
-    await this.prisma.userBalance.update({
+    const user = await this.prisma.userBalance.findFirst({
       where: {
         userId: userId,
         deletedAt: {
           equals: null,
         },
       },
-      data: {
-        balance: 0,
-        updatedAt: new Date(),
-      },
     })
+
+    return {
+      status: 201,
+      message: 'Deposit succesfully sended via bank!',
+      depositStatus: DepositStatusOutPut.STATUS_WAIT,
+    }
   }
 
   async updateDepositAccountant(id: number, data: any) {
@@ -335,6 +386,42 @@ export class DepositService {
       data: {
         status: data?.status,
         updatedAt: new Date(),
+      },
+    })
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: deposit?.incasatorId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    const balance = await this.prisma.userBalance.findFirst({
+      where: {
+        userId: user.id,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+    const userBalance = balance.balance
+
+    await this.prisma.userBalance.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        balance: 0,
+      },
+    })
+
+    await this.prisma.userBalanceHistory.create({
+      data: {
+        amount: Number(userBalance),
+        userId: user?.id,
+        type: UserBalanceHistoryStatus.MINUS,
       },
     })
 
