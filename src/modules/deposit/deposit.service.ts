@@ -5,12 +5,13 @@ import { DepositStatus, DepositStatusOutPut } from 'enums/deposit.enum'
 import { FilterService } from '@helpers'
 import * as admin from 'firebase-admin'
 import { UserBalanceHistoryStatus } from '@enums'
+import { Pagination } from 'enums/pagination.enum'
 @Injectable()
 export class DepositService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllDepositResponse> {
-    const { limit, sort, filters } = query
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
     const parsedFilters = filters ? JSON?.parse(filters) : []
