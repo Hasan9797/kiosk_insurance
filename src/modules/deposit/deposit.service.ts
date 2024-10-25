@@ -37,13 +37,16 @@ export class DepositService {
           statusOutPut = DepositStatusOutPut.STATUS_ERROR
           break
         default:
-          statusOutPut = 'UNKNOWN' // noma'lum status uchun
+          statusOutPut = 'UNKNOWN'
       }
 
       result.push({
         id: deposit.id,
         amount: Number(deposit.amount),
-        status: statusOutPut,
+        status: {
+          int: deposit?.status,
+          string: statusOutPut,
+        },
         comment: deposit.comment,
         checkPhoto: deposit.checkPhoto,
         type: deposit.type,
@@ -76,10 +79,32 @@ export class DepositService {
       throw new NotFoundException('Deposit not found with given ID!')
     }
 
+    let statusOutPut = ''
+
+    switch (deposit.status) {
+      case DepositStatus.STATUS_CREATE:
+        statusOutPut = DepositStatusOutPut.STATUS_CREATE
+        break
+      case DepositStatus.STATUS_WAIT:
+        statusOutPut = DepositStatusOutPut.STATUS_WAIT
+        break
+      case DepositStatus.STATUS_SUCCESS:
+        statusOutPut = DepositStatusOutPut.STATUS_SUCCESS
+        break
+      case DepositStatus.STATUS_ERROR:
+        statusOutPut = DepositStatusOutPut.STATUS_ERROR
+        break
+      default:
+        statusOutPut = 'UNKNOWN'
+    }
+
     const result = {
       id: deposit.id,
-      amount: deposit.amount,
-      status: deposit.status,
+      amount: Number(deposit.amount),
+      status: {
+        int: deposit?.status,
+        string: statusOutPut,
+      },
       comment: deposit.comment,
       checkPhoto: deposit.checkPhoto,
       type: deposit.type,
@@ -125,13 +150,16 @@ export class DepositService {
           statusOutPut = DepositStatusOutPut.STATUS_ERROR
           break
         default:
-          statusOutPut = 'UNKNOWN' // noma'lum status uchun
+          statusOutPut = 'UNKNOWN'
       }
 
       return {
         id: deposit?.id,
         amount: Number(deposit?.amount),
-        status: statusOutPut, // statusni string ko'rinishida qaytarish
+        status: {
+          int: deposit?.status,
+          string: statusOutPut,
+        },
         comment: deposit?.comment,
         checkPhoto: deposit?.checkPhoto,
         type: deposit?.type,
