@@ -2,10 +2,15 @@ export interface CreateDepositRequest {
   operatorId: number
 }
 
+interface DepositStatus {
+  int: number
+  string: string
+}
+
 interface Deposit {
   id: number
   amount: number
-  status: string
+  status: DepositStatus
   comment: string | null
   checkPhoto: string | null
   type: number
