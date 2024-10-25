@@ -19,7 +19,7 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   // So'rovni yuborish
   async send() {
@@ -38,12 +38,7 @@ export class InfinityRequestService {
           timeout: 30000,
         }),
       )
-
       this.response = response.data
-
-      if (this.getError()) {
-        throw new BadRequestException(this.getErrorMessage())
-      }
 
       // this.response = {
       //   "id": 207,
@@ -209,10 +204,6 @@ export class InfinityRequestService {
 
   getError(): any {
     return this.response?.error.message || this.errorUnknown
-  }
-
-  getErrorMessage(): string {
-    return this.response.error.message || this.errorUnknown
   }
 
   getErrorUnknown(): any {
