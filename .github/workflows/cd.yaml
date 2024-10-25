@@ -40,7 +40,7 @@ jobs:
           COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="CD Successfully.%0Commit: $COMMIT_MESSAGE%0Author: $COMMIT_AUTHOR"
+          -d text="CD Successfully.%0ACommit: $COMMIT_MESSAGE%0AAuthor: $COMMIT_AUTHOR"
 
       # Step 4: Notify Telegram on failure
       - name: Notify Telegram on failure

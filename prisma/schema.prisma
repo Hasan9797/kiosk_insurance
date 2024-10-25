@@ -192,6 +192,5 @@ model UserBalanceHistory {
 
   user User @relation(fields: [userId], references: [id])
 
-  @@unique([userId])
   @@map("user_balance_history")
 }

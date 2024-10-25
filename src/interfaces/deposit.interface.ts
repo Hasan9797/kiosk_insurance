@@ -26,3 +26,7 @@ interface Deposit {
 export interface FindAllDepositResponse {
   data: Deposit[]
 }
+
+export interface FindOneDepositResponse {
+  data: Deposit
+}
