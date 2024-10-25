@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid'
   path: 'deposits',
 })
 export class DepositController {
-  constructor(private readonly depositService: DepositService) {}
+  constructor(private readonly depositService: DepositService) { }
 
   @Get()
   findAll(@Query() query: QueryParams) {

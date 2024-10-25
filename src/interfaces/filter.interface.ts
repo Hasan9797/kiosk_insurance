@@ -1,17 +1,17 @@
-interface Filter {
-  column: string
-  value: string | number | string[]
-  operator: string
+export interface Filter {
+  column: string;
+  value: string;
+  operator: string;
 }
 
-interface Sort {
-  column: string
-  value: 'asc' | 'desc'
+export interface Sort {
+  column: string;
+  value: 'asc' | 'desc';
 }
 
-export interface QueryParams {
-  filters: Filter[]
-  sort: Sort
-  limit: number
-  page: number
+export class QueryParams {
+  filters: Filter[];
+  sort: Sort;
+  limit: number;
+  page: number;
 }
