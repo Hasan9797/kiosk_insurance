@@ -36,23 +36,18 @@ jobs:
       - name: Notify Telegram on success
         if: success()
         run: |
-          PROJECT_NAME="kiosk_insurance"
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
           COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="Отправлены изменения по проекту - $PROJECT_NAME.%0AВетка $BRANCH_NAME.%0AОт $COMMIT_AUTHOR.%0AКОММИТ - $COMMIT_MESSAGE%0AЗавершен билд DAVRSMART BACKEND $BRANCH_NAME BRANCH."
+          -d text="CD Successfully.%0ACommit: $COMMIT_MESSAGE%0AAuthor: $COMMIT_AUTHOR"
 
+      # Step 4: Notify Telegram on failure
       - name: Notify Telegram on failure
         if: failure()
         run: |
-          PROJECT_NAME="kiosk_insurance"
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
           COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="Отправлены изменения по проекту - $PROJECT_NAME.%0AВетка $BRANCH_NAME.%0AОт $COMMIT_AUTHOR.%0AКОММИТ - $COMMIT_MESSAGE%0AБилд завершен с ошибкой DAVRSMART BACKEND $BRANCH_NAME BRANCH."
-
-
+          -d text="CD Failed.\\nCommit: $COMMIT_MESSAGE\\nAuthor: $COMMIT_AUTHOR"
