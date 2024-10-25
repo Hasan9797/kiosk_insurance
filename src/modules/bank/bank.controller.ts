@@ -11,7 +11,7 @@ import { QueryParams } from '@interfaces'
   path: 'banks',
 })
 export class BankController {
-  constructor(private readonly bankService: BankService) { }
+  constructor(private readonly bankService: BankService) {}
 
   @Get()
   findAll(@Query() query: any) {
