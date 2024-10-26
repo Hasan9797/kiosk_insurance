@@ -36,9 +36,10 @@ export class DepositController {
     return this.depositService.findAll(query)
   }
 
-  @Get('incasator-static')
+  @UseGuards(CheckTokenGuard)
+  @Get('deposit-static')
   findIncasatorDeposit(@Req() request: CustomRequest, @Query() query: any) {
-    return this.depositService.findIncasatorStatic(request?.user?.id, query)
+    return this.depositService.findDepositStatic(request?.user?.id, query)
   }
 
   @Get(':id')

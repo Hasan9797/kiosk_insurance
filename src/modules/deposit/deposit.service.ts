@@ -128,7 +128,7 @@ export class DepositService {
     }
   }
 
-  async findIncasatorStatic(userId: number, query: any): Promise<FindAllDepositResponse> {
+  async findDepositStatic(userId: number, query: any): Promise<FindAllDepositResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
@@ -143,7 +143,14 @@ export class DepositService {
       page,
     )
 
-    const result = depositStatic.map((deposit) => {
+    const deposits = depositStatic.reduce((acc, deposit) => {
+      if (deposit?.incasatorId === userId) {
+        acc.push(deposit)
+      }
+      return acc
+    }, [])
+
+    const result = deposits.map((deposit) => {
       let statusOutPut = ''
 
       switch (deposit.status) {
@@ -183,7 +190,7 @@ export class DepositService {
       }
     })
 
-    const pagination = paginationResponse(depositStatic.length, limit, page)
+    const pagination = paginationResponse(deposits.length, limit, page)
 
     return {
       data: result,
