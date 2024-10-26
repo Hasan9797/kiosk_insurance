@@ -1,5 +1,7 @@
+export * from './structure.enum'
 export * from './psp-method-list'
 export * from './user-roles-enum'
+export * from './pagination.enum'
 export * from './error-codes.enum'
 export * from './transaction.enum'
 export * from './language-code.enum'

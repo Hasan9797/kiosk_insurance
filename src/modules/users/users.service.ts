@@ -1,40 +1,46 @@
-import { CreateUserRequest } from '@interfaces'
+import { CreateUserRequest, FindAllUserResponse, FindOneUserResponse } from '@interfaces'
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
-import { UserRoles, UserRolesOutPut } from '@enums'
+import { UserRoles, UserRolesOutPut, Pagination } from '@enums'
 import * as bcrypt from 'bcrypt'
 import { FilterService } from '@helpers'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  async findAll(query: any) {
-    console.log(process.env.FIREBASE_SENDER_TOKEN.replace(/\\n/g, '\n'))
+  async findAll(query: any): Promise<FindAllUserResponse> {
 
-    const { limit, sort, filters } = query
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    // const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort)
+    const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort, limit, page)
 
-    const users = await this.prisma.user.findMany({
-      where: {
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
+    // const users = await this.prisma.user.findMany({
+    //   where: {
+    //     deletedAt: {
+    //       equals: null,
+    //     },
+    //   },
+    // })
 
-    const usersWithRoles = users.map((user) => ({
+    const usersWithRoles = users.map((user: any) => ({
       ...user,
-      role: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+      role: {
+        int: user.role,
+        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut]
+      },
     }))
 
+    for (let user of usersWithRoles) {
+      delete user.password
+    }
+
     return {
-      data: users,
+      data: usersWithRoles,
     }
   }
 
@@ -60,6 +66,23 @@ export class UsersService {
       },
     })
     return accountant
+  }
+
+  async getOperatorsStatic(userId: number) {
+    const operators = await this.prisma.user.findMany(
+      {
+        where: {
+          incasatorId: userId,
+          deletedAt: {
+            equals: null
+          }
+        }
+      }
+    )
+
+    return {
+      data: operators
+    }
   }
 
   async getIncasators() {

@@ -1,3 +1,6 @@
+import { Changer } from '@interfaces'
+import { Decimal } from '@prisma/client/runtime/library'
+
 export interface CreateUserRequest {
   name: string
   login: string
@@ -7,4 +10,29 @@ export interface CreateUserRequest {
   incasatorId: number
   latitude?: string
   longitude?: string
+}
+
+
+interface FindUserResponse {
+  id: number;
+  name: string;
+  login: string;
+  code: string;
+  role: Changer;
+  status: number;
+  cashCount: number;
+  latitude: Decimal;
+  longitude: Decimal;
+  createdAt: Date;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
+  structureId: number | null;
+  incasatorId: number | null;
+}
+export interface FindAllUserResponse {
+  data: FindUserResponse[];
+}
+
+export interface FindOneUserResponse {
+  data: FindUserResponse;
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common'
 import { StructureService } from './structure.service'
 import { CreateStructureDTO, UpdateStructureDTO } from './dto'
 import { ApiTags } from '@nestjs/swagger'
@@ -9,11 +9,13 @@ import { ApiTags } from '@nestjs/swagger'
   path: 'structures',
 })
 export class StructureController {
-  constructor(private readonly structureService: StructureService) {}
+  constructor(private readonly structureService: StructureService) { }
 
   @Get()
-  findAll() {
-    return this.structureService.findAll()
+  findAll(
+    @Query() query: any
+  ) {
+    return this.structureService.findAll(query)
   }
 
   @Get(':id')
