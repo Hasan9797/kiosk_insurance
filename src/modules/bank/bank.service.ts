@@ -3,6 +3,7 @@ import { PrismaService } from 'prisma/prisma.service'
 import { CreateBankRequest, UpdateBankRequest } from '@interfaces'
 import { FilterService } from '@helpers'
 import { Pagination } from 'enums/pagination.enum'
+import { Bank } from '@prisma/client'
 
 @Injectable()
 export class BankService {
@@ -15,7 +16,7 @@ export class BankService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const banks = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, limit, page)
+    const banks: Bank[] = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, limit, page)
 
     return {
       data: banks,

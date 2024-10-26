@@ -26,3 +26,4 @@ export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse } from
 export type { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from './deposit.interface'
 export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
+export type { Pagination } from './pagination.interface'

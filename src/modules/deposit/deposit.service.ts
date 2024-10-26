@@ -6,6 +6,7 @@ import { FilterService } from '@helpers'
 import * as admin from 'firebase-admin'
 import { UserBalanceHistoryStatus } from '@enums'
 import { Pagination } from 'enums/pagination.enum'
+import { Deposit } from '@prisma/client'
 @Injectable()
 export class DepositService {
   constructor(private readonly prisma: PrismaService) { }
@@ -14,9 +15,10 @@ export class DepositService {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
+
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const deposits = await FilterService?.applyFilters('deposit', parsedFilters, parsedSort)
+    const deposits: Deposit[] = await FilterService?.applyFilters('deposit', parsedFilters, parsedSort, limit, page)
 
     const result = []
 
