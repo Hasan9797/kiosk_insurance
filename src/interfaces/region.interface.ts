@@ -1,3 +1,4 @@
+import { Pagination } from '@interfaces'
 export interface CreateRegionRequest {
   name: string
   status?: number
@@ -16,7 +17,8 @@ interface Region {
 }
 
 export interface FindAllRegionResponse {
-  data: Region[]
+  data: Region[],
+  pagination: Pagination
 }
 
 export interface FindOneRegionResponse {

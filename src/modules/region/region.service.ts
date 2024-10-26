@@ -7,7 +7,7 @@ import {
   UpdateRegionRequest,
 } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
-import { FilterService } from '@helpers'
+import { FilterService, paginationResponse } from '@helpers'
 import { Pagination } from '@enums'
 @Injectable()
 export class RegionService {
@@ -35,8 +35,11 @@ export class RegionService {
       })
     }
 
+    const pagination = paginationResponse(regions.length, limit, page)
+
     return {
       data: result,
+      pagination
     }
   }
 
