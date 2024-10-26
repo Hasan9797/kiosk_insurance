@@ -42,6 +42,9 @@
       "@client": [
         "./client"
       ],
+      "@guards": [
+        "./guards"
+      ],
     },
     "typeRoots": [
       "./node_modules/@types",

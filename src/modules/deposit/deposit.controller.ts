@@ -28,7 +28,7 @@ import { v4 as uuidv4 } from 'uuid'
   version: '1',
   path: 'deposits',
 })
-export class DepositController {
+export class DepositController { 
   constructor(private readonly depositService: DepositService) {}
 
   @Get()

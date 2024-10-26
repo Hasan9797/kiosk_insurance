@@ -10,23 +10,21 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any) {
-    console.log(process.env.FIREBASE_SENDER_TOKEN.replace(/\\n/g, '\n'))
-
     const { limit, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    // const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort)
+    const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort)
 
-    const users = await this.prisma.user.findMany({
-      where: {
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
+    // const users = await this.prisma.user.findMany({
+    //   where: {
+    //     deletedAt: {
+    //       equals: null,
+    //     },
+    //   },
+    // })
 
     const usersWithRoles = users.map((user) => ({
       ...user,
@@ -60,6 +58,23 @@ export class UsersService {
       },
     })
     return accountant
+  }
+
+  async getOperatorsStatic(userId: number) {
+    const operators = await this.prisma.user.findMany(
+      {
+        where: {
+          incasatorId: userId,
+          deletedAt: {
+            equals: null
+          }
+        }
+      }
+    )
+
+    return {
+      data: operators
+    }
   }
 
   async getIncasators() {

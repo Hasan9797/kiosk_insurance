@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Delete, Query } from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Req, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { UsersService } from './users.service'
 import { CreateUserDTO, UpdateUserDto } from './dto'
+import { CustomRequest } from 'custom'
+import { CheckTokenGuard } from '@guards'
 
 @ApiTags('Users Service')
 @Controller({
@@ -30,6 +32,14 @@ export class UsersController {
   @Get('accountant')
   findAccountants() {
     return this.usersService.getAccountans()
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Get('operator-static')
+  findoperatorsStatic(
+    @Req() request: CustomRequest
+  ) {
+    return this.usersService.getOperatorsStatic(request?.user?.id)
   }
 
   @Get(':id')
