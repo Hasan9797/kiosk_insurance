@@ -28,7 +28,7 @@ import { v4 as uuidv4 } from 'uuid'
   version: '1',
   path: 'deposits',
 })
-export class DepositController { 
+export class DepositController {
   constructor(private readonly depositService: DepositService) {}
 
   @Get()
@@ -36,9 +36,10 @@ export class DepositController {
     return this.depositService.findAll(query)
   }
 
-  @Get('incasator-static')
-  findIncasatorDeposit(@Req() request: CustomRequest) {
-    return this.depositService.findIncasatorStatic(request?.user?.id)
+  @UseGuards(CheckTokenGuard)
+  @Get('deposit-static')
+  findIncasatorDeposit(@Req() request: CustomRequest, @Query() query: any) {
+    return this.depositService.findDepositStatic(request?.user?.id, query)
   }
 
   @Get(':id')

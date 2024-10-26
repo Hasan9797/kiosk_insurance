@@ -1,3 +1,5 @@
+import { Pagination } from '@interfaces'
+
 export interface CreateDepositRequest {
   operatorId: number
 }
@@ -25,6 +27,7 @@ interface Deposit {
 
 export interface FindAllDepositResponse {
   data: Deposit[]
+  pagination: Pagination
 }
 
 export interface FindOneDepositResponse {

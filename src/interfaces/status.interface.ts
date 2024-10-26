@@ -1,4 +1,4 @@
 export interface Changer {
-    int: number;
-    string: string;
+  int: number
+  string: string
 }

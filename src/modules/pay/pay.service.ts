@@ -10,7 +10,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) { }
+  ) {}
 
   async preparePay(data: any, userId: number): Promise<void> {
     const result = await this.payGateService.payByCard(

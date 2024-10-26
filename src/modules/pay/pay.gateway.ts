@@ -21,7 +21,7 @@ import { CustomRequest } from 'custom'
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
-  constructor(private readonly payService: PayService) { }
+  constructor(private readonly payService: PayService) {}
 
   afterInit(server: Server) {
     console.log('Socket server initialized')

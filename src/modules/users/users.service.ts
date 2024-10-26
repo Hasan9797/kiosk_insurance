@@ -3,14 +3,13 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { PrismaService } from 'prisma/prisma.service'
 import { UserRoles, UserRolesOutPut, Pagination } from '@enums'
 import * as bcrypt from 'bcrypt'
-import { FilterService } from '@helpers'
+import { FilterService, paginationResponse } from '@helpers'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllUserResponse> {
-
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
@@ -31,16 +30,19 @@ export class UsersService {
       ...user,
       role: {
         int: user.role,
-        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut]
+        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
       },
     }))
 
-    for (let user of usersWithRoles) {
+    for (const user of usersWithRoles) {
       delete user.password
     }
 
+    const pagination = paginationResponse(users.length, limit, page)
+
     return {
       data: usersWithRoles,
+      pagination,
     }
   }
 
@@ -69,19 +71,17 @@ export class UsersService {
   }
 
   async getOperatorsStatic(userId: number) {
-    const operators = await this.prisma.user.findMany(
-      {
-        where: {
-          incasatorId: userId,
-          deletedAt: {
-            equals: null
-          }
-        }
-      }
-    )
+    const operators = await this.prisma.user.findMany({
+      where: {
+        incasatorId: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
 
     return {
-      data: operators
+      data: operators,
     }
   }
 

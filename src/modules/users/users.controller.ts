@@ -36,9 +36,7 @@ export class UsersController {
 
   @UseGuards(CheckTokenGuard)
   @Get('operator-static')
-  findoperatorsStatic(
-    @Req() request: CustomRequest
-  ) {
+  findoperatorsStatic(@Req() request: CustomRequest) {
     return this.usersService.getOperatorsStatic(request?.user?.id)
   }
 

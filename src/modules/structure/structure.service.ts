@@ -1,43 +1,54 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateStructureRequest, FindAllStructureResponse, FindOneStructureResponse, UpdateStructureRequest } from '@interfaces'
+import {
+  CreateStructureRequest,
+  FindAllStructureResponse,
+  FindOneStructureResponse,
+  UpdateStructureRequest,
+} from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
-import { FilterService } from '@helpers'
+import { FilterService, paginationResponse } from '@helpers'
 import { Pagination, StructureEnum, StructureEnumOutPut } from '@enums'
 import { Structure, User } from '@prisma/client'
 
 @Injectable()
 export class StructureService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllStructureResponse> {
-
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const structures: Structure[] = await FilterService?.applyFilters('structure', parsedFilters, parsedSort, limit, page)
+    const structures: Structure[] = await FilterService?.applyFilters(
+      'structure',
+      parsedFilters,
+      parsedSort,
+      limit,
+      page,
+    )
 
     const result: any = []
 
     structures.map((structure) => {
-      result.push(
-        {
-          id: structure?.id,
-          name: structure?.name,
-          status: {
-            int: structure?.status,
-            string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut]
-          },
-          createdAt: structure?.createdAt,
-          regionId: structure?.regionId
-        }
-      )
+      result.push({
+        id: structure?.id,
+        name: structure?.name,
+        status: {
+          int: structure?.status,
+          string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: structure?.createdAt,
+        regionId: structure?.regionId,
+      })
     })
+
+    const pagination = paginationResponse(structures.length, limit, page)
 
     return {
       data: result,
+      pagination,
     }
   }
 
@@ -60,10 +71,10 @@ export class StructureService {
       name: structure?.name,
       status: {
         int: structure?.status,
-        string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut]
+        string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut],
       },
       createdAt: structure?.createdAt,
-      regionId: structure?.regionId
+      regionId: structure?.regionId,
     }
 
     return {

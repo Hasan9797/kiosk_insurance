@@ -11,7 +11,7 @@ import { FilterService, paginationResponse } from '@helpers'
 import { Pagination } from '@enums'
 @Injectable()
 export class RegionService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllRegionResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -39,7 +39,7 @@ export class RegionService {
 
     return {
       data: result,
-      pagination
+      pagination,
     }
   }
 

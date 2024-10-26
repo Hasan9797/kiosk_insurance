@@ -8,7 +8,7 @@ export class InsuranceService {
   constructor(
     private readonly insuranceGateService: InsuranceGateService,
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async findCompany() {
     const result = await this.insuranceGateService.findCompany(
