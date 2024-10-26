@@ -76,6 +76,12 @@ export class FilterService {
       },
     }
 
+    const skip = (page - 1) * limit;
+
+    query.take = limit;
+    query.skip = skip;
+
+
     const model: any = prisma[modelName as keyof PrismaClient]
     return model['findMany'](query)
   }

@@ -21,7 +21,7 @@ import { CustomRequest } from 'custom'
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
-  constructor(private readonly payService: PayService) {}
+  constructor(private readonly payService: PayService) { }
 
   afterInit(server: Server) {
     console.log('Socket server initialized')
@@ -39,7 +39,6 @@ export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   @SubscribeMessage('pay')
   async handlePayment(@MessageBody() data: any, @Req() request: CustomRequest): Promise<any> {
     this.payService.saveEveryCash(data, request?.user?.id)
-    // console.log('salam')
     this.server.emit('payResponse', { amount: 'salam' })
   }
 }

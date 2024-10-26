@@ -10,11 +10,9 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: any, userId: number): Promise<void> {
-    console.log(data)
-
     const result = await this.payGateService.payByCard(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
@@ -98,8 +96,6 @@ export class PayService {
   }
 
   async saveEveryCash(data: any, userId: number) {
-    console.log(userId, 'salam')
-
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -110,8 +106,6 @@ export class PayService {
     })
 
     const cashCountRightNow = user.cashCount
-
-    console.log(cashCountRightNow)
 
     if (!user) {
       throw new NotFoundException('User not found with given ID!')

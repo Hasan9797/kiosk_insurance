@@ -8,7 +8,7 @@ export class InsuranceService {
   constructor(
     private readonly insuranceGateService: InsuranceGateService,
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   async findCompany() {
     const result = await this.insuranceGateService.findCompany(
@@ -37,8 +37,6 @@ export class InsuranceService {
   }
 
   async createInsurance(data: any, userId: any) {
-    console.log(userId)
-
     const result = await this.insuranceGateService.createInsurance(
       data,
       process.env.QUICKPAY_SERVICE_ID,

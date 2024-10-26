@@ -1,29 +1,47 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateStructureRequest, UpdateStructureRequest } from '@interfaces'
+import { CreateStructureRequest, FindAllStructureResponse, FindOneStructureResponse, UpdateStructureRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
+import { FilterService } from '@helpers'
+import { Pagination, StructureEnum, StructureEnumOutPut } from '@enums'
+import { Structure, User } from '@prisma/client'
 
 @Injectable()
 export class StructureService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  async findAll() {
-    const structures = await this.prisma.structure.findMany({
-      where: {
-        deletedAt: {
-          equals: null,
-        },
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
+  async findAll(query: any): Promise<FindAllStructureResponse> {
+
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
+
+    const parsedSort = sort ? JSON?.parse(sort) : {}
+
+    const parsedFilters = filters ? JSON?.parse(filters) : []
+
+    const structures: Structure[] = await FilterService?.applyFilters('structure', parsedFilters, parsedSort, limit, page)
+
+    const result: any = []
+
+    structures.map((structure) => {
+      result.push(
+        {
+          id: structure?.id,
+          name: structure?.name,
+          status: {
+            int: structure?.status,
+            string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut]
+          },
+          createdAt: structure?.createdAt,
+          regionId: structure?.regionId
+        }
+      )
     })
 
     return {
-      data: structures,
+      data: result,
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<FindOneStructureResponse> {
     const structure = await this.prisma.structure.findUnique({
       where: {
         id: id,
@@ -37,8 +55,19 @@ export class StructureService {
       throw new NotFoundException('Structure not found with given ID!')
     }
 
+    const result = {
+      id: structure?.id,
+      name: structure?.name,
+      status: {
+        int: structure?.status,
+        string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut]
+      },
+      createdAt: structure?.createdAt,
+      regionId: structure?.regionId
+    }
+
     return {
-      data: structure,
+      data: result,
     }
   }
 

@@ -8,12 +8,13 @@ import {
 } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { FilterService } from '@helpers'
+import { Pagination } from '@enums'
 @Injectable()
 export class RegionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllRegionResponse> {
-    const { limit, sort, filters } = query
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedLimit = parseInt(limit, 10)
 
@@ -21,7 +22,7 @@ export class RegionService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const regions = await FilterService?.applyFilters('region', parsedFilters, parsedSort)
+    const regions = await FilterService?.applyFilters('region', parsedFilters, parsedSort, limit, page)
 
     const result = []
 
@@ -29,7 +30,7 @@ export class RegionService {
       result?.push({
         id: region?.id,
         name: region?.name,
-        status: region?.status,
+        status: region?.status || 1,
         createdAt: region?.createdAt,
       })
     }
