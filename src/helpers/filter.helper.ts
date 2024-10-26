@@ -8,7 +8,7 @@ export class FilterService {
     filters: Array<{ column: string; operator: string; value: any }>,
     sort: { column: string; value: 'asc' | 'desc' },
     limit?: number,
-    page?: number,
+    page?: number
   ): Promise<any> {
     const query: Prisma.UserFindManyArgs = {
       where: {},

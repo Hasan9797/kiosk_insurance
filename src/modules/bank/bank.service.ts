@@ -6,7 +6,7 @@ import { Pagination } from 'enums/pagination.enum'
 
 @Injectable()
 export class BankService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query

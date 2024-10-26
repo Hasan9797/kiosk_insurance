@@ -19,7 +19,7 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   // So'rovni yuborish
   async send() {

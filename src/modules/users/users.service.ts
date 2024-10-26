@@ -16,15 +16,15 @@ export class UsersService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort)
+    // const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort)
 
-    // const users = await this.prisma.user.findMany({
-    //   where: {
-    //     deletedAt: {
-    //       equals: null,
-    //     },
-    //   },
-    // })
+    const users = await this.prisma.user.findMany({
+      where: {
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
 
     const usersWithRoles = users.map((user) => ({
       ...user,
