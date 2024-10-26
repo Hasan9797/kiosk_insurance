@@ -1,4 +1,4 @@
 export enum Pagination {
   PAGE = 1,
-  LIMIT = 2,
+  LIMIT = 20,
 }
