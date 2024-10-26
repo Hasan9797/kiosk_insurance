@@ -8,7 +8,7 @@ export class FilterService {
     filters: Array<{ column: string; operator: string; value: any }>,
     sort: { column: string; value: 'asc' | 'desc' },
     limit?: number,
-    page?: number
+    page?: number,
   ): Promise<any> {
     const query: Prisma.UserFindManyArgs = {
       where: {},
@@ -76,11 +76,10 @@ export class FilterService {
       },
     }
 
-    const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit
 
-    query.take = limit;
-    query.skip = skip;
-
+    query.take = limit
+    query.skip = skip
 
     const model: any = prisma[modelName as keyof PrismaClient]
     return model['findMany'](query)

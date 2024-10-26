@@ -9,12 +9,10 @@ import { ApiTags } from '@nestjs/swagger'
   path: 'structures',
 })
 export class StructureController {
-  constructor(private readonly structureService: StructureService) { }
+  constructor(private readonly structureService: StructureService) {}
 
   @Get()
-  findAll(
-    @Query() query: any
-  ) {
+  findAll(@Query() query: any) {
     return this.structureService.findAll(query)
   }
 

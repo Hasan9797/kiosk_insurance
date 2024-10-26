@@ -21,7 +21,12 @@ export type {
   FindOneRegionResponse,
 } from './region.interface'
 
-export type { CreateStructureRequest, UpdateStructureRequest, FindAllStructureResponse, FindOneStructureResponse } from './structure.interface'
+export type {
+  CreateStructureRequest,
+  UpdateStructureRequest,
+  FindAllStructureResponse,
+  FindOneStructureResponse,
+} from './structure.interface'
 export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse } from './user.interface'
 export type { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from './deposit.interface'
 export type { QueryParams, Filter, Sort } from './filter.interface'

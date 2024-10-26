@@ -1,4 +1,4 @@
-import { Changer } from "@interfaces"
+import { Changer, Pagination } from '@interfaces'
 export interface CreateStructureRequest {
   name: string
   status: number
@@ -12,15 +12,16 @@ export interface UpdateStructureRequest {
 }
 
 interface FindStructure {
-  id: number,
-  name: string,
-  status: Changer,
-  regionId: number,
+  id: number
+  name: string
+  status: Changer
+  regionId: number
   createdAt: Date
 }
 
 export interface FindAllStructureResponse {
   data: FindStructure[]
+  pagination: Pagination
 }
 
 export interface FindOneStructureResponse {

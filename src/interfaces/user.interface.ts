@@ -1,4 +1,4 @@
-import { Changer } from '@interfaces'
+import { Changer, Pagination } from '@interfaces'
 import { Decimal } from '@prisma/client/runtime/library'
 
 export interface CreateUserRequest {
@@ -12,27 +12,27 @@ export interface CreateUserRequest {
   longitude?: string
 }
 
-
 interface FindUserResponse {
-  id: number;
-  name: string;
-  login: string;
-  code: string;
-  role: Changer;
-  status: number;
-  cashCount: number;
-  latitude: Decimal;
-  longitude: Decimal;
-  createdAt: Date;
-  updatedAt: Date | null;
-  deletedAt: Date | null;
-  structureId: number | null;
-  incasatorId: number | null;
+  id: number
+  name: string
+  login: string
+  code: string
+  role: Changer
+  status: number
+  cashCount: number
+  latitude: Decimal
+  longitude: Decimal
+  createdAt: Date
+  updatedAt: Date | null
+  deletedAt: Date | null
+  structureId: number | null
+  incasatorId: number | null
 }
 export interface FindAllUserResponse {
-  data: FindUserResponse[];
+  data: FindUserResponse[]
+  pagination: Pagination
 }
 
 export interface FindOneUserResponse {
-  data: FindUserResponse;
+  data: FindUserResponse
 }

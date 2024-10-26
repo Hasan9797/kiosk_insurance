@@ -17,7 +17,7 @@ interface Region {
 }
 
 export interface FindAllRegionResponse {
-  data: Region[],
+  data: Region[]
   pagination: Pagination
 }
 

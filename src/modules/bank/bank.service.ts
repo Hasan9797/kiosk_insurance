@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
 import { CreateBankRequest, UpdateBankRequest } from '@interfaces'
-import { FilterService } from '@helpers'
+import { FilterService, paginationResponse } from '@helpers'
 import { Pagination } from 'enums/pagination.enum'
 import { Bank } from '@prisma/client'
 
 @Injectable()
 export class BankService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -18,8 +18,11 @@ export class BankService {
 
     const banks: Bank[] = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, limit, page)
 
+    const pagination = paginationResponse(banks.length, limit, page)
+
     return {
       data: banks,
+      pagination,
     }
   }
 

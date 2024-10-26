@@ -2,14 +2,14 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { DepositStatus, DepositStatusOutPut } from 'enums/deposit.enum'
-import { FilterService } from '@helpers'
+import { FilterService, paginationResponse } from '@helpers'
 import * as admin from 'firebase-admin'
 import { UserBalanceHistoryStatus } from '@enums'
 import { Pagination } from 'enums/pagination.enum'
 import { Deposit } from '@prisma/client'
 @Injectable()
 export class DepositService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllDepositResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -63,8 +63,11 @@ export class DepositService {
       })
     }
 
+    const pagination = paginationResponse(deposits.length, limit, page)
+
     return {
       data: result,
+      pagination,
     }
   }
 
@@ -125,18 +128,22 @@ export class DepositService {
     }
   }
 
-  async findIncasatorStatic(userId: number): Promise<FindAllDepositResponse> {
-    const depositStatic = await this.prisma.deposit.findMany({
-      where: {
-        incasatorId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
+  async findIncasatorStatic(userId: number, query: any): Promise<FindAllDepositResponse> {
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
+
+    const parsedSort = sort ? JSON?.parse(sort) : {}
+
+    const parsedFilters = filters ? JSON?.parse(filters) : []
+
+    const depositStatic: Deposit[] = await FilterService?.applyFilters(
+      'deposit',
+      parsedFilters,
+      parsedSort,
+      limit,
+      page,
+    )
 
     const result = depositStatic.map((deposit) => {
-      // DepositStatus ga qarab DepositStatusOutPut qiymatini aniqlash
       let statusOutPut = ''
 
       switch (deposit.status) {
@@ -176,8 +183,11 @@ export class DepositService {
       }
     })
 
+    const pagination = paginationResponse(depositStatic.length, limit, page)
+
     return {
       data: result,
+      pagination,
     }
   }
 
