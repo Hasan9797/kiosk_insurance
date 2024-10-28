@@ -169,6 +169,7 @@ export class UsersService {
         password: hashedPassword,
         code: code,
         role: data?.role,
+        incasatorId: data?.incasatorId,
       },
     })
 

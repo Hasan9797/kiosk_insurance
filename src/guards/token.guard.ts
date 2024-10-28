@@ -27,7 +27,7 @@ export class CheckTokenGuard implements CanActivate {
       accessToken = request.headers.authorization?.replace(/^(bearer)\s/i, '')
     } else if (type === 'ws') {
       const client = context.switchToWs().getClient()
-      console.log(client.handshake.headers.authorization)
+      console.log(client.handshake.headers)
 
       accessToken = client.handshake.headers.authorization
     }
@@ -52,6 +52,8 @@ export class CheckTokenGuard implements CanActivate {
         id: verified.id,
       },
     })
+
+    console.log(user)
 
     if (!user) {
       throw new UnauthorizedException(ErrorCodes.UNAUTHORIZED)
