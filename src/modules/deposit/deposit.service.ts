@@ -352,6 +352,7 @@ export class DepositService {
         cashCount: 0,
       },
     })
+    console.log(file)
 
     await this.prisma.deposit.update({
       where: {

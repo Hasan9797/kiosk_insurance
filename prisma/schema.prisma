@@ -157,7 +157,7 @@ model Transaction {
   payerPhone           String?
   merchantId           Int?
   terminalId           Int?
-  partnerTransactionId String?   @map("partner_transaction_id")
+  partnerTransactionId Int?      @map("partner_transaction_id")
   bankTransactionId    Int?      @map("bank_transaction_id")
   status               Int?      @default(0)
   smsNotify            Int?      @default(0)

@@ -3,7 +3,6 @@ import { BankService } from './bank.service'
 import { CreateBankDTO } from './dto'
 import { UpdateBankDTO } from './dto/update-bank.dto'
 import { ApiTags } from '@nestjs/swagger'
-import { QueryParams } from '@interfaces'
 
 @ApiTags('Bank Service')
 @Controller({

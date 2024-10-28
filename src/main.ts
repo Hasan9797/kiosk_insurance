@@ -6,7 +6,6 @@ import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express
 import { App } from './app'
 import { appConfig } from 'config/app.config'
 import { swaggerConfig } from '@config'
-import { createServer } from 'http'
 import { IoAdapter } from '@nestjs/platform-socket.io'
 
 async function bootstrap() {

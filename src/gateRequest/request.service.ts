@@ -1,10 +1,10 @@
-import { Injectable, HttpException, InternalServerErrorException, BadRequestException } from '@nestjs/common'
+import { Injectable, HttpException, InternalServerErrorException } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ConfigService } from '@nestjs/config'
 import { firstValueFrom } from 'rxjs'
 import * as crypto from 'crypto'
 import { REQUEST_ERRORS } from '@enums'
-import { GetInsuranceIds } from '@interfaces'
+import { GetInsuranceIds, TransactionPreparePayCardResponse } from '@interfaces'
 
 @Injectable()
 export class InfinityRequestService {
@@ -38,7 +38,7 @@ export class InfinityRequestService {
           timeout: 30000,
         }),
       )
-      this.response = response.data
+      // this.response = response.data
 
       // this.response = {
       //   "id": 207,
@@ -82,22 +82,181 @@ export class InfinityRequestService {
       //   "id": 207
       // }
 
+      this.response = {
+        id: 207,
+        error: null,
+        result: {
+          details: {
+            id: '8g78g88d7gdq5ytq89utyq45',
+            masked_card_number: '860053******9500',
+            transaction_id: 4534534,
+            bank_transaction_id: 6845346,
+            reference_number: 5464563454,
+            amount: 1000,
+            merchantId: 33005329,
+            terminalId: 33004331,
+            date: 12425135346,
+          },
+        },
+      }
+
       // this.response = {
-      //   "id": 207,
+      //   "id": 227,
       //   "error": null,
-      //   "result": {
-      //     "details": {
-      //       "id": "8g78g88d7gdq5ytq89utyq45",
-      //       "masked_card_number": "860053******9500",
-      //       "transaction_id": 4534534,
-      //       "bank_transaction_id": 6845346,
-      //       "reference_number": 5464563454,
-      //       "amount": 1000,
-      //       "merchantId": 33005329,
-      //       "terminalId": 33004331,
-      //       "date": 12425135346
+      //   "result": [
+
+      //     {
+      //       "vendor_form": [
+
+      //         {
+      //           "key": "phone_number",
+      //           "value": "906150050",
+      //           "show": 0,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "key": "summa",
+      //           "value": 1000,
+      //           "show": 0,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "key": "vendor_id",
+      //           "value": "100080",
+      //           "show": 0,
+      //           "is_required": 1
+
+      //         }
+      //       ],
+      //       "pay_form": [
+
+      //         {
+      //           "key": "card_id",
+      //           "value": "",
+      //           "show": 0,
+      //           "is_required": 1
+
+      //         }
+      //       ],
+      //       "request_method": "pam.pay_by_id"
+      //     },
+
+      //     {
+      //       "vendor_form": [
+
+      //         {
+      //           "key": "phone_number",
+      //           "value": "906150050",
+      //           "show": 0,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "key": "summa",
+      //           "value": 1000,
+      //           "show": 0,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "key": "vendor_id",
+      //           "value": "100080",
+      //           "show": 0,
+      //           "is_required": 1
+
+      //         }
+      //       ],
+      //       "pay_form": [
+
+      //         {
+      //           "key": "card_id",
+      //           "value": "",
+      //           "show": 0,
+      //           "is_required": 1
+
+      //         }
+      //       ],
+      //       "request_method": "pam.prepare_pay_by_id"
+      //     },
+
+      //     {
+      //       "vendor_form": [
+
+      //         {
+      //           "key": "phone_number",
+      //           "value": "906150050",
+      //           "show": 0,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "key": "summa",
+
+      //           "value": 1000,
+      //           "show": 0,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "key": "vendor_id",
+      //           "value": "100080",
+      //           "show": 0,
+      //           "is_required": 1
+
+      //         }
+      //       ],
+      //       "pay_form": [
+
+      //         {
+      //           "label": "Номер карты",
+      //           "key": "card_number",
+      //           "element": "input",
+      //           "type": "int",
+      //           "value": "",
+      //           "show": 1,
+      //           "mask": "#### #### #### ####",
+      //           "regex": "^(8600|6262|9860)[0-9]{12}$",
+      //           "placeholder": "",
+      //           "size": 16,
+      //           "order": 10,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "label": "Срок действия",
+      //           "key": "card_expire",
+      //           "element": "input",
+      //           "type": "int",
+      //           "value": "",
+      //           "show": 1,
+      //           "mask": "##/##",
+      //           "regex": "^[0-9]{4}$",
+      //           "placeholder": "",
+      //           "size": 4,
+      //           "order": 20,
+      //           "is_required": 1
+      //         },
+
+      //         {
+      //           "label": "Сохранить карту",
+      //           "key": "save",
+      //           "element": "checkbox",
+      //           "type": "int",
+      //           "value": "0",
+      //           "show": 1,
+      //           "regex": "^[0,1]{1}$",
+      //           "order": 25,
+      //           "is_required": 1
+
+      //         }
+      //       ],
+      //       "request_method": "pam.prepare_pay"
+
       //     }
-      //   }
+
+      //   ]
       // }
 
       if (!this.response) {
@@ -190,6 +349,21 @@ export class InfinityRequestService {
 
   getResult(): any {
     return this.response?.result || []
+  }
+
+  getIdsPreparePayCard(): TransactionPreparePayCardResponse {
+    console.log(this.response, 'keldim karochi')
+
+    const result = {
+      id: this.response.result.details.id,
+      transaction_id: this.response.result.details.transaction_id,
+      bank_transaction_id: this.response.result.details.bank_transaction_id,
+      reference_number: this.response.result.details.reference_number,
+      amount: this.response.result.details.amount,
+      merchantId: this.response.result.details.merchantId,
+      terminalId: this.response.result.details.terminalId,
+    }
+    return result
   }
 
   getInsuranceIds(): GetInsuranceIds {
