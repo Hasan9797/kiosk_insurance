@@ -40,7 +40,7 @@ model Insurance {
   id          Int       @id @default(autoincrement())
   anketaId    String
   amount      BigInt
-  status      String
+  status      Int       @default(0)
   createResId Int?      @map("create_res_id")
   polisId     Int       @map("polis_id")
   orderId     String    @map("order_id")

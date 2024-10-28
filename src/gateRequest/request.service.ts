@@ -38,7 +38,7 @@ export class InfinityRequestService {
           timeout: 30000,
         }),
       )
-      // this.response = response.data
+      this.response = response.data
 
       // this.response = {
       //   "id": 207,
@@ -82,23 +82,23 @@ export class InfinityRequestService {
       //   "id": 207
       // }
 
-      this.response = {
-        id: 207,
-        error: null,
-        result: {
-          details: {
-            id: '8g78g88d7gdq5ytq89utyq45',
-            masked_card_number: '860053******9500',
-            transaction_id: 4534534,
-            bank_transaction_id: 6845346,
-            reference_number: 5464563454,
-            amount: 1000,
-            merchantId: 33005329,
-            terminalId: 33004331,
-            date: 12425135346,
-          },
-        },
-      }
+      // this.response = {
+      //   id: 207,
+      //   error: null,
+      //   result: {
+      //     details: {
+      //       id: '8g78g88d7gdq5ytq89utyq45',
+      //       masked_card_number: '860053******9500',
+      //       transaction_id: 4534534,
+      //       bank_transaction_id: 6845346,
+      //       reference_number: 5464563454,
+      //       amount: 1000,
+      //       merchantId: 33005329,
+      //       terminalId: 33004331,
+      //       date: 12425135346,
+      //     },
+      //   },
+      // }
 
       // this.response = {
       //   "id": 227,
@@ -352,8 +352,6 @@ export class InfinityRequestService {
   }
 
   getIdsPreparePayCard(): TransactionPreparePayCardResponse {
-    console.log(this.response, 'keldim karochi')
-
     const result = {
       id: this.response.result.details.id,
       transaction_id: this.response.result.details.transaction_id,
