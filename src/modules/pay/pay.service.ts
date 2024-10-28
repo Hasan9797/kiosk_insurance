@@ -1,4 +1,4 @@
-import { TransactionStatus } from '@enums'
+import { InsuranceStatus, TransactionStatus } from '@enums'
 import { FirebaseService } from '@helpers'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PayGate } from 'gateRequest'
@@ -25,6 +25,13 @@ export class PayService {
         deletedAt: {
           equals: null,
         },
+      },
+    })
+
+    const lastInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        userId: userId,
+        status: InsuranceStatus.NEW,
       },
     })
 
@@ -221,7 +228,7 @@ export class PayService {
         deletedAt: {
           equals: null,
         },
-        status: 'created',
+        status: InsuranceStatus.NEW,
       },
       data: {
         amount: data?.amount,
