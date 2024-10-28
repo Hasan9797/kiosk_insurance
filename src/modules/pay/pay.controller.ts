@@ -17,24 +17,25 @@ export class PayController {
     return this.payService.preparePay(createPayDto, request?.user?.id)
   }
 
+  @UseGuards(CheckTokenGuard)
   @Post('prepare-pay-card')
-  preparePay(@Body() preparePayDto: any) {
-    return this.payService.payByCard(preparePayDto)
+  preparePay(@Body() preparePayDto: any, @Req() request: CustomRequest) {
+    return this.payService.payByCard(preparePayDto, request?.user?.id)
   }
 
   @Post('confirm-pay-card')
-  confirmPayment(@Body() dto: any) {
-    return this.payService.confirmPayment(dto)
+  confirmPayment(@Body() dto: any, @Req() request: CustomRequest) {
+    return this.payService.confirmPayment(dto, request?.user?.id)
   }
 
   @Post('resend-sms')
-  resendSms(@Body() dto: any) {
-    return this.payService.resendSms(dto)
+  resendSms(@Req() request: CustomRequest) {
+    return this.payService.resendSms(request?.user?.id)
   }
 
   @Post('check-status-transaction')
-  checkTransactionStatus(@Body() dto: any) {
-    return this.payService.checkTransactionStatus(dto)
+  checkTransactionStatus(@Req() request: CustomRequest) {
+    return this.payService.checkTransactionStatus(request?.user?.id)
   }
 
   @Post('get-receipt')

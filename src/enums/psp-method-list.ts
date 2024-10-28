@@ -11,4 +11,5 @@ export enum MethodList {
   PAM_CHECK = 'pam.check',
   PAM_PREPARE_PAYMENT = 'pam.prepare_pay',
   PAM_CONFIRM_PAYMENT = 'pam.confirm_pay',
+  PAM_RESEND_SMS = 'pam.pay_resend_sms',
 }
