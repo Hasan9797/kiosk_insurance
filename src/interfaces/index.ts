@@ -28,7 +28,12 @@ export type {
   FindOneStructureResponse,
 } from './structure.interface'
 export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse } from './user.interface'
-export type { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse, UpdateFcmTokenRequest } from './deposit.interface'
+export type {
+  CreateDepositRequest,
+  FindAllDepositResponse,
+  FindOneDepositResponse,
+  UpdateFcmTokenRequest,
+} from './deposit.interface'
 export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
 export type { Pagination } from './pagination.interface'

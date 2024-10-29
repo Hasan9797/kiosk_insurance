@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid'
   path: 'deposits',
 })
 export class DepositController {
-  constructor(private readonly depositService: DepositService) { }
+  constructor(private readonly depositService: DepositService) {}
 
   @Get()
   findAll(@Query() query: QueryParams) {
@@ -89,10 +89,7 @@ export class DepositController {
 
   @UseGuards(CheckTokenGuard)
   @Post('update/fcm-token')
-  updateFcmToken(
-    @Body() body: UpdateFcmTokenDTO,
-    @Req() request: CustomRequest
-  ) {
+  updateFcmToken(@Body() body: UpdateFcmTokenDTO, @Req() request: CustomRequest) {
     return this.depositService.updateFcmToken(body, request?.user?.id)
   }
 
