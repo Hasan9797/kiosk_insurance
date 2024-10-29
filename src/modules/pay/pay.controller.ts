@@ -3,6 +3,7 @@ import { PayService } from './pay.service'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from 'guards'
+import { PreparePayCardDTO } from './dto'
 
 @ApiTags('Pay Service')
 @Controller({
@@ -13,7 +14,7 @@ export class PayController {
 
   @UseGuards(CheckTokenGuard)
   @Post('check-pay-card')
-  payByCard(@Body() createPayDto: any, @Req() request: CustomRequest) {
+  payByCard(@Body() createPayDto: PreparePayCardDTO, @Req() request: CustomRequest) {
     return this.payService.preparePay(createPayDto, request?.user?.id)
   }
 

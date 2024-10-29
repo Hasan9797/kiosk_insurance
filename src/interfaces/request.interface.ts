@@ -14,3 +14,10 @@ export interface TransactionPreparePayCardResponse {
   merchantId: number
   terminalId: number
 }
+
+export interface PreparePayCardRequest {
+  phone_number: string
+  anketa_id: string
+  amount: string
+  vendor_id?: number
+}
