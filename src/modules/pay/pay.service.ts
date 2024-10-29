@@ -10,7 +10,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: any, userId: number): Promise<void> {
     const result = await this.payGateService.payByCard(
@@ -199,6 +199,8 @@ export class PayService {
       },
     })
 
+
+
     const cashCountRightNow = user.cashCount
 
     if (!user) {
@@ -207,7 +209,7 @@ export class PayService {
 
     if (cashCountRightNow === 1900 && cashCountRightNow < 1900) {
       const firebaseToken =
-        'dMYhX-6vRF2jppve7RJ-c-:APA91bEJsUGVU9zNxgf1JN-RJC1ZBSsI_5A3P2OUTs1h-T82ES5CfXUi7eUga_Ko-PpumQwWMQNM0nwkHC7RbYAGnqT7fDJ4VL74gaDKB7_vYuABTkS7MF1kqi3xkfE-x7AFqq8QytjG'
+        user.fcmToken
       if (firebaseToken) {
         await this.firabase.sendPushNotification(firebaseToken, 'Ketdi', 'Naqd pul 1900 dan oshdi')
       }
@@ -221,6 +223,8 @@ export class PayService {
         cashCount: cashCountRightNow + 1,
       },
     })
+
+    console.log('salam', user, data);
 
     const insurance = await this.prisma.insurance.update({
       where: {

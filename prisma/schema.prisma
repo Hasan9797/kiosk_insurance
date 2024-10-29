@@ -16,6 +16,7 @@ model User {
   role      Int
   status    Int       @default(1)
   cashCount Int       @default(0) @map("cash_count")
+  fcmToken  String?   @default("") @map("fcm_token")
   latitude  Decimal   @default(0.0) @db.Decimal(8, 6)
   longitude Decimal   @default(0.0) @db.Decimal(9, 6)
   createdAt DateTime  @default(now()) @map("created_at")

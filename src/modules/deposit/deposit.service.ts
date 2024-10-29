@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from '@interfaces'
+import { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse, UpdateFcmTokenRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { DepositStatus, DepositStatusOutPut } from 'enums/deposit.enum'
 import { FilterService, paginationResponse } from '@helpers'
@@ -9,7 +9,7 @@ import { Pagination } from 'enums/pagination.enum'
 import { Deposit } from '@prisma/client'
 @Injectable()
 export class DepositService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllDepositResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -470,6 +470,37 @@ export class DepositService {
       })
 
     return response
+  }
+
+  async updateFcmToken(data: UpdateFcmTokenRequest, userId: number): Promise<void> {
+    const user = await this.prisma.user.findUnique(
+      {
+        where: {
+          id: userId,
+          deletedAt: {
+            equals: null
+          }
+        }
+      }
+    )
+
+    if (!user) {
+      throw new NotFoundException('User not found with given ID!')
+    }
+
+    await this.prisma.user.update(
+      {
+        where: {
+          id: userId,
+          deletedAt: {
+            equals: null
+          }
+        },
+        data: {
+          fcmToken: data?.fcmToken,
+        }
+      }
+    )
   }
 
   async remove(id: number) {

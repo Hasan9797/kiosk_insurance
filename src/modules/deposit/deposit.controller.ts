@@ -14,7 +14,7 @@ import {
   UploadedFile,
 } from '@nestjs/common'
 import { DepositService } from './deposit.service'
-import { CreateDepositDTO } from './dto'
+import { CreateDepositDTO, UpdateFcmTokenDTO } from './dto'
 import { ApiTags } from '@nestjs/swagger'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid'
   path: 'deposits',
 })
 export class DepositController {
-  constructor(private readonly depositService: DepositService) {}
+  constructor(private readonly depositService: DepositService) { }
 
   @Get()
   findAll(@Query() query: QueryParams) {
@@ -85,6 +85,15 @@ export class DepositController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.depositService.update(+id, request?.user?.id, updateDepositDto, file)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Post('update/fcm-token')
+  updateFcmToken(
+    @Body() body: UpdateFcmTokenDTO,
+    @Req() request: CustomRequest
+  ) {
+    return this.depositService.updateFcmToken(body, request?.user?.id)
   }
 
   @Patch('status-update/:id')
