@@ -10,7 +10,7 @@ export type {
   StepFourRequest,
 } from './create-insurance'
 
-export type { GetInsuranceIds, TransactionPreparePayCardResponse } from './request.interface'
+export type { GetInsuranceIds, TransactionPreparePayCardResponse, PreparePayCardRequest } from './request.interface'
 export type { LoginResponse, LoginRequest, RefreshTokenRequest } from './auth.interface'
 export type { JwtModel } from './jwt.interaface'
 export type { CreateBankRequest, UpdateBankRequest } from './bank.interface'

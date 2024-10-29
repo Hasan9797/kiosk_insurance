@@ -12,6 +12,9 @@ export class PayService {
     private readonly firabase: FirebaseService,
   ) {}
 
+  /**
+   * To'lov amalga oshirishni boshlash. Telefon raqam jo'natgan holda karta raqam attributeni olish yani karta orqali to'lash birinchi bosqich.
+   **/
   async preparePay(data: any, userId: number): Promise<void> {
     const result = await this.payGateService.payByCard(
       process.env.QUICKPAY_SERVICE_ID,
