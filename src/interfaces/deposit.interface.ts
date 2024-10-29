@@ -33,3 +33,7 @@ export interface FindAllDepositResponse {
 export interface FindOneDepositResponse {
   data: Deposit
 }
+
+export interface UpdateFcmTokenRequest {
+  fcmToken: string
+}
