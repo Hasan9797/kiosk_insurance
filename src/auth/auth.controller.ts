@@ -1,8 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import { LoginDtoRequest } from './dto/login-dto'
 import { LoginResponse } from '@interfaces'
+import { RefreshTokenDTO, LoginDtoRequest } from './dto'
+import { CustomRequest } from 'custom'
+import { CheckTokenGuard } from '@guards'
 
 @ApiTags('Auth')
 @Controller({
@@ -14,10 +16,12 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() body: LoginDtoRequest): Promise<LoginResponse> {
-    const { accessToken } = await this.service.login(body)
+    return await this.service.login(body)
+  }
 
-    return {
-      accessToken: accessToken,
-    }
+  @UseGuards(CheckTokenGuard)
+  @Post('refresh')
+  async refreshToken(@Body() body: RefreshTokenDTO, @Req() request: CustomRequest) {
+    return await this.service.refreshToken(body.token, request.user.id)
   }
 }
