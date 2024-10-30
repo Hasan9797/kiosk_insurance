@@ -473,6 +473,8 @@ export class DepositService {
         throw new BadRequestException('Someting went wrong')
       })
 
+    console.log(1)
+
     return response
   }
 
