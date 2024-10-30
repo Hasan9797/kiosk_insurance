@@ -144,8 +144,8 @@ export class DepositService {
       'deposit',
       parsedFilters,
       parsedSort,
-      limit,
-      page,
+      Number(limit),
+      Number(page),
     )
 
     const deposits = depositStatic.reduce((acc, deposit) => {
@@ -293,7 +293,7 @@ export class DepositService {
           },
         },
         data: {
-          balance: totalAmountInOperator?.balance + incasatorBalance?.balance,
+          balance: Number(totalAmountInOperator?.balance) + Number(incasatorBalance?.balance),
           updatedAt: new Date(),
         },
       })
@@ -357,7 +357,6 @@ export class DepositService {
         cashCount: 0,
       },
     })
-    console.log(file)
 
     await this.prisma.deposit.update({
       where: {
