@@ -7,7 +7,7 @@ import { FilterService, paginationResponse } from '@helpers'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllUserResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -162,6 +162,7 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(data.password, saltOrRounds)
 
+
     const newUser = await this.prisma.user.create({
       data: {
         name: data?.name,
@@ -170,6 +171,8 @@ export class UsersService {
         code: code,
         role: data?.role,
         incasatorId: data?.incasatorId,
+        longitude: data?.longitude,
+        latitude: data?.latitude
       },
     })
 
