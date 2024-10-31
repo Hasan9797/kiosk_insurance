@@ -30,7 +30,7 @@ interface FindUserResponse {
 }
 export interface FindAllUserResponse {
   data: FindUserResponse[]
-  pagination: Pagination
+  pagination?: Pagination
 }
 
 export interface FindOneUserResponse {
