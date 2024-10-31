@@ -36,3 +36,28 @@ export interface FindAllUserResponse {
 export interface FindOneUserResponse {
   data: FindUserResponse
 }
+
+export interface GetMeUser {
+  id?: number
+  name?: string
+  login: string
+  code?: string
+  role: {
+    int?: number
+    string: string
+  }
+  status: {
+    int?: number
+    string: string
+  }
+  cashCount?: number
+  latitude?: number
+  longitude?: number
+  createdAt?: Date
+  structure?: string
+  incasatorId?: string
+}
+
+export interface GetMeResponse {
+  data: GetMeUser
+}

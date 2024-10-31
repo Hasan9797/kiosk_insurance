@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import { LoginResponse } from '@interfaces'
@@ -23,5 +23,11 @@ export class AuthController {
   @Post('refresh')
   async refreshToken(@Body() body: RefreshTokenDTO, @Req() request: CustomRequest) {
     return await this.service.refreshToken(body.token, request.user.id)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Get('me')
+  async getMe(@Req() request: CustomRequest) {
+    return await this.service.getMe(request.user.id)
   }
 }
