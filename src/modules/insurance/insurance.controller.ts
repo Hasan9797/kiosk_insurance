@@ -63,9 +63,15 @@ export class InsuranceController {
 
   @UseGuards(CheckTokenGuard)
   @Post('create-insurance')
-  async createInvoice(@Body() createInvoiceDto: any, @Req() request: CustomRequest) {
-    const userId = request?.user?.id
-    const result = await this.insuranceService.createInsurance(createInvoiceDto, userId)
+  async createInvoice(@Body() createInvoiceDto: any) {
+    const result = await this.insuranceService.createInsurance(createInvoiceDto)
+    return result
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Post('get-polis-url')
+  async getPolisUrl(@Body() getPolisUrlDTO: any) {
+    const result = await this.insuranceService.getPolisUrl(getPolisUrlDTO)
     return result
   }
 }

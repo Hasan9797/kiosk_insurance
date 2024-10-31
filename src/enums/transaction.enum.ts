@@ -19,3 +19,17 @@ export enum TransactionStatusOutPut {
   REFUND = 'Возврат',
   CASH_NEED_SUPPORT = 'Наличный транзакция в ожидания подверждения',
 }
+
+export enum PaymentStatus {
+  CREATED = 0,
+  WAITING = 1,
+  FINISHED = 2,
+  CANCELLED = 3,
+}
+
+export enum PaymentStatusOutPut {
+  CREATED = 'Отменена',
+  WAITING = 'Завершена',
+  FINISHED = 'В ожидании',
+  CANCELLED = 'Созданный',
+}

@@ -374,7 +374,7 @@ export class DepositService {
       },
     })
 
-    const user = await this.prisma.userBalance.findFirst({
+    await this.prisma.userBalance.findFirst({
       where: {
         userId: userId,
         deletedAt: {

@@ -1,11 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import {
-  CreateRegionRequest,
-  FindAllRegionResponse,
-  FindOneRegionResponse,
-  QueryParams,
-  UpdateRegionRequest,
-} from '@interfaces'
+import { CreateRegionRequest, FindAllRegionResponse, FindOneRegionResponse, UpdateRegionRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { FilterService, paginationResponse } from '@helpers'
 import { Pagination } from '@enums'
@@ -15,8 +9,6 @@ export class RegionService {
 
   async findAll(query: any): Promise<FindAllRegionResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
-
-    const parsedLimit = parseInt(limit, 10)
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 

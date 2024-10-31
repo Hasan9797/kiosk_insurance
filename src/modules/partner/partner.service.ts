@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { CreatePartnerDto } from './dto/create-partner.dto'
-import { UpdatePartnerDto } from './dto/update-partner.dto'
 
 @Injectable()
 export class PartnerService {
-  create(createPartnerDto: CreatePartnerDto) {
+  create(createPartnerDto: any) {
     return 'This action adds a new partner'
   }
 
@@ -16,7 +14,7 @@ export class PartnerService {
     return `This action returns a #${id} partner`
   }
 
-  update(id: number, updatePartnerDto: UpdatePartnerDto) {
+  update(id: number, updatePartnerDto: any) {
     return `This action updates a #${id} partner`
   }
 

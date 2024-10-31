@@ -20,27 +20,27 @@ export class InsuranceService {
 
   async findService(data: GetServiceRequest) {
     const result = await this.insuranceGateService.findService(
-      data,
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      data,
     )
     return result.getResponse()
   }
 
   async getStep(data: GetStepRequest) {
     const result = await this.insuranceGateService.getStep(
-      data,
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      data,
     )
     return result.getResponse()
   }
 
-  async createInsurance(data: any, userId: any) {
+  async createInsurance(data: any) {
     const result = await this.insuranceGateService.createInsurance(
-      data,
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      data,
     )
     return result.getResponse()
 
@@ -55,5 +55,15 @@ export class InsuranceService {
     companyId
     serviceId
     */
+  }
+
+  async getPolisUrl(data: any) {
+    const result = await this.insuranceGateService.getPolisUrl(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      data,
+    )
+
+    return result.getResponse()
   }
 }
