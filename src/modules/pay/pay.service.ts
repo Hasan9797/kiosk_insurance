@@ -1,8 +1,10 @@
 import { InsuranceStatus, TransactionStatus } from '@enums'
 import { FirebaseService } from '@helpers'
+import { ConfirmPaymentRequest, PrepareToPayRequest } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PayGate } from 'gateRequest'
 import { PrismaService } from 'prisma/prisma.service'
+import { PreparePayCardDTO } from './dto'
 
 @Injectable()
 export class PayService {
@@ -12,17 +14,8 @@ export class PayService {
     private readonly firabase: FirebaseService,
   ) {}
 
-  /**
-   * To'lov amalga oshirishni boshlash. Telefon raqam jo'natgan holda karta raqam attributeni olish yani karta orqali to'lash birinchi bosqich.
-   **/
-  async preparePay(data: any, userId: number): Promise<void> {
-    const result = await this.payGateService.payByCard(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      data,
-    )
-
-    const user = await this.prisma.user.findUnique({
+  async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
+    await this.prisma.user.findUnique({
       where: {
         id: userId,
         deletedAt: {
@@ -38,11 +31,23 @@ export class PayService {
       },
     })
 
+    const vendor_form = {
+      phone_number: data?.phone_number,
+      summa: '1000',
+      vendor_id: lastInsurance.vendorId,
+    }
+
+    const result = await this.payGateService.prepareToPay(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form },
+    )
+
     const newTransaction = await this.prisma.transaction.create({
       data: {
         userId: userId,
         payerPhone: data?.phone_number,
-        request: data,
+        request: JSON.stringify(data),
         response: result?.getResponse(),
         status: TransactionStatus.NEW,
       },
@@ -51,7 +56,7 @@ export class PayService {
     return result.getResponse()
   }
 
-  async payByCard(data: any, userId: number) {
+  async payByCard(data: PreparePayCardDTO, userId: number) {
     const existTransaction = await this.prisma.transaction.findFirst({
       where: {
         userId: userId,
@@ -65,7 +70,7 @@ export class PayService {
     const vendor_form = {
       phone_number: existTransaction?.payerPhone,
       amount: '1000',
-      vendor_id: 100080,
+      vendor_id: existTransaction?.vendorId,
     }
 
     const pay_form = {
@@ -73,7 +78,7 @@ export class PayService {
       card_expire: data?.card_expire,
     }
 
-    const result = await this.payGateService.payByCard(
+    const result = await this.payGateService.preparePayByCard(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
       { vendor_form, pay_form },
@@ -81,7 +86,7 @@ export class PayService {
     return result.getResponse()
   }
 
-  async confirmPayment(data: any, userId: number) {
+  async confirmPayment(data: ConfirmPaymentRequest, userId: number) {
     const existTransaction = await this.prisma.transaction.findFirst({
       where: {
         userId: userId,
@@ -100,7 +105,7 @@ export class PayService {
     const result = await this.payGateService.confirmPayment(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
-      confirm_form,
+      { confirm_form },
     )
 
     const { id, transaction_id, bank_transaction_id, reference_number, amount, merchantId, terminalId } =
@@ -117,7 +122,7 @@ export class PayService {
         amount: amount,
         merchantId: merchantId,
         partnerTransactionId: transaction_id,
-        request: data,
+        request: JSON.stringify(data),
         response: result.getResponse(),
         updatedAt: new Date(),
       },
@@ -135,7 +140,7 @@ export class PayService {
 
     const data = existTransaction.bankTransactionId
 
-    const result = await this.payGateService.payByCard(
+    const result = await this.payGateService.resendSms(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
       data,
@@ -174,7 +179,7 @@ export class PayService {
 
     const data = existTransaction.bankTransactionId
 
-    const result = await this.payGateService.payByCard(
+    const result = await this.payGateService.checkTransactionStatus(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
       data,
@@ -183,11 +188,33 @@ export class PayService {
     return result.getResponse()
   }
 
-  async checkReceipt(data: any) {
-    const result = await this.payGateService.payByCard(
+  async getFiscalData(data: any) {
+    const result = await this.payGateService.getFiscalDetails(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
       data,
+    )
+    return result.getResponse()
+  }
+
+  async payByCash(userId: number) {
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+        status: TransactionStatus.NEW,
+      },
+    })
+
+    const vendor_form = {
+      anketa_id: existTransaction.anketaId,
+      amount: '12000',
+      vendor_id: existTransaction.vendorId,
+    }
+
+    const result = await this.payGateService.getFiscalDetails(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form },
     )
     return result.getResponse()
   }

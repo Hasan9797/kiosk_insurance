@@ -8,7 +8,7 @@ import {
 import { PrismaService } from 'prisma/prisma.service'
 import { FilterService, paginationResponse } from '@helpers'
 import { Pagination, StructureEnum, StructureEnumOutPut } from '@enums'
-import { Structure, User } from '@prisma/client'
+import { Structure } from '@prisma/client'
 
 @Injectable()
 export class StructureService {
