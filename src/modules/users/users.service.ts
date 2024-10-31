@@ -7,7 +7,7 @@ import { FilterService, paginationResponse } from '@helpers'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllUserResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -17,14 +17,6 @@ export class UsersService {
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
     const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort, limit, page)
-
-    // const users = await this.prisma.user.findMany({
-    //   where: {
-    //     deletedAt: {
-    //       equals: null,
-    //     },
-    //   },
-    // })
 
     const usersWithRoles = users.map((user: any) => ({
       ...user,
@@ -46,7 +38,7 @@ export class UsersService {
     }
   }
 
-  async getOperators() {
+  async getOperators(): Promise<FindAllUserResponse> {
     const operators = await this.prisma.user.findMany({
       where: {
         role: UserRoles.OPERATOR,
@@ -55,11 +47,26 @@ export class UsersService {
         },
       },
     })
-    return operators
+
+    const operatorsWithRoles = operators.map((accountant: any) => ({
+      ...accountant,
+      role: {
+        int: accountant.role,
+        string: UserRolesOutPut[UserRoles[accountant.role] as keyof typeof UserRolesOutPut],
+      },
+      accountant,
+    }))
+
+    for (const operator of operatorsWithRoles) {
+      delete operator.password
+    }
+    return {
+      data: operatorsWithRoles,
+    }
   }
 
-  async getAccountans() {
-    const accountant = await this.prisma.user.findMany({
+  async getAccountans(): Promise<FindAllUserResponse> {
+    const accountants = await this.prisma.user.findMany({
       where: {
         role: UserRoles.ACCOUNTANT,
         deletedAt: {
@@ -67,7 +74,51 @@ export class UsersService {
         },
       },
     })
-    return accountant
+
+    const accountantWithRoles = accountants.map((accountant: any) => ({
+      ...accountant,
+      role: {
+        int: accountant.role,
+        string: UserRolesOutPut[UserRoles[accountant.role] as keyof typeof UserRolesOutPut],
+      },
+      accountant,
+    }))
+
+    for (const user of accountantWithRoles) {
+      delete user.password
+    }
+
+    return {
+      data: accountantWithRoles,
+    }
+  }
+
+  async getIncasators(): Promise<FindAllUserResponse> {
+    const incasators = await this.prisma.user.findMany({
+      where: {
+        role: UserRoles.INCASATOR,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    const incasatorsWithRoles = incasators.map((incasator: any) => ({
+      ...incasator,
+      role: {
+        int: incasator.role,
+        string: UserRolesOutPut[UserRoles[incasator.role] as keyof typeof UserRolesOutPut],
+      },
+      incasator,
+    }))
+
+    for (const incasator of incasatorsWithRoles) {
+      delete incasator.password
+    }
+
+    return {
+      data: incasatorsWithRoles,
+    }
   }
 
   async getOperatorsStatic(userId: number) {
@@ -83,18 +134,6 @@ export class UsersService {
     return {
       data: operators,
     }
-  }
-
-  async getIncasators() {
-    const incasators = await this.prisma.user.findMany({
-      where: {
-        role: UserRoles.INCASATOR,
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
-    return incasators
   }
 
   async findOne(id: number) {
@@ -162,7 +201,6 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(data.password, saltOrRounds)
 
-
     const newUser = await this.prisma.user.create({
       data: {
         name: data?.name,
@@ -172,7 +210,7 @@ export class UsersService {
         role: data?.role,
         incasatorId: data?.incasatorId,
         longitude: data?.longitude,
-        latitude: data?.latitude
+        latitude: data?.latitude,
       },
     })
 
