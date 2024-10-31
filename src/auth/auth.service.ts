@@ -14,7 +14,7 @@ export class AuthService {
     private readonly usersService: UsersService,
 
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   async login(data: LoginRequest): Promise<LoginResponse> {
     const user = await this.usersService.validate({ login: data.login })
@@ -105,19 +105,6 @@ export class AuthService {
       },
     })
 
-    const incasator = await this.prisma.user.findUnique({
-      where: {
-        id: user?.incasatorId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
-
-    if (!incasator) {
-      throw new NotFoundException('Incasator Not Found With given ID!')
-    }
-
     const result = {
       id: user?.id,
       name: user?.name,
@@ -136,7 +123,6 @@ export class AuthService {
       longitude: Number(user?.longitude),
       createdAt: user?.createdAt,
       structure: user?.structure?.name,
-      incasatorId: incasator?.name,
     }
 
     return {
