@@ -33,7 +33,7 @@ export type {
   FindAllStructureResponse,
   FindOneStructureResponse,
 } from './structure.interface'
-export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse } from './user.interface'
+export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse, GetMeResponse } from './user.interface'
 export type {
   CreateDepositRequest,
   FindAllDepositResponse,

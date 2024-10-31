@@ -1,11 +1,11 @@
 import { jwtConstants } from '@constants'
-import { LoginRequest, LoginResponse } from '@interfaces'
+import { FindOneUserResponse, GetMeResponse, LoginRequest, LoginResponse } from '@interfaces'
 import { UsersService } from '@modules'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { signJwt, verifyJwt } from '@helpers'
 import { PrismaService } from 'prisma/prisma.service'
 import * as bcrypt from 'bcrypt'
-import { ErrorCodes } from '@enums'
+import { ErrorCodes, UserRoles, UserRolesOutPut, UserStatus, UserStatusOutPut } from '@enums'
 import { isJWT } from 'class-validator'
 
 @Injectable()
@@ -89,6 +89,58 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+    }
+  }
+
+  async getMe(userId: number): Promise<GetMeResponse> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      include: {
+        structure: true,
+      },
+    })
+
+    const incasator = await this.prisma.user.findUnique({
+      where: {
+        id: user?.incasatorId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    if (!incasator) {
+      throw new NotFoundException('Incasator Not Found With given ID!')
+    }
+
+    const result = {
+      id: user?.id,
+      name: user?.name,
+      login: user.login,
+      code: user?.code,
+      role: {
+        int: user?.role,
+        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+      },
+      status: {
+        int: user?.status,
+        string: UserStatusOutPut[UserStatus[user?.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: user?.cashCount,
+      latitude: Number(user?.latitude),
+      longitude: Number(user?.longitude),
+      createdAt: user?.createdAt,
+      structure: user?.structure?.name,
+      incasatorId: incasator?.name,
+    }
+
+    return {
+      data: result,
     }
   }
 }
