@@ -1,4 +1,4 @@
-import { CreateUserRequest, FindAllUserResponse, FindOneUserResponse } from '@interfaces'
+import { FindAllUserResponse } from '@interfaces'
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
 import { UserRoles, UserRolesOutPut, Pagination } from '@enums'

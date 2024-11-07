@@ -8,6 +8,7 @@ import {
   stepOneRequestDTO,
   StepThreeRequestDto,
   StepTwoRequestDTO,
+  CreateInsuranceRequestDto,
 } from './dto'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
@@ -42,35 +43,35 @@ export class InsuranceController {
 
   @UseGuards(CheckTokenGuard)
   @Post('get-step-one')
-  async stepOne(@Body() stepOneDto: stepOneRequestDTO, @Req() request: CustomRequest) {
-    const result = await this.insuranceService.getStepOne(stepOneDto, request?.user?.id)
+  async stepOne(@Body() stepOneDto: stepOneRequestDTO) {
+    const result = await this.insuranceService.getStep(stepOneDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
   @Post('get-step-two')
-  async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO, @Req() request: CustomRequest) {
-    const result = await this.insuranceService.getStepTwo(stepTwoDto, request?.user?.id)
+  async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
+    const result = await this.insuranceService.getStep(stepTwoDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
   @Post('get-step-three')
-  async stepThree(@Body() stepThreeDto: StepThreeRequestDto, @Req() request: CustomRequest) {
-    const result = await this.insuranceService.getSteThree(stepThreeDto, request?.user?.id)
+  async stepThree(@Body() stepThreeDto: StepThreeRequestDto) {
+    const result = await this.insuranceService.getStep(stepThreeDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
   @Post('get-step-four')
-  async stepFour(@Body() stepFourDto: StepFourRequestDto, @Req() request: CustomRequest) {
-    const result = await this.insuranceService.getSteFour(stepFourDto, request?.user?.id)
+  async stepFour(@Body() stepFourDto: StepFourRequestDto) {
+    const result = await this.insuranceService.getStep(stepFourDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
   @Post('create-insurance')
-  async createInvoice(@Body() createInvoiceDto: any, @Req() request: CustomRequest) {
+  async createInvoice(@Body() createInvoiceDto: CreateInsuranceRequestDto, @Req() request: CustomRequest) {
     const result = await this.insuranceService.createInsurance(createInvoiceDto, request?.user?.id)
     return result
   }

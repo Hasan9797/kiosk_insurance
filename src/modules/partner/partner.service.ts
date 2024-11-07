@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class PartnerService {
-  create(createPartnerDto: any) {
+  create() {
     return 'This action adds a new partner'
   }
 
@@ -14,7 +14,7 @@ export class PartnerService {
     return `This action returns a #${id} partner`
   }
 
-  update(id: number, updatePartnerDto: any) {
+  update(id: number, data: any) {
     return `This action updates a #${id} partner`
   }
 
