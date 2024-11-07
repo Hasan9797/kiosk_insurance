@@ -14,7 +14,7 @@ export class AuthService {
     private readonly usersService: UsersService,
 
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async login(data: LoginRequest): Promise<LoginResponse> {
     const user = await this.usersService.validate({ login: data.login })
