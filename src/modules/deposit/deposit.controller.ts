@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid'
   path: 'deposits',
 })
 export class DepositController {
-  constructor(private readonly depositService: DepositService) {}
+  constructor(private readonly depositService: DepositService) { }
 
   @Get()
   findAll(@Query() query: QueryParams) {
@@ -70,12 +70,12 @@ export class DepositController {
           cb(null, filename)
         },
       }),
-      fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|pdf)$/)) {
-          return cb(new BadRequestException('Invalid file type'), false)
-        }
-        cb(null, true)
-      },
+      // fileFilter: (req, file, cb) => {
+      //   if (!file.mimetype.match(/\/(jpg|jpeg|png|pdf)$/)) {
+      //     return cb(new BadRequestException('Invalid file type'), false)
+      //   }
+      //   cb(null, true)
+      // },
     }),
   )
   update(

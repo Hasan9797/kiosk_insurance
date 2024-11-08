@@ -1,7 +1,7 @@
 import { jwtConstants } from '@constants'
-import { FindOneUserResponse, GetMeResponse, LoginRequest, LoginResponse } from '@interfaces'
+import { GetMeResponse, LoginRequest, LoginResponse } from '@interfaces'
 import { UsersService } from '@modules'
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { signJwt, verifyJwt } from '@helpers'
 import { PrismaService } from 'prisma/prisma.service'
 import * as bcrypt from 'bcrypt'
@@ -14,7 +14,7 @@ export class AuthService {
     private readonly usersService: UsersService,
 
     private readonly prisma: PrismaService,
-  ) { }
+  ) {}
 
   async login(data: LoginRequest): Promise<LoginResponse> {
     const user = await this.usersService.validate({ login: data.login })

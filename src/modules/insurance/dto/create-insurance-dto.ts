@@ -1,10 +1,64 @@
-import { IsNotEmpty, IsNumber, IsString, IsOptional, Length, Matches } from 'class-validator'
-import { StepThreeData, StepThreeRequest } from '@interfaces'
+import { CreateInsuranceRequest } from '@interfaces'
+import { IsNotEmpty, IsNumber, IsString, IsOptional, Length } from 'class-validator'
 
-class DataDto implements StepThreeData {
+class DriverDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^\d{2}\.\d{2}\.\d{4}$/, { message: 'texpdate must be in the format dd.MM.yyyy' })
+  datebirth: string
+
+  @IsString()
+  @IsNotEmpty()
+  surname: string
+
+  @IsString()
+  @IsNotEmpty()
+  name: string
+
+  @IsString()
+  @IsNotEmpty()
+  patronym: string
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(2, 2, { message: 'licsery must be exactly 2 characters' })
+  licsery: string
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(7, 7, { message: 'licnumber must be exactly 7 digits' })
+  licnumber: string
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(14, 14, { message: 'pinfl must be exactly 14 digits' })
+  pinfl: string
+
+  @IsNumber()
+  @IsNotEmpty()
+  relative: number
+
+  @IsNumber()
+  @IsNotEmpty()
+  resident: number
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(2, 2, { message: 'paspsery must be exactly 2 characters' })
+  paspsery: string
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(7, 7, { message: 'paspnumber must be exactly 7 digits' })
+  paspnumber: string
+
+  @IsString()
+  @IsNotEmpty()
+  licdate: string
+}
+
+class DataDto {
+  @IsString()
+  @IsNotEmpty()
   texpdate: string
 
   @IsString()
@@ -19,8 +73,8 @@ class DataDto implements StepThreeData {
   @IsNotEmpty()
   vehicle: string
 
-  @IsString()
   @IsOptional()
+  @IsString()
   model: string | null
 
   @IsString()
@@ -62,7 +116,6 @@ class DataDto implements StepThreeData {
   @IsString()
   @IsNotEmpty()
   @Length(14, 14, { message: 'owner_pinfl must be exactly 14 digits' })
-  @Matches(/^[0-9]{14}$/, { message: 'owner_pinfl must contain only numbers' })
   owner_pinfl: string
 
   @IsString()
@@ -108,13 +161,11 @@ class DataDto implements StepThreeData {
   @IsString()
   @IsNotEmpty()
   @Length(2, 2, { message: 'owner_pasp_sery must be exactly 2 uppercase letters' })
-  @Matches(/^[A-Z]{2}$/, { message: 'owner_pasp_sery must contain only uppercase letters' })
   owner_pasp_sery: string
 
   @IsString()
   @IsNotEmpty()
   @Length(7, 7, { message: 'owner_pasp_num must be exactly 7 digits' })
-  @Matches(/^[0-9]{7}$/, { message: 'owner_pasp_num must contain only numbers' })
   owner_pasp_num: string
 
   @IsNumber()
@@ -123,8 +174,6 @@ class DataDto implements StepThreeData {
 
   @IsString()
   @IsNotEmpty()
-  @Length(12, 12, { message: 'owner_phone must be exactly 12 digits starting with 998' })
-  @Matches(/^998[0-9]{9}$/, { message: 'owner_phone must start with 998 followed by 9 digits' })
   owner_phone: string
 
   @IsNumber()
@@ -189,23 +238,11 @@ class DataDto implements StepThreeData {
 
   @IsOptional()
   @IsString()
-  @Length(14, 14, { message: 'appl_pinfl must be exactly 14 digits' })
-  @Matches(/^[0-9]{14}$/, { message: 'appl_pinfl must contain only numbers' })
   appl_pinfl: string | null
 
   @IsOptional()
   @IsString()
   appl_pasp_sery: string | null
-}
-
-export class StepThreeRequestDto implements StepThreeRequest {
-  @IsNumber()
-  @IsNotEmpty()
-  company_id: number
-
-  @IsNumber()
-  @IsNotEmpty()
-  service_id: number
 
   @IsOptional()
   @IsString()
@@ -213,20 +250,7 @@ export class StepThreeRequestDto implements StepThreeRequest {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^\d{2}\.\d{2}\.\d{4}$/, { message: 'contract_begin must be in the format dd.MM.yyyy' })
   contract_begin: string
-
-  @IsNumber()
-  @IsNotEmpty()
-  step: number
-
-  @IsNumber()
-  @IsNotEmpty()
-  is_renewal: number
-
-  @IsNumber()
-  @IsNotEmpty()
-  opl_type: number
 
   @IsOptional()
   @IsString()
@@ -235,6 +259,31 @@ export class StepThreeRequestDto implements StepThreeRequest {
   @IsOptional()
   @IsString()
   dog_date: string | null
+
+  @IsNumber()
+  @IsNotEmpty()
+  opl_type: number
+
+  @IsNumber()
+  @IsNotEmpty()
+  is_renewal: number
+
+  @IsNumber()
+  @IsNotEmpty()
+  step_status: number
+
+  @IsNotEmpty({ each: true })
+  drivers: DriverDto[]
+}
+
+export class CreateInsuranceRequestDto implements CreateInsuranceRequest {
+  @IsNumber()
+  @IsNotEmpty()
+  company_id: number
+
+  @IsNumber()
+  @IsNotEmpty()
+  service_id: number
 
   @IsNotEmpty()
   data: DataDto

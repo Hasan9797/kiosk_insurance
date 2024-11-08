@@ -9,7 +9,7 @@ export class PartnerController {
 
   @Post()
   create(@Body() createPartnerDto: CreatePartnerDto) {
-    return this.partnerService.create(createPartnerDto)
+    return this.partnerService.create()
   }
 
   @Get()
