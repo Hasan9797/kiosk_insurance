@@ -195,3 +195,19 @@ model UserBalanceHistory {
 
   @@map("user_balance_history")
 }
+
+model Partner {
+  id                Int    @id @default(autoincrement())
+  name              String
+  partnerId         Int    @map("partner_id")
+  image             String
+  status            Int    @default(1)
+  unLimitedTashkent Int    @default(0) @map("un_limited_tashkent")
+  limitedTashkent   Int    @default(0) @map("limited_tashkent")
+  unLimitedInRegion Int    @default(0) @map("un_limited_in_region")
+  limitedInRegion   Int    @default(0)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime? @map("deleted_at")
+}

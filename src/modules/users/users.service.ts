@@ -7,7 +7,7 @@ import { FilterService, paginationResponse } from '@helpers'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllUserResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -159,7 +159,7 @@ export class UsersService {
 
     const userExists = await this.prisma.user.findFirst({
       where: {
-        login: data?.login,
+        login: data?.login.toUpperCase(),
       },
     })
 
@@ -204,8 +204,8 @@ export class UsersService {
     const newUser = await this.prisma.user.create({
       data: {
         name: data?.name,
-        login: data?.login,
-        password: hashedPassword,
+        login: data?.login.toUpperCase(),
+        password: data?.password.toUpperCase(),
         code: code,
         role: data?.role,
         incasatorId: data?.incasatorId,
