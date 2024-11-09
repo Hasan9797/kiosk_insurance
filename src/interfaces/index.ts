@@ -44,3 +44,10 @@ export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
 export type { Pagination } from './pagination.interface'
 export type { CreateInsuranceRequest } from './create-insurance.interface'
+export type {
+  CreatePartnerRequest,
+  UpdatePartnerRequest,
+  FindAllPartnerResponse,
+  FindOnePartnerResponse,
+  PartnerModel,
+} from './partner.interface'

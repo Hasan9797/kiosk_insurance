@@ -7,7 +7,7 @@ import { FilterService, paginationResponse } from '@helpers'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllUserResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query

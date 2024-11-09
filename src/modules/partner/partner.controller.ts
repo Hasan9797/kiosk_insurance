@@ -1,30 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common'
 import { PartnerService } from './partner.service'
-import { CreatePartnerDto } from './dto/create-partner.dto'
-import { UpdatePartnerDto } from './dto/update-partner.dto'
+import { CreatePartnerDTO, UpdatePartnerDTO } from './dto'
+import { ApiTags } from '@nestjs/swagger'
 
-@Controller('partner')
+@ApiTags('Partner Service')
+@Controller({
+  version: '1',
+  path: 'partners',
+})
 export class PartnerController {
   constructor(private readonly partnerService: PartnerService) {}
 
-  @Post()
-  create(@Body() createPartnerDto: CreatePartnerDto) {
-    return this.partnerService.create()
-  }
-
   @Get()
-  findAll() {
-    return this.partnerService.findAll()
+  findAll(@Query() query: any) {
+    return this.partnerService.findAll(query)
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.partnerService.findOne(+id)
   }
 
+  @Post()
+  create(@Body() data: CreatePartnerDTO) {
+    return this.partnerService.create(data)
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePartnerDto: UpdatePartnerDto) {
-    return this.partnerService.update(+id, updatePartnerDto)
+  update(@Param('id') id: string, @Body() data: UpdatePartnerDTO) {
+    return this.partnerService.update(+id, data)
   }
 
   @Delete(':id')

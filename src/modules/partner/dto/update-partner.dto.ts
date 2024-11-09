@@ -1,4 +1,31 @@
-import { PartialType } from '@nestjs/swagger'
-import { CreatePartnerDto } from './create-partner.dto'
+import { UpdatePartnerRequest } from '@interfaces'
+import { IsOptional, IsNumber, IsString } from 'class-validator'
+export class UpdatePartnerDTO implements UpdatePartnerRequest {
+  @IsOptional()
+  @IsString()
+  name: string
 
-export class UpdatePartnerDto extends PartialType(CreatePartnerDto) {}
+  @IsOptional()
+  @IsNumber()
+  partnerId: number
+
+  @IsOptional()
+  @IsNumber()
+  status: number
+
+  @IsOptional()
+  @IsNumber()
+  limitedAmountInRegion: number
+
+  @IsOptional()
+  @IsNumber()
+  limitedAmountTashkent: number
+
+  @IsOptional()
+  @IsNumber()
+  unLimitedAmountInRegion: number
+
+  @IsOptional()
+  @IsNumber()
+  unLimitedAmountTashkent: number
+}

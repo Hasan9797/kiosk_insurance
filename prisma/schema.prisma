@@ -197,15 +197,15 @@ model UserBalanceHistory {
 }
 
 model Partner {
-  id                Int    @id @default(autoincrement())
-  name              String
-  partnerId         Int    @map("partner_id")
-  image             String
-  status            Int    @default(1)
-  unLimitedTashkent Int    @default(0) @map("un_limited_tashkent")
-  limitedTashkent   Int    @default(0) @map("limited_tashkent")
-  unLimitedInRegion Int    @default(0) @map("un_limited_in_region")
-  limitedInRegion   Int    @default(0)
+  id                      Int    @id @default(autoincrement())
+  name                    String
+  partnerId               Int    @map("partner_id")
+  image                   String
+  status                  Int    @default(1)
+  unLimitedAmountTashkent Int    @default(0) @map("unlimited_amount_tashkent")
+  limitedAmountTashkent   Int    @default(0) @map("limited_amount_tashkent")
+  unLimitedAmountInRegion Int    @default(0) @map("unlimited_amount_in_region")
+  limitedAmountInRegion   Int    @default(0) @map("limited_amount_in_region")
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt

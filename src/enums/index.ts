@@ -1,3 +1,4 @@
+export * from './partner.enum'
 export * from './structure.enum'
 export * from './psp-method-list'
 export * from './user-roles-enum'
