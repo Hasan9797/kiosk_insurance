@@ -14,10 +14,10 @@ export class AuthService {
     private readonly usersService: UsersService,
 
     private readonly prisma: PrismaService,
-  ) {}
+  ) { }
 
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const user = await this.usersService.validate({ login: data.login })
+    const user = await this.usersService.validate({ login: data.login.toUpperCase() })
 
     const isMatch = await bcrypt.compare(data.password, user.password)
 

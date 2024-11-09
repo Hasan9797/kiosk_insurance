@@ -199,13 +199,13 @@ export class UsersService {
 
     const code = `${roleCapitalLetter}${count + 1}`
 
-    const hashedPassword = await bcrypt.hash(data.password, saltOrRounds)
+    const hashedPassword = await bcrypt.hash(data.password.toUpperCase(), saltOrRounds)
 
     const newUser = await this.prisma.user.create({
       data: {
         name: data?.name,
         login: data?.login.toUpperCase(),
-        password: data?.password.toUpperCase(),
+        password: hashedPassword,
         code: code,
         role: data?.role,
         incasatorId: data?.incasatorId,
