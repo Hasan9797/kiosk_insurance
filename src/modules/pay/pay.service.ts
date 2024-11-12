@@ -110,7 +110,6 @@ export class PayService {
 
     const { id, transaction_id, bank_transaction_id, reference_number, amount, merchantId, terminalId } =
       result?.getIdsPreparePayCard()
-    console.log(result?.getIdsPreparePayCard())
 
     const updatedTransaction = await this.prisma.transaction.update({
       where: {
@@ -148,7 +147,6 @@ export class PayService {
 
     const { id, transaction_id, bank_transaction_id, reference_number, amount, merchantId, terminalId } =
       result?.getIdsPreparePayCard()
-    console.log(result?.getIdsPreparePayCard())
 
     const updatedTransaction = await this.prisma.transaction.update({
       where: {
@@ -250,8 +248,6 @@ export class PayService {
         cashCount: cashCountRightNow + 1,
       },
     })
-
-    console.log('salam', user, data)
 
     const insurance = await this.prisma.insurance.update({
       where: {

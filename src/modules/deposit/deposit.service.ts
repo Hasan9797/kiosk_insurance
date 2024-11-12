@@ -140,8 +140,6 @@ export class DepositService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    console.log(limit)
-
     const depositStatic: Deposit[] = await FilterService?.applyFilters(
       'deposit',
       parsedFilters,
@@ -474,8 +472,6 @@ export class DepositService {
         console.log(err)
         throw new BadRequestException('Someting went wrong')
       })
-
-    console.log(1)
 
     return response
   }
