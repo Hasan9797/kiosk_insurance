@@ -10,7 +10,6 @@ import { CheckTokenGuard } from '@guards'
   path: 'users',
   version: '1',
 })
-@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

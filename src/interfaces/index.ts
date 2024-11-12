@@ -44,3 +44,22 @@ export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
 export type { Pagination } from './pagination.interface'
 export type { CreateInsuranceRequest } from './create-insurance.interface'
+export type {
+  CreatePartnerRequest,
+  UpdatePartnerRequest,
+  FindAllPartnerResponse,
+  FindOnePartnerResponse,
+  PartnerModel,
+  FindActivePartners,
+  Companies,
+  CreatePartnerResponse,
+  UpdatePartnerResponse,
+} from './partner.interface'
+export type { FindAllUserBalanceResponse, Balance } from './userBalance.interface'
+export type {
+  FindAllUserBalanceHistoryResponse,
+  FindOneUserBalanceHistoryResponse,
+  BalanceHistory,
+} from './userBalanceHistory.interface'
+
+export type { ApiResponse, Response } from './api-response.dto'

@@ -13,11 +13,7 @@ import { Req, UseGuards } from '@nestjs/common'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
 
-@WebSocketGateway(Number(process.env.APP_SOCKET_PORT) || 2117, {
-  cors: {
-    origin: '*',
-  },
-})
+@WebSocketGateway(Number(process.env.APP_SOCKET_PORT) || 2117)
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
@@ -40,6 +36,6 @@ export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   async handlePayment(@MessageBody() data: any, @Req() request: CustomRequest): Promise<any> {
     this.payService.saveEveryCash({ amount: 1000 }, request?.user?.id)
     this.server.emit('payResponse', { amount: 'salam' })
-    // this.server.emit('pay')
+    this.server.emit('pay', 'salam')
   }
 }
