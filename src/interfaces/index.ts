@@ -52,3 +52,8 @@ export type {
   PartnerModel,
 } from './partner.interface'
 export type { FindAllUserBalanceResponse, Balance } from './userBalance.interface'
+export type {
+  FindAllUserBalanceHistoryResponse,
+  FindOneUserBalanceHistoryResponse,
+  BalanceHistory,
+} from './userBalanceHistory.interface'
