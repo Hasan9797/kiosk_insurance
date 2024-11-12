@@ -9,10 +9,12 @@ export class FilterService {
     sort: { column: string; value: 'asc' | 'desc' },
     limit?: number,
     page?: number,
+    includeRelations: Array<string> = [],
   ): Promise<any> {
     const query: Prisma.UserFindManyArgs = {
       where: {},
       orderBy: {},
+      include: {},
     }
 
     filters.forEach((filter) => {
@@ -71,6 +73,7 @@ export class FilterService {
     }
 
     query.where = {
+      ...query.where,
       deletedAt: {
         equals: null,
       },
@@ -80,6 +83,10 @@ export class FilterService {
 
     query.take = limit
     query.skip = skip
+
+    includeRelations.forEach((relation) => {
+      ;(query.include as any)[relation] = true
+    })
 
     const model: any = prisma[modelName as keyof PrismaClient]
     return model['findMany'](query)

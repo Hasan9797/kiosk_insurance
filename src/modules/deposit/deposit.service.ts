@@ -140,11 +140,13 @@ export class DepositService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
+    console.log(limit)
+
     const depositStatic: Deposit[] = await FilterService?.applyFilters(
       'deposit',
       parsedFilters,
       parsedSort,
-      Number(limit),
+      limit,
       Number(page),
     )
 

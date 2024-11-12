@@ -51,3 +51,4 @@ export type {
   FindOnePartnerResponse,
   PartnerModel,
 } from './partner.interface'
+export type { FindAllUserBalanceResponse, Balance } from './userBalance.interface'
