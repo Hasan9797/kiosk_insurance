@@ -50,6 +50,10 @@ export type {
   FindAllPartnerResponse,
   FindOnePartnerResponse,
   PartnerModel,
+  FindActivePartners,
+  Companies,
+  CreatePartnerResponse,
+  UpdatePartnerResponse,
 } from './partner.interface'
 export type { FindAllUserBalanceResponse, Balance } from './userBalance.interface'
 export type {
@@ -57,3 +61,5 @@ export type {
   FindOneUserBalanceHistoryResponse,
   BalanceHistory,
 } from './userBalanceHistory.interface'
+
+export type { ApiResponse, Response } from './api-response.dto'

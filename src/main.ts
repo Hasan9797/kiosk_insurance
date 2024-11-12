@@ -31,7 +31,11 @@ async function bootstrap() {
   //initialize socket
 
   // Global validation pipes
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
 
   // API versioning
   app.enableVersioning({

@@ -1,5 +1,6 @@
 import { CreatePartnerRequest } from '@interfaces'
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreatePartnerDTO implements CreatePartnerRequest {
   @IsNotEmpty()
@@ -7,26 +8,32 @@ export class CreatePartnerDTO implements CreatePartnerRequest {
   name: string
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   partnerId: number
 
-  @IsNotEmpty()
+  @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  status: number
+  status?: number
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   limitedAmountInRegion: number
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   limitedAmountTashkent: number
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   unLimitedAmountInRegion: number
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   unLimitedAmountTashkent: number
 }

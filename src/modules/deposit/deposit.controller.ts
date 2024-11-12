@@ -10,7 +10,6 @@ import {
   Req,
   Query,
   UseInterceptors,
-  BadRequestException,
   UploadedFile,
 } from '@nestjs/common'
 import { DepositService } from './deposit.service'
