@@ -38,8 +38,12 @@ export class PartnerController {
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    console.log(id)
     return this.partnerService.findOne(+id)
+  }
+
+  @Patch(':id/change-status')
+  changePartnerStatus(@Param('id') id: number, @Query('status') status: number) {
+    return this.partnerService.updatePartnerStatus(+id, status)
   }
 
   @Post()

@@ -28,7 +28,7 @@ model User {
 
   structure          Structure?           @relation(fields: [structureId], references: [id])
   insurances         Insurance[]
-  userBalances       UserBalance[]
+  userBalance        UserBalance?
   Transaction        Transaction[]
   UserBalanceHistory UserBalanceHistory[]
 
@@ -90,20 +90,22 @@ model Structure {
   deletedAt DateTime? @map("deleted_at")
 
   regionId Int    @map("region_id")
-  User     User[]
+  region   Region @relation(fields: [regionId], references: [id])
+  user     User[]
 
   @@index([name, status, createdAt])
   @@map("structures")
 }
 
 model Region {
-  id        Int       @id @default(autoincrement())
-  name      String
-  status    Int       @default(1)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-  Bank      Bank[]
+  id         Int         @id @default(autoincrement())
+  name       String
+  status     Int         @default(1)
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime?   @map("updated_at")
+  deletedAt  DateTime?   @map("deleted_at")
+  structures Structure[]
+  Bank       Bank[]
 
   @@map("regions")
 }

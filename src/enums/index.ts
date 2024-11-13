@@ -1,3 +1,4 @@
+export * from './region.enum'
 export * from './partner.enum'
 export * from './structure.enum'
 export * from './psp-method-list'
