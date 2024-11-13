@@ -20,14 +20,14 @@ export class BalanceHistoryController {
 
   @UseGuards(CheckTokenGuard)
   @Get('one-user/:id')
-  oneUserHistory(@Param('id') id: string) {
-    return this.balanceHistoryService.findOneUserBalanceHistory(+id)
+  oneUserHistory(@Query() query: any, @Param('id') id: string) {
+    return this.balanceHistoryService.findOneUserBalanceHistory(query, +id)
   }
 
   @UseGuards(CheckTokenGuard)
   @Get('static-history')
-  staticBalanceHistory(@Req() request: CustomRequest) {
-    return this.balanceHistoryService.findStaticUserBalanceHistory(request?.user?.id)
+  staticBalanceHistory(@Query() query: any, @Req() request: CustomRequest) {
+    return this.balanceHistoryService.findStaticUserBalanceHistory(query, request?.user?.id)
   }
 
   @UseGuards(CheckTokenGuard)

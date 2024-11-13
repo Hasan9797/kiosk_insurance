@@ -131,6 +131,10 @@ export class UsersService {
       },
     })
 
+    for (const operator of operators) {
+      delete operator.password
+    }
+
     return {
       data: operators,
     }

@@ -19,7 +19,13 @@ export type {
 } from './request.interface'
 export type { LoginResponse, LoginRequest, RefreshTokenRequest } from './auth.interface'
 export type { JwtModel } from './jwt.interaface'
-export type { CreateBankRequest, UpdateBankRequest } from './bank.interface'
+export type {
+  CreateBankRequest,
+  UpdateBankRequest,
+  BankModel,
+  FindBankResponse,
+  FindOneBankResponse,
+} from './bank.interface'
 export type {
   CreateRegionRequest,
   UpdateRegionRequest,
