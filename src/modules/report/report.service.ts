@@ -33,7 +33,7 @@ export class ReportService {
                   }
                 },
                 include: {
-                  userBalances: true
+                  userBalance: true
                 }
               }
             }
