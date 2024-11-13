@@ -14,7 +14,7 @@ import { Pagination } from 'enums/pagination.enum'
 import { Deposit } from '@prisma/client'
 @Injectable()
 export class DepositService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllDepositResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -23,7 +23,7 @@ export class DepositService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const deposits: Deposit[] = await FilterService?.applyFilters('deposit', parsedFilters, parsedSort, limit, page)
+    const deposits: Deposit[] = await FilterService?.applyFilters('deposit', parsedFilters, parsedSort, Number(limit), Number(page))
 
     const result = []
 
@@ -144,7 +144,7 @@ export class DepositService {
       'deposit',
       parsedFilters,
       parsedSort,
-      limit,
+      Number(limit),
       Number(page),
     )
 
