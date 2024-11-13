@@ -110,7 +110,11 @@ export class StructureService {
     }
 
     await this.prisma.structure.create({
-      data: data,
+      data: {
+        name: data.name,
+        status: data.status,
+        regionId: data.regionId,
+      },
     })
   }
 

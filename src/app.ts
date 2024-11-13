@@ -13,7 +13,7 @@ import {
   StructureModule,
   UserBalanceModule,
   BalanceHistoryModule,
-  ReportModule
+  ReportModule,
 } from '@modules'
 import { pspConfig } from '@config'
 import { AuthModule } from 'auth/auth.module'
@@ -44,7 +44,7 @@ import * as admin from 'firebase-admin'
     DepositModule,
     UserBalanceModule,
     BalanceHistoryModule,
-    ReportModule
+    ReportModule,
   ],
   controllers: [],
   providers: [],

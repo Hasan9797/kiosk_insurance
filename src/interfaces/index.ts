@@ -63,3 +63,4 @@ export type {
 } from './userBalanceHistory.interface'
 
 export type { ApiResponse, Response } from './api-response.dto'
+export type { ReportByRegionResponse, ReportByRegion } from './report.interface'
