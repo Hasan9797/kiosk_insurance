@@ -16,3 +16,7 @@ export interface Response<T> {
   data: T
   pagination?: Pagination
 }
+
+export interface DeleteRequestResponse {
+  status: number
+}

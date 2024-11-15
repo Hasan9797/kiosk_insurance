@@ -9,7 +9,7 @@ interface DepositStatus {
   string: string
 }
 
-interface Deposit {
+export interface DepositResponse {
   id: number
   amount: number
   status: DepositStatus
@@ -26,12 +26,12 @@ interface Deposit {
 }
 
 export interface FindAllDepositResponse {
-  data: Deposit[]
+  data: DepositResponse[]
   pagination: Pagination
 }
 
 export interface FindOneDepositResponse {
-  data: Deposit
+  data: DepositResponse
 }
 
 export interface UpdateFcmTokenRequest {

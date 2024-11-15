@@ -45,6 +45,7 @@ export type {
   FindAllDepositResponse,
   FindOneDepositResponse,
   UpdateFcmTokenRequest,
+  DepositResponse,
 } from './deposit.interface'
 export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
@@ -68,5 +69,5 @@ export type {
   BalanceHistory,
 } from './userBalanceHistory.interface'
 
-export type { ApiResponse, Response } from './api-response.dto'
+export type { ApiResponse, Response, DeleteRequestResponse } from './api-response.dto'
 export type { ReportByRegionResponse, ReportByRegion } from './report.interface'

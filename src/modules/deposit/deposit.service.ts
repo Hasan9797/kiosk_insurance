@@ -4,19 +4,20 @@ import {
   FindAllDepositResponse,
   FindOneDepositResponse,
   UpdateFcmTokenRequest,
+  DepositResponse,
 } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { DepositStatus, DepositStatusOutPut } from 'enums/deposit.enum'
-import { FilterService, paginationResponse } from '@helpers'
+import { FilterService, paginationResponse, formatResponse } from '@helpers'
 import * as admin from 'firebase-admin'
-import { UserBalanceHistoryStatus } from '@enums'
+import { HttpStatus, UserBalanceHistoryStatus } from '@enums'
 import { Pagination } from 'enums/pagination.enum'
 import { Deposit } from '@prisma/client'
 @Injectable()
 export class DepositService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any): Promise<FindAllDepositResponse> {
+  async findAll(query: any): Promise<Omit<FindAllDepositResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
@@ -34,7 +35,6 @@ export class DepositService {
     const result = []
 
     for (const deposit of deposits) {
-      // DepositStatus ga qarab DepositStatusOutPut qiymatini aniqlash
       let statusOutPut = ''
 
       switch (deposit.status) {
@@ -76,10 +76,7 @@ export class DepositService {
 
     const pagination = paginationResponse(deposits.length, limit, page)
 
-    return {
-      data: result,
-      pagination,
-    }
+    return formatResponse(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number): Promise<FindOneDepositResponse> {
@@ -115,9 +112,9 @@ export class DepositService {
         statusOutPut = 'UNKNOWN'
     }
 
-    const result = {
+    const result: DepositResponse = {
       id: deposit.id,
-      amount: Number(deposit.amount),
+      amount: Number(deposit?.amount),
       status: {
         int: deposit?.status,
         string: statusOutPut,
@@ -134,12 +131,10 @@ export class DepositService {
       createdAt: deposit.createdAt,
     }
 
-    return {
-      data: result,
-    }
+    return formatResponse<DepositResponse>(HttpStatus.OK, result)
   }
 
-  async findDepositStatic(userId: number, query: any): Promise<FindAllDepositResponse> {
+  async findDepositStatic(userId: number, query: any): Promise<Omit<FindAllDepositResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
@@ -161,7 +156,7 @@ export class DepositService {
       return acc
     }, [])
 
-    const result = deposits.map((deposit) => {
+    const result: DepositResponse[] = deposits.map((deposit) => {
       let statusOutPut = ''
 
       switch (deposit.status) {
@@ -203,10 +198,7 @@ export class DepositService {
 
     const pagination = paginationResponse(deposits.length, limit, page)
 
-    return {
-      data: result,
-      pagination,
-    }
+    return formatResponse<DepositResponse[]>(HttpStatus.OK, result, pagination)
   }
 
   async create(data: CreateDepositRequest, incasatorId: number) {

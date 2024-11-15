@@ -1,6 +1,13 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
-import { CreateBankRequest, FindBankResponse, UpdateBankRequest, BankModel, FindOneBankResponse } from '@interfaces'
+import {
+  CreateBankRequest,
+  FindBankResponse,
+  UpdateBankRequest,
+  BankModel,
+  FindOneBankResponse,
+  DeleteRequestResponse,
+} from '@interfaces'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
 import { Bank } from '@prisma/client'
@@ -180,7 +187,7 @@ export class BankService {
     return formatResponse<BankModel>(HttpStatus.OK, result)
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteRequestResponse> {
     const bankExists = await this.prisma.bank.findUnique({
       where: {
         id: id,
