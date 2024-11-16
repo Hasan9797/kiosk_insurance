@@ -1,3 +1,4 @@
+import { Region } from '@interfaces'
 import { Changer, Pagination } from '@interfaces'
 export interface CreateStructureRequest {
   name: string
@@ -11,19 +12,19 @@ export interface UpdateStructureRequest {
   regionId?: number
 }
 
-interface FindStructure {
+export interface StructureResponse {
   id: number
   name: string
   status: Changer
-  regionId: number
+  region: Region
   createdAt: Date
 }
 
-export interface FindAllStructureResponse {
-  data: FindStructure[]
-  pagination: Pagination
-}
+// export interface FindAllStructureResponse {
+//   data: FindStructure[]
+//   pagination: Pagination
+// }
 
-export interface FindOneStructureResponse {
-  data: FindStructure
-}
+// export interface FindOneStructureResponse {
+//   data: FindStructure
+// }

@@ -23,7 +23,9 @@ export class BankService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const banks = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, limit, page, ['region'])
+    const banks = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, Number(limit), Number(page), [
+      'region',
+    ])
 
     const pagination = paginationResponse(banks.length, limit, page)
 

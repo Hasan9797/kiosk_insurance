@@ -1,4 +1,4 @@
-import { Pagination } from '@interfaces'
+import { Changer, Pagination } from '@interfaces'
 export interface CreateRegionRequest {
   name: string
   status?: number
@@ -9,10 +9,10 @@ export interface UpdateRegionRequest {
   status?: number
 }
 
-interface Region {
+export interface Region {
   id: number
   name: string
-  status: number
+  status: Changer
   createdAt: Date
 }
 

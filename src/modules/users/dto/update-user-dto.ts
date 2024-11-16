@@ -2,11 +2,11 @@ export class UpdateUserDto {
   name?: string
   email?: string
   password?: string
-  role?: string
+  role?: number
   status?: number
   cashCount?: number
-  latitude?: number
-  longitude?: number
+  latitude?: string
+  longitude?: string
   structureId?: number
   incasatorId?: number
 }

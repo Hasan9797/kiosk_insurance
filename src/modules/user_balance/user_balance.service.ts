@@ -1,24 +1,28 @@
-import { Pagination, UserRoles, UserRolesOutPut, UserStatus, UserStatusOutPut } from '@enums'
-import { FilterService, paginationResponse } from '@helpers'
-import { FindAllUserBalanceResponse, Balance } from '@interfaces'
+import { HttpStatus, Pagination, UserRoles, UserRolesOutPut, UserStatus, UserStatusOutPut } from '@enums'
+import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { Balance } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { FindOneUserBalanceResponse } from 'interfaces/userBalance.interface'
 import { PrismaService } from 'prisma/prisma.service'
 
 @Injectable()
 export class UserBalanceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any): Promise<FindAllUserBalanceResponse> {
+  async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const userBalances = await FilterService?.applyFilters('userBalance', parsedFilters, parsedSort, limit, page, [
-      'user',
-    ])
+    const userBalances = await FilterService?.applyFilters(
+      'userBalance',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['user'],
+    )
 
     const pagination = paginationResponse(userBalances.length, limit, page)
 
@@ -47,13 +51,10 @@ export class UserBalanceService {
       })
     })
 
-    return {
-      data: result,
-      pagination: pagination,
-    }
+    return formatResponse<Balance[]>(HttpStatus.OK, result)
   }
 
-  async findOne(id: number): Promise<FindOneUserBalanceResponse> {
+  async findOne(id: number) {
     const userBalance = await this.prisma.userBalance.findUnique({
       where: {
         userId: id,
@@ -90,10 +91,7 @@ export class UserBalanceService {
         createdAt: userBalance?.user?.createdAt,
       },
     }
-
-    return {
-      data: result,
-    }
+    return formatResponse<Balance>(HttpStatus.OK, result)
   }
 
   async findStaticUserBalance(id: number) {
@@ -134,8 +132,6 @@ export class UserBalanceService {
       },
     }
 
-    return {
-      data: result,
-    }
+    return formatResponse<Balance>(HttpStatus.OK, result)
   }
 }

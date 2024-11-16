@@ -31,15 +31,11 @@ export type {
   UpdateRegionRequest,
   FindAllRegionResponse,
   FindOneRegionResponse,
+  Region,
 } from './region.interface'
 
-export type {
-  CreateStructureRequest,
-  UpdateStructureRequest,
-  FindAllStructureResponse,
-  FindOneStructureResponse,
-} from './structure.interface'
-export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse, GetMeResponse } from './user.interface'
+export type { CreateStructureRequest, UpdateStructureRequest, StructureResponse } from './structure.interface'
+export type { CreateUserRequest, UserResponse, GetMeResponse, UpdateUserRequest } from './user.interface'
 export type {
   CreateDepositRequest,
   FindAllDepositResponse,

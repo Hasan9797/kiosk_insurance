@@ -33,7 +33,7 @@ export class BalanceHistoryService {
       ['user'],
     )
 
-    const pagination = paginationResponse(userBalancesHistory.length, limit, page)
+    const pagination = paginationResponse(userBalancesHistory.length, Number(limit), Number(page))
 
     const result: BalanceHistory[] = []
 
