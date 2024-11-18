@@ -9,3 +9,8 @@ export enum NotificationTypeOutPut {
   INFO = 'ИНФОРМАЦИЯ',
   ERROR = 'ОШИБКА',
 }
+
+export enum notificationTextAfter1900 {
+  title = NotificationType.WARNING,
+  CONTENT = 'Sizning KIOSKkangizda kupyeralar soni 1900 dan oshdi',
+}

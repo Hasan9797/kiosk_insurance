@@ -1,4 +1,4 @@
-import { InsuranceStatus, TransactionStatus } from '@enums'
+import { InsuranceStatus, NotificationType, TransactionStatus, notificationTextAfter1900 } from '@enums'
 import { FirebaseService } from '@helpers'
 import { ConfirmPaymentRequest, PrepareToPayRequest } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
@@ -225,40 +225,82 @@ export class PayService {
           equals: null,
         },
       },
+      include: {
+        insurances: {
+          where: {
+            userId: userId,
+            status: InsuranceStatus.NEW,
+          },
+        },
+      },
     })
-
-    const cashCountRightNow = user.cashCount
 
     if (!user) {
       throw new NotFoundException('User not found with given ID!')
     }
 
-    if (cashCountRightNow === 1900 && cashCountRightNow < 1900) {
-      const firebaseToken = user.fcmToken
-      if (firebaseToken) {
-        await this.firabase.sendPushNotification(firebaseToken, 'Ketdi', 'Naqd pul 1900 dan oshdi')
-      }
-    }
+    const incasator = await this.prisma.user.findUnique({
+      where: {
+        id: user.incasatorId,
+      },
+    })
 
+    const existingInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        userId: userId,
+        status: InsuranceStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    await this.prisma.insurance.update({
+      where: {
+        id: existingInsurance.id,
+      },
+      data: {
+        amount: Number(existingInsurance.amount) + Number(data.amount),
+      },
+    })
+
+    const cashCountRightNow = user.cashCount
+
+    if (cashCountRightNow >= 1900) {
+      const firebaseToken = incasator.fcmToken
+      if (firebaseToken) {
+        await this.firabase.sendPushNotification(
+          firebaseToken,
+          NotificationType.WARNING.toString(),
+          `Sizga tegishli ${user.code} raqamli KIOSKda kupyuralar soni 1900 dan oshdi`,
+        )
+
+        await this.prisma.notify.create({
+          data: {
+            title: NotificationType.WARNING.toString(),
+            type: NotificationType.WARNING,
+            content: notificationTextAfter1900.CONTENT.toString(),
+            userId: userId,
+          },
+        })
+      }
+
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          cashCount: cashCountRightNow + 1,
+        },
+      })
+      return
+    }
     await this.prisma.user.update({
       where: {
         id: userId,
       },
       data: {
         cashCount: cashCountRightNow + 1,
-      },
-    })
-
-    const insurance = await this.prisma.insurance.update({
-      where: {
-        id: userId,
-        deletedAt: {
-          equals: null,
-        },
-        status: InsuranceStatus.NEW,
-      },
-      data: {
-        amount: data?.amount,
       },
     })
   }

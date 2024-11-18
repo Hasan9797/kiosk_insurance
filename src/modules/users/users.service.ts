@@ -35,25 +35,23 @@ export class UsersService {
       ['structure'],
     )
 
-    console.log(users)
-
     const usersWithRoles: UserResponse[] = users.map((user: any) => ({
-      id: user.id,
-      name: user.name,
-      login: user.login,
-      code: user.code,
+      id: user?.id,
+      name: user?.name,
+      login: user?.login,
+      code: user?.code,
       role: {
-        int: user.role,
-        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+        int: user?.role,
+        string: UserRolesOutPut[UserRoles[user?.role] as keyof typeof UserRolesOutPut],
       },
       status: {
-        int: user.status,
-        string: UserStatusOutPut[UserStatus[user.status] as keyof typeof UserStatusOutPut],
+        int: user?.status,
+        string: UserStatusOutPut[UserStatus[user?.status] as keyof typeof UserStatusOutPut],
       },
-      cashCount: user.cashCount,
-      fcmToken: user.fcmToken,
-      latitude: user.latitude,
-      longitude: user.longitude,
+      cashCount: user?.cashCount,
+      fcmToken: user?.fcmToken,
+      latitude: user?.latitude,
+      longitude: user?.longitude,
       structure: {
         id: user?.structure?.id,
         name: user?.structure?.name,
@@ -63,8 +61,8 @@ export class UsersService {
         },
         createdAt: user?.structure?.createdAt,
       },
-      incasatorId: user.incasatorId,
-      createdAt: user.createdAt,
+      incasatorId: user?.incasatorId,
+      createdAt: user?.createdAt,
     }))
 
     const pagination = paginationResponse(users.length, limit, page)
@@ -275,33 +273,33 @@ export class UsersService {
     }
 
     const result = {
-      id: user.id,
-      name: user.name,
-      login: user.login,
-      code: user.code,
+      id: user?.id,
+      name: user?.name,
+      login: user?.login,
+      code: user?.code,
       role: {
-        int: user.role,
-        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+        int: user?.role,
+        string: UserRolesOutPut[UserRoles[user?.role] as keyof typeof UserRolesOutPut],
       },
       status: {
-        int: user.status,
-        string: UserStatusOutPut[UserStatus[user.status] as keyof typeof UserStatusOutPut],
+        int: user?.status,
+        string: UserStatusOutPut[UserStatus[user?.status] as keyof typeof UserStatusOutPut],
       },
-      cashCount: user.cashCount,
-      fcmToken: user.fcmToken,
-      latitude: user.latitude.toString(),
-      longitude: user.longitude.toString(),
+      cashCount: user?.cashCount,
+      fcmToken: user?.fcmToken,
+      latitude: user?.latitude.toString(),
+      longitude: user?.longitude.toString(),
       structure: {
         id: user?.structure?.id,
         name: user?.structure?.name,
         status: {
-          int: user.structure.status,
-          string: StructureEnumOutPut[StructureEnum[user.structure.status] as keyof typeof StructureEnumOutPut],
+          int: user?.structure?.status,
+          string: StructureEnumOutPut[StructureEnum[user?.structure?.status] as keyof typeof StructureEnumOutPut],
         },
-        createdAt: user.structure.createdAt,
+        createdAt: user?.structure?.createdAt,
       },
-      incasatorId: user.incasatorId,
-      createdAt: user.createdAt,
+      incasatorId: user?.incasatorId,
+      createdAt: user?.createdAt,
     }
 
     return formatResponse<UserResponse>(HttpStatus.CREATED, result)
@@ -312,7 +310,7 @@ export class UsersService {
 
     const userExists = await this.prisma.user.findFirst({
       where: {
-        login: data?.login.toUpperCase(),
+        login: data?.login,
       },
     })
 
@@ -352,12 +350,12 @@ export class UsersService {
 
     const code = `${roleCapitalLetter}${count + 1}`
 
-    const hashedPassword = await bcrypt.hash(data.password.toUpperCase(), saltOrRounds)
+    const hashedPassword = await bcrypt.hash(data.password, saltOrRounds)
 
     const newUser = await this.prisma.user.create({
       data: {
         name: data?.name,
-        login: data?.login.toUpperCase(),
+        login: data?.login,
         password: hashedPassword,
         code: code,
         role: data?.role,

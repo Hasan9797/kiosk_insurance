@@ -135,6 +135,10 @@ export class NotificationService {
 
     const firebaseToken = user.fcmToken
 
+    if (!firebaseToken) {
+      throw new NotFoundException('FCM Token not found')
+    }
+
     const newNotification = await this.prisma.notify.create({
       data: {
         type: data.type,

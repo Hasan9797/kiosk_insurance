@@ -61,6 +61,7 @@ model Insurance {
   user        User?         @relation(fields: [userId], references: [id])
   Transaction Transaction[]
 
+  @@unique([userId, id])
   @@index([anketaId, status, polisId, vendorId, orderId, createdAt])
   @@map("insurances")
 }

@@ -134,7 +134,7 @@ export class DepositService {
     return formatResponse<DepositResponse>(HttpStatus.OK, result)
   }
 
-  async findDepositStatic(userId: number, query: any): Promise<Omit<FindAllDepositResponse, 'pagination'>> {
+  async findDepositStatic(userId: number, query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
