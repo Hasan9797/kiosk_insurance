@@ -67,3 +67,8 @@ export type {
 
 export type { ApiResponse, Response, DeleteRequestResponse } from './api-response.dto'
 export type { ReportByRegionResponse, ReportByRegion } from './report.interface'
+export type {
+  CreateNotificationRequest,
+  NotificationResponse,
+  UpdateNotificationRequest,
+} from './notification.interface'

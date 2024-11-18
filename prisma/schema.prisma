@@ -31,6 +31,7 @@ model User {
   userBalance        UserBalance?
   Transaction        Transaction[]
   UserBalanceHistory UserBalanceHistory[]
+  Notify             Notify[]
 
   @@unique([code, login])
   @@index([code, status, cashCount, latitude, longitude, structureId, incasatorId, createdAt])
@@ -212,4 +213,17 @@ model Partner {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime? @map("deleted_at")
+}
+
+model Notify {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+  type      Int
+  userId    Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime? @map("deleted_at")
+
+  user User @relation(fields: [userId], references: [id])
 }

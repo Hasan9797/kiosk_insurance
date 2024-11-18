@@ -14,6 +14,7 @@ import {
   UserBalanceModule,
   BalanceHistoryModule,
   ReportModule,
+  NotificationModule,
 } from '@modules'
 import { pspConfig } from '@config'
 import { AuthModule } from 'auth/auth.module'
@@ -45,18 +46,19 @@ import * as admin from 'firebase-admin'
     UserBalanceModule,
     BalanceHistoryModule,
     ReportModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [],
 })
 export class App {
   constructor() {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_SENDER_ID,
-        privateKey: process.env.FIREBASE_SENDER_TOKEN.replace(/\\n/g, '\n'),
-        clientEmail: process.env.FIREBASE_SENDER_EMAIL,
-      }),
-    })
+    // admin.initializeApp({
+    //   credential: admin.credential.cert({
+    //     projectId: process.env.FIREBASE_SENDER_ID,
+    //     privateKey: process.env.FIREBASE_SENDER_TOKEN.replace(/\\n/g, '\n'),
+    //     clientEmail: process.env.FIREBASE_SENDER_EMAIL,
+    //   }),
+    // })
   }
 }
