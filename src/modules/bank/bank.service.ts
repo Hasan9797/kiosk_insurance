@@ -1,36 +1,65 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
-import { CreateBankRequest, UpdateBankRequest } from '@interfaces'
-import { FilterService, paginationResponse } from '@helpers'
-import { Pagination } from 'enums/pagination.enum'
+import {
+  CreateBankRequest,
+  FindBankResponse,
+  UpdateBankRequest,
+  BankModel,
+  FindOneBankResponse,
+  DeleteRequestResponse,
+} from '@interfaces'
+import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
 import { Bank } from '@prisma/client'
 
 @Injectable()
 export class BankService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any) {
+  async findAll(query: any): Promise<Omit<FindBankResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const banks: Bank[] = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, limit, page)
+    const banks = await FilterService?.applyFilters('bank', parsedFilters, parsedSort, Number(limit), Number(page), [
+      'region',
+    ])
 
     const pagination = paginationResponse(banks.length, limit, page)
 
-    return {
-      data: banks,
-      pagination,
-    }
+    const result: BankModel[] = []
+
+    banks?.map((bank: any) => {
+      result.push({
+        id: bank?.id,
+        name: bank?.name,
+        percentage: Number(bank?.percentage),
+        region: {
+          id: bank?.region?.id,
+          name: bank?.region?.name,
+          status: {
+            int: bank?.region?.status,
+            string: RegionStatusOutPut[RegionStatus[bank?.region?.status] as keyof typeof RegionStatusOutPut],
+          },
+          createdAt: bank?.region?.createdAt,
+        },
+        createdAt: bank?.createdAt,
+      })
+    })
+
+    return formatResponse<BankModel[]>(HttpStatus.OK, result, pagination)
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<FindOneBankResponse> {
     const bank = await this.prisma.bank.findUnique({
       where: {
         id: id,
         deletedAt: null,
+      },
+      include: {
+        region: true,
       },
     })
 
@@ -38,12 +67,26 @@ export class BankService {
       throw new NotFoundException(`Bank not found with given ID`)
     }
 
-    return {
-      data: bank,
+    const result: BankModel = {
+      id: bank?.id,
+      name: bank?.name,
+      percentage: Number(bank?.percentage),
+      region: {
+        id: bank?.region?.id,
+        name: bank?.region?.name,
+        status: {
+          int: bank?.region?.status,
+          string: RegionStatusOutPut[RegionStatus[bank?.region?.status] as keyof typeof RegionStatusOutPut],
+        },
+        createdAt: bank?.region?.createdAt,
+      },
+      createdAt: bank?.createdAt,
     }
+
+    return formatResponse<BankModel>(HttpStatus.OK, result)
   }
 
-  async create(data: CreateBankRequest): Promise<void> {
+  async create(data: CreateBankRequest) {
     const regionExists = await this.prisma.region.findUnique({
       where: {
         id: data?.regionId,
@@ -57,13 +100,34 @@ export class BankService {
       throw new NotFoundException('Region not found with given ID!')
     }
 
-    await this.prisma.bank.create({
+    const newBank = await this.prisma.bank.create({
       data: {
         name: data?.name,
         regionId: data?.regionId,
         percentage: data?.percentage,
       },
+      include: {
+        region: true,
+      },
     })
+
+    const result: BankModel = {
+      id: newBank?.id,
+      name: newBank?.name,
+      percentage: Number(newBank?.percentage),
+      region: {
+        id: newBank?.region?.id,
+        name: newBank?.region?.name,
+        status: {
+          int: newBank?.region?.status,
+          string: RegionStatusOutPut[RegionStatus[newBank?.region?.status] as keyof typeof RegionStatusOutPut],
+        },
+        createdAt: newBank?.region?.createdAt,
+      },
+      createdAt: newBank?.createdAt,
+    }
+
+    return formatResponse<BankModel>(HttpStatus.CREATED, result)
   }
 
   async update(id: number, data: UpdateBankRequest) {
@@ -93,7 +157,7 @@ export class BankService {
       throw new NotFoundException('Region not found with given ID!')
     }
 
-    return this.prisma.bank.update({
+    const updatedBank = await this.prisma.bank.update({
       where: {
         id: id,
       },
@@ -101,10 +165,31 @@ export class BankService {
         ...data,
         updatedAt: new Date(),
       },
+      include: {
+        region: true,
+      },
     })
+
+    const result: BankModel = {
+      id: updatedBank?.id,
+      name: updatedBank?.name,
+      percentage: Number(updatedBank?.percentage),
+      region: {
+        id: updatedBank?.region?.id,
+        name: updatedBank?.region?.name,
+        status: {
+          int: updatedBank?.region?.status,
+          string: RegionStatusOutPut[RegionStatus[updatedBank?.region?.status] as keyof typeof RegionStatusOutPut],
+        },
+        createdAt: updatedBank?.region?.createdAt,
+      },
+      createdAt: updatedBank?.createdAt,
+    }
+
+    return formatResponse<BankModel>(HttpStatus.OK, result)
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<DeleteRequestResponse> {
     const bankExists = await this.prisma.bank.findUnique({
       where: {
         id: id,
@@ -126,5 +211,9 @@ export class BankService {
         deletedAt: new Date(),
       },
     })
+
+    return {
+      status: HttpStatus.NO_CONTENT,
+    }
   }
 }

@@ -29,7 +29,13 @@ export class PartnerService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const partners: Partner[] = await FilterService?.applyFilters('partner', parsedFilters, parsedSort, limit, page)
+    const partners: Partner[] = await FilterService?.applyFilters(
+      'partner',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+    )
 
     const pagination = paginationResponse(partners.length, limit, page)
 

@@ -1,5 +1,11 @@
 import { Changer, Pagination } from '@interfaces'
-import { Decimal } from '@prisma/client/runtime/library'
+
+export interface Structure {
+  id: number
+  name: string
+  status: Changer
+  createdAt: Date
+}
 
 export interface CreateUserRequest {
   name: string
@@ -12,29 +18,38 @@ export interface CreateUserRequest {
   longitude?: string
 }
 
-interface FindUserResponse {
+export interface UpdateUserRequest {
+  name?: string
+  login?: string
+  password?: string
+  role?: number
+  structureId?: number
+  incasatorId?: number
+  latitude?: string
+  longitude?: string
+}
+
+export interface UserResponse {
   id: number
   name: string
   login: string
   code: string
   role: Changer
-  status: number
+  status: Changer
   cashCount: number
-  latitude: Decimal
-  longitude: Decimal
+  latitude: string
+  longitude: string
   createdAt: Date
-  updatedAt: Date | null
-  deletedAt: Date | null
-  structureId: number | null
+  structure: Structure
   incasatorId: number | null
 }
 export interface FindAllUserResponse {
-  data: FindUserResponse[]
+  data: UserResponse[]
   pagination?: Pagination
 }
 
 export interface FindOneUserResponse {
-  data: FindUserResponse
+  data: UserResponse
 }
 
 export interface GetMeUser {
@@ -42,14 +57,8 @@ export interface GetMeUser {
   name?: string
   login: string
   code?: string
-  role: {
-    int?: number
-    string: string
-  }
-  status: {
-    int?: number
-    string: string
-  }
+  role: Changer
+  status: Changer
   cashCount?: number
   latitude?: number
   longitude?: number

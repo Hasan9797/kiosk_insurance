@@ -3,7 +3,7 @@ export function paginationResponse(totalCount: number, limit: number, page: numb
   return {
     totalCount,
     totalPages,
-    currentPage: page,
-    limit,
+    currentPage: Number(page),
+    limit: Number(limit),
   }
 }

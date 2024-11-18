@@ -1,44 +1,78 @@
-import { FindAllUserResponse } from '@interfaces'
+import { CreateUserRequest, DeleteRequestResponse, UpdateUserRequest, UserResponse } from '@interfaces'
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
-import { UserRoles, UserRolesOutPut, Pagination } from '@enums'
+import {
+  UserRoles,
+  UserRolesOutPut,
+  Pagination,
+  HttpStatus,
+  UserStatusOutPut,
+  UserStatus,
+  StructureEnumOutPut,
+  StructureEnum,
+} from '@enums'
 import * as bcrypt from 'bcrypt'
-import { FilterService, paginationResponse } from '@helpers'
+import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { User, UserBalance } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any): Promise<FindAllUserResponse> {
+  async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const users = await FilterService?.applyFilters('user', parsedFilters, parsedSort, limit, page)
+    const users: User[] = await FilterService?.applyFilters(
+      'user',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['structure'],
+    )
 
-    const usersWithRoles = users.map((user: any) => ({
-      ...user,
+    console.log(users)
+
+    const usersWithRoles: UserResponse[] = users.map((user: any) => ({
+      id: user.id,
+      name: user.name,
+      login: user.login,
+      code: user.code,
       role: {
         int: user.role,
         string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
       },
+      status: {
+        int: user.status,
+        string: UserStatusOutPut[UserStatus[user.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: user.cashCount,
+      fcmToken: user.fcmToken,
+      latitude: user.latitude,
+      longitude: user.longitude,
+      structure: {
+        id: user?.structure?.id,
+        name: user?.structure?.name,
+        status: {
+          int: user?.structure?.status,
+          string: StructureEnumOutPut[StructureEnum[user?.structure?.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: user?.structure?.createdAt,
+      },
+      incasatorId: user.incasatorId,
+      createdAt: user.createdAt,
     }))
-
-    for (const user of usersWithRoles) {
-      delete user.password
-    }
 
     const pagination = paginationResponse(users.length, limit, page)
 
-    return {
-      data: usersWithRoles,
-      pagination,
-    }
+    return formatResponse<UserResponse[]>(HttpStatus.OK, usersWithRoles, pagination)
   }
 
-  async getOperators(): Promise<FindAllUserResponse> {
+  async getOperators() {
     const operators = await this.prisma.user.findMany({
       where: {
         role: UserRoles.OPERATOR,
@@ -46,26 +80,45 @@ export class UsersService {
           equals: null,
         },
       },
+      include: {
+        structure: true,
+      },
     })
 
-    const operatorsWithRoles = operators.map((accountant: any) => ({
-      ...accountant,
+    const operatorsWithRoles: UserResponse[] = operators.map((operator: any) => ({
+      id: operator.id,
+      name: operator.name,
+      login: operator.login,
+      code: operator.code,
       role: {
-        int: accountant.role,
-        string: UserRolesOutPut[UserRoles[accountant.role] as keyof typeof UserRolesOutPut],
+        int: operator.role,
+        string: UserRolesOutPut[UserRoles[operator.role] as keyof typeof UserRolesOutPut],
       },
-      accountant,
+      status: {
+        int: operator.status,
+        string: UserStatusOutPut[UserStatus[operator.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: operator.cashCount,
+      fcmToken: operator.fcmToken,
+      latitude: operator.latitude,
+      longitude: operator.longitude,
+      structure: {
+        id: operator?.structure?.id,
+        name: operator?.structure?.name,
+        status: {
+          int: operator.structure.status,
+          string: StructureEnumOutPut[StructureEnum[operator.structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: operator.structure.createdAt,
+      },
+      incasatorId: operator.incasatorId,
+      createdAt: operator.createdAt,
     }))
 
-    for (const operator of operatorsWithRoles) {
-      delete operator.password
-    }
-    return {
-      data: operatorsWithRoles,
-    }
+    return formatResponse<UserResponse[]>(HttpStatus.OK, operatorsWithRoles)
   }
 
-  async getAccountans(): Promise<FindAllUserResponse> {
+  async getAccountans() {
     const accountants = await this.prisma.user.findMany({
       where: {
         role: UserRoles.ACCOUNTANT,
@@ -73,27 +126,45 @@ export class UsersService {
           equals: null,
         },
       },
+      include: {
+        structure: true,
+      },
     })
 
-    const accountantWithRoles = accountants.map((accountant: any) => ({
-      ...accountant,
+    const accountantWithRoles: UserResponse[] = accountants.map((accountant: any) => ({
+      id: accountant.id,
+      name: accountant.name,
+      login: accountant.login,
+      code: accountant.code,
       role: {
         int: accountant.role,
         string: UserRolesOutPut[UserRoles[accountant.role] as keyof typeof UserRolesOutPut],
       },
-      accountant,
+      status: {
+        int: accountant.status,
+        string: UserStatusOutPut[UserStatus[accountant.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: accountant.cashCount,
+      fcmToken: accountant.fcmToken,
+      latitude: accountant.latitude,
+      longitude: accountant.longitude,
+      structure: {
+        id: accountant?.structure?.id,
+        name: accountant?.structure?.name,
+        status: {
+          int: accountant.structure.status,
+          string: StructureEnumOutPut[StructureEnum[accountant.structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: accountant.structure.createdAt,
+      },
+      incasatorId: accountant.incasatorId,
+      createdAt: accountant.createdAt,
     }))
 
-    for (const user of accountantWithRoles) {
-      delete user.password
-    }
-
-    return {
-      data: accountantWithRoles,
-    }
+    return formatResponse<UserResponse[]>(HttpStatus.OK, accountantWithRoles)
   }
 
-  async getIncasators(): Promise<FindAllUserResponse> {
+  async getIncasators() {
     const incasators = await this.prisma.user.findMany({
       where: {
         role: UserRoles.INCASATOR,
@@ -101,24 +172,43 @@ export class UsersService {
           equals: null,
         },
       },
+      include: {
+        structure: true,
+      },
     })
 
-    const incasatorsWithRoles = incasators.map((incasator: any) => ({
-      ...incasator,
+    type UserResponseWithoutIncasatorId = Omit<UserResponse, 'incasatorId'>
+
+    const incasatorsWithRoles: UserResponseWithoutIncasatorId[] = incasators.map((incasator: any) => ({
+      id: incasator.id,
+      name: incasator.name,
+      login: incasator.login,
+      code: incasator.code,
       role: {
         int: incasator.role,
         string: UserRolesOutPut[UserRoles[incasator.role] as keyof typeof UserRolesOutPut],
       },
-      incasator,
+      status: {
+        int: incasator.status,
+        string: UserStatusOutPut[UserStatus[incasator.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: incasator.cashCount,
+      fcmToken: incasator.fcmToken,
+      latitude: incasator.latitude,
+      longitude: incasator.longitude,
+      structure: {
+        id: incasator?.structure?.id,
+        name: incasator?.structure?.name,
+        status: {
+          int: incasator.structure.status,
+          string: StructureEnumOutPut[StructureEnum[incasator.structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: incasator.structure.createdAt,
+      },
+      createdAt: incasator.createdAt,
     }))
 
-    for (const incasator of incasatorsWithRoles) {
-      delete incasator.password
-    }
-
-    return {
-      data: incasatorsWithRoles,
-    }
+    return formatResponse<UserResponseWithoutIncasatorId[]>(HttpStatus.OK, incasatorsWithRoles)
   }
 
   async getOperatorsStatic(userId: number) {
@@ -129,11 +219,42 @@ export class UsersService {
           equals: null,
         },
       },
+      include: {
+        structure: true,
+      },
     })
 
-    return {
-      data: operators,
-    }
+    const result: UserResponse[] = operators.map((operator: any) => ({
+      id: operator.id,
+      name: operator.name,
+      login: operator.login,
+      code: operator.code,
+      role: {
+        int: operator.role,
+        string: UserRolesOutPut[UserRoles[operator.role] as keyof typeof UserRolesOutPut],
+      },
+      status: {
+        int: operator.status,
+        string: UserStatusOutPut[UserStatus[operator.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: operator.cashCount,
+      fcmToken: operator.fcmToken,
+      latitude: operator.latitude,
+      longitude: operator.longitude,
+      structure: {
+        id: operator?.structure?.id,
+        name: operator?.structure?.name,
+        status: {
+          int: operator.structure.status,
+          string: StructureEnumOutPut[StructureEnum[operator.structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: operator.structure.createdAt,
+      },
+      incasatorId: operator.incasatorId,
+      createdAt: operator.createdAt,
+    }))
+
+    return formatResponse<UserResponse[]>(HttpStatus.OK, result)
   }
 
   async findOne(id: number) {
@@ -144,17 +265,49 @@ export class UsersService {
           equals: null,
         },
       },
+      include: {
+        structure: true,
+      },
     })
 
     if (!user) {
       throw new NotFoundException('User not found with given ID')
     }
-    return {
-      data: user,
+
+    const result = {
+      id: user.id,
+      name: user.name,
+      login: user.login,
+      code: user.code,
+      role: {
+        int: user.role,
+        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+      },
+      status: {
+        int: user.status,
+        string: UserStatusOutPut[UserStatus[user.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: user.cashCount,
+      fcmToken: user.fcmToken,
+      latitude: user.latitude.toString(),
+      longitude: user.longitude.toString(),
+      structure: {
+        id: user?.structure?.id,
+        name: user?.structure?.name,
+        status: {
+          int: user.structure.status,
+          string: StructureEnumOutPut[StructureEnum[user.structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: user.structure.createdAt,
+      },
+      incasatorId: user.incasatorId,
+      createdAt: user.createdAt,
     }
+
+    return formatResponse<UserResponse>(HttpStatus.CREATED, result)
   }
 
-  async create(data: any): Promise<void> {
+  async create(data: CreateUserRequest) {
     const saltOrRounds = 10
 
     const userExists = await this.prisma.user.findFirst({
@@ -212,6 +365,9 @@ export class UsersService {
         longitude: data?.longitude,
         latitude: data?.latitude,
       },
+      include: {
+        structure: true,
+      },
     })
 
     await this.prisma.userBalance.create({
@@ -220,9 +376,33 @@ export class UsersService {
         balance: 0,
       },
     })
+
+    const result = {
+      id: newUser.id,
+      name: newUser.name,
+      login: newUser.login,
+      code: newUser.code,
+      role: {
+        int: newUser.role,
+        string: UserRolesOutPut[UserRoles[newUser.role] as keyof typeof UserRolesOutPut],
+      },
+      status: {
+        int: newUser.status,
+        string: UserStatusOutPut[UserStatus[newUser.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: newUser.cashCount,
+      fcmToken: newUser.fcmToken,
+      latitude: newUser.latitude.toString(),
+      longitude: newUser.longitude.toString(),
+      incasatorId: newUser.incasatorId,
+      structureId: newUser.structureId,
+      createdAt: newUser.createdAt,
+    }
+
+    return formatResponse(HttpStatus.CREATED, result)
   }
 
-  async update(id: number, data: any): Promise<void> {
+  async update(id: number, data: UpdateUserRequest) {
     const userExists = await this.prisma.user.findUnique({
       where: {
         id: id,
@@ -291,7 +471,9 @@ export class UsersService {
         },
       })
 
-      const roleCapitalLetter = data.role
+      const role = UserRoles[data.role]
+
+      const roleCapitalLetter = role
         .split('_')
         .map((c: string, index: number, array: string[]) => {
           if (array.length > 1) {
@@ -305,7 +487,7 @@ export class UsersService {
       code = `${roleCapitalLetter}${count + 1}`
     }
 
-    await this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: {
         id: id,
         deletedAt: {
@@ -318,11 +500,39 @@ export class UsersService {
         password: hashedPassword,
         code: code,
         role: data?.role || userExists.role,
+        incasatorId: data?.incasatorId || userExists?.incasatorId,
+        latitude: data?.latitude || userExists?.latitude,
+        longitude: data?.longitude || userExists?.longitude,
+        structureId: data?.structureId,
+        updatedAt: new Date(),
       },
     })
+
+    const result = {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      login: updatedUser.login,
+      code: updatedUser.code,
+      role: {
+        int: updatedUser.role,
+        string: UserRolesOutPut[UserRoles[updatedUser.role] as keyof typeof UserRolesOutPut],
+      },
+      status: {
+        int: updatedUser.status,
+        string: UserStatusOutPut[UserStatus[updatedUser.status] as keyof typeof UserStatusOutPut],
+      },
+      cashCount: updatedUser.cashCount,
+      fcmToken: updatedUser.fcmToken,
+      latitude: updatedUser.latitude.toString(),
+      longitude: updatedUser.longitude.toString(),
+      incasatorId: updatedUser.incasatorId,
+      structureId: updatedUser.structureId,
+      createdAt: updatedUser.createdAt,
+    }
+    return formatResponse(HttpStatus.OK, result)
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<DeleteRequestResponse> {
     const userExists = await this.prisma.user.findUnique({
       where: {
         id: id,
@@ -344,6 +554,10 @@ export class UsersService {
         deletedAt: new Date(),
       },
     })
+
+    return {
+      status: HttpStatus.NO_CONTENT,
+    }
   }
 
   async validate(data: any) {

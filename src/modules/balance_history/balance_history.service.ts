@@ -1,4 +1,5 @@
 import {
+  HttpStatus,
   Pagination,
   UserBalanceHistoryStatus,
   UserBalanceHistoryStatusOutPut,
@@ -7,7 +8,7 @@ import {
   UserStatus,
   UserStatusOutPut,
 } from '@enums'
-import { FilterService, paginationResponse } from '@helpers'
+import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { BalanceHistory, FindAllUserBalanceHistoryResponse, FindOneUserBalanceHistoryResponse } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'prisma/prisma.service'
@@ -16,7 +17,7 @@ import { PrismaService } from 'prisma/prisma.service'
 export class BalanceHistoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any): Promise<FindAllUserBalanceHistoryResponse> {
+  async findAll(query: any): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
@@ -27,12 +28,12 @@ export class BalanceHistoryService {
       'userBalanceHistory',
       parsedFilters,
       parsedSort,
-      limit,
-      page,
+      Number(limit),
+      Number(page),
       ['user'],
     )
 
-    const pagination = paginationResponse(userBalancesHistory.length, limit, page)
+    const pagination = paginationResponse(userBalancesHistory.length, Number(limit), Number(page))
 
     const result: BalanceHistory[] = []
 
@@ -65,10 +66,8 @@ export class BalanceHistoryService {
         },
       })
     })
-    return {
-      data: result,
-      pagination: pagination,
-    }
+
+    return formatResponse<BalanceHistory[]>(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number): Promise<FindOneUserBalanceHistoryResponse> {
@@ -116,12 +115,13 @@ export class BalanceHistoryService {
       },
     }
 
-    return {
-      data: result,
-    }
+    return formatResponse<BalanceHistory>(HttpStatus.OK, result)
   }
 
-  async findOneUserBalanceHistory(userId: number): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
+  async findOneUserBalanceHistory(
+    query: any,
+    userId: number,
+  ): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -135,17 +135,20 @@ export class BalanceHistoryService {
       throw new NotFoundException('User not found with given ID!')
     }
 
-    const userBalanceHistorys = await this.prisma.userBalanceHistory.findMany({
-      where: {
-        userId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-      include: {
-        user: true,
-      },
-    })
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
+
+    const parsedSort = sort ? JSON?.parse(sort) : {}
+
+    const parsedFilters = filters ? JSON?.parse(filters) : []
+
+    const userBalanceHistorys = await FilterService?.applyFilters(
+      'userBalanceHistory',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['user'],
+    )
 
     const result: BalanceHistory[] = []
 
@@ -179,23 +182,31 @@ export class BalanceHistoryService {
       })
     })
 
-    return {
-      data: result,
-    }
+    const pagination = paginationResponse(userBalanceHistorys.length, limit, page)
+
+    return formatResponse<BalanceHistory[]>(HttpStatus.OK, result, pagination)
   }
 
-  async findStaticUserBalanceHistory(userId: number): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
-    const userBalanceHistorys = await this.prisma.userBalanceHistory.findMany({
-      where: {
-        userId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-      include: {
-        user: true,
-      },
-    })
+  async findStaticUserBalanceHistory(
+    query: any,
+    userId: number,
+  ): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
+
+    const parsedSort = sort ? JSON?.parse(sort) : {}
+
+    const parsedFilters = filters ? JSON?.parse(filters) : []
+
+    const userBalanceHistorys = await FilterService?.applyFilters(
+      'userBalanceHistory',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['user'],
+    )
+
+    const pagination = paginationResponse(userBalanceHistorys.length, limit, page)
 
     const result: BalanceHistory[] = []
 
@@ -228,8 +239,6 @@ export class BalanceHistoryService {
         },
       })
     })
-    return {
-      data: result,
-    }
+    return formatResponse<BalanceHistory[]>(HttpStatus.OK, result, pagination)
   }
 }

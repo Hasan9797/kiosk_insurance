@@ -19,26 +19,29 @@ export type {
 } from './request.interface'
 export type { LoginResponse, LoginRequest, RefreshTokenRequest } from './auth.interface'
 export type { JwtModel } from './jwt.interaface'
-export type { CreateBankRequest, UpdateBankRequest } from './bank.interface'
+export type {
+  CreateBankRequest,
+  UpdateBankRequest,
+  BankModel,
+  FindBankResponse,
+  FindOneBankResponse,
+} from './bank.interface'
 export type {
   CreateRegionRequest,
   UpdateRegionRequest,
   FindAllRegionResponse,
   FindOneRegionResponse,
+  Region,
 } from './region.interface'
 
-export type {
-  CreateStructureRequest,
-  UpdateStructureRequest,
-  FindAllStructureResponse,
-  FindOneStructureResponse,
-} from './structure.interface'
-export type { CreateUserRequest, FindAllUserResponse, FindOneUserResponse, GetMeResponse } from './user.interface'
+export type { CreateStructureRequest, UpdateStructureRequest, StructureResponse } from './structure.interface'
+export type { CreateUserRequest, UserResponse, GetMeResponse, UpdateUserRequest } from './user.interface'
 export type {
   CreateDepositRequest,
   FindAllDepositResponse,
   FindOneDepositResponse,
   UpdateFcmTokenRequest,
+  DepositResponse,
 } from './deposit.interface'
 export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
@@ -62,4 +65,10 @@ export type {
   BalanceHistory,
 } from './userBalanceHistory.interface'
 
-export type { ApiResponse, Response } from './api-response.dto'
+export type { ApiResponse, Response, DeleteRequestResponse } from './api-response.dto'
+export type { ReportByRegionResponse, ReportByRegion } from './report.interface'
+export type {
+  CreateNotificationRequest,
+  NotificationResponse,
+  UpdateNotificationRequest,
+} from './notification.interface'

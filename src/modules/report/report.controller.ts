@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ReportService } from './report.service';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { ReportService } from './report.service'
+import { ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Report Service')
 @Controller({
@@ -8,11 +8,11 @@ import { ApiTags } from '@nestjs/swagger';
   path: 'report',
 })
 export class ReportController {
-  constructor(private readonly reportService: ReportService) { }
+  constructor(private readonly reportService: ReportService) {}
 
   @Get()
   findAll() {
-    return this.reportService.findAll();
+    return this.reportService.findAll()
   }
 
   @Get('report-by-region')
@@ -22,7 +22,6 @@ export class ReportController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.reportService.findOne(+id);
+    return this.reportService.findOne(+id)
   }
-
 }
