@@ -17,7 +17,7 @@ import { User, UserBalance } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -38,22 +38,22 @@ export class UsersService {
     console.log(users)
 
     const usersWithRoles: UserResponse[] = users.map((user: any) => ({
-      id: user.id,
-      name: user.name,
-      login: user.login,
-      code: user.code,
+      id: user?.id,
+      name: user?.name,
+      login: user?.login,
+      code: user?.code,
       role: {
-        int: user.role,
-        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+        int: user?.role,
+        string: UserRolesOutPut[UserRoles[user?.role] as keyof typeof UserRolesOutPut],
       },
       status: {
-        int: user.status,
-        string: UserStatusOutPut[UserStatus[user.status] as keyof typeof UserStatusOutPut],
+        int: user?.status,
+        string: UserStatusOutPut[UserStatus[user?.status] as keyof typeof UserStatusOutPut],
       },
-      cashCount: user.cashCount,
-      fcmToken: user.fcmToken,
-      latitude: user.latitude,
-      longitude: user.longitude,
+      cashCount: user?.cashCount,
+      fcmToken: user?.fcmToken,
+      latitude: user?.latitude,
+      longitude: user?.longitude,
       structure: {
         id: user?.structure?.id,
         name: user?.structure?.name,
@@ -63,8 +63,8 @@ export class UsersService {
         },
         createdAt: user?.structure?.createdAt,
       },
-      incasatorId: user.incasatorId,
-      createdAt: user.createdAt,
+      incasatorId: user?.incasatorId,
+      createdAt: user?.createdAt,
     }))
 
     const pagination = paginationResponse(users.length, limit, page)
@@ -275,33 +275,33 @@ export class UsersService {
     }
 
     const result = {
-      id: user.id,
-      name: user.name,
-      login: user.login,
-      code: user.code,
+      id: user?.id,
+      name: user?.name,
+      login: user?.login,
+      code: user?.code,
       role: {
-        int: user.role,
-        string: UserRolesOutPut[UserRoles[user.role] as keyof typeof UserRolesOutPut],
+        int: user?.role,
+        string: UserRolesOutPut[UserRoles[user?.role] as keyof typeof UserRolesOutPut],
       },
       status: {
-        int: user.status,
-        string: UserStatusOutPut[UserStatus[user.status] as keyof typeof UserStatusOutPut],
+        int: user?.status,
+        string: UserStatusOutPut[UserStatus[user?.status] as keyof typeof UserStatusOutPut],
       },
-      cashCount: user.cashCount,
-      fcmToken: user.fcmToken,
-      latitude: user.latitude.toString(),
-      longitude: user.longitude.toString(),
+      cashCount: user?.cashCount,
+      fcmToken: user?.fcmToken,
+      latitude: user?.latitude.toString(),
+      longitude: user?.longitude.toString(),
       structure: {
         id: user?.structure?.id,
         name: user?.structure?.name,
         status: {
-          int: user.structure.status,
-          string: StructureEnumOutPut[StructureEnum[user.structure.status] as keyof typeof StructureEnumOutPut],
+          int: user?.structure?.status,
+          string: StructureEnumOutPut[StructureEnum[user?.structure?.status] as keyof typeof StructureEnumOutPut],
         },
-        createdAt: user.structure.createdAt,
+        createdAt: user?.structure?.createdAt,
       },
-      incasatorId: user.incasatorId,
-      createdAt: user.createdAt,
+      incasatorId: user?.incasatorId,
+      createdAt: user?.createdAt,
     }
 
     return formatResponse<UserResponse>(HttpStatus.CREATED, result)

@@ -10,7 +10,7 @@ export class NotificationService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly firebase: FirebaseService,
-  ) {}
+  ) { }
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -134,6 +134,10 @@ export class NotificationService {
     }
 
     const firebaseToken = user.fcmToken
+
+    if (!firebaseToken) {
+      throw new NotFoundException('FCM Token not found')
+    }
 
     const newNotification = await this.prisma.notify.create({
       data: {

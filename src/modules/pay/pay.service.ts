@@ -1,4 +1,4 @@
-import { InsuranceStatus, TransactionStatus } from '@enums'
+import { InsuranceStatus, NotificationType, TransactionStatus } from '@enums'
 import { FirebaseService } from '@helpers'
 import { ConfirmPaymentRequest, PrepareToPayRequest } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
@@ -12,7 +12,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -236,30 +236,31 @@ export class PayService {
     if (cashCountRightNow === 1900 && cashCountRightNow < 1900) {
       const firebaseToken = user.fcmToken
       if (firebaseToken) {
-        await this.firabase.sendPushNotification(firebaseToken, 'Ketdi', 'Naqd pul 1900 dan oshdi')
+        await this.firabase.sendPushNotification(firebaseToken, NotificationType.WARNING.toString(), 'Naqd pul 1900 dan oshdi')
       }
-    }
+      console.log(user.cashCount);
 
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        cashCount: cashCountRightNow + 1,
-      },
-    })
-
-    const insurance = await this.prisma.insurance.update({
-      where: {
-        id: userId,
-        deletedAt: {
-          equals: null,
+      await this.prisma.user.update({
+        where: {
+          id: userId,
         },
-        status: InsuranceStatus.NEW,
-      },
-      data: {
-        amount: data?.amount,
-      },
-    })
+        data: {
+          cashCount: cashCountRightNow + 1,
+        },
+      })
+
+      const insurance = await this.prisma.insurance.update({
+        where: {
+          id: userId,
+          deletedAt: {
+            equals: null,
+          },
+          status: InsuranceStatus.NEW,
+        },
+        data: {
+          amount: data?.amount,
+        },
+      })
+    }
   }
 }
