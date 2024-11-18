@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
 
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const user = await this.usersService.validate({ login: data.login.toUpperCase() })
+    const user = await this.usersService.validate({ login: data.login })
 
     const isMatch = await bcrypt.compare(data.password, user.password)
 
@@ -65,8 +65,6 @@ export class AuthService {
     if (!user || !(userId === user.id)) {
       throw new UnauthorizedException(ErrorCodes.UNAUTHORIZED)
     }
-
-    console.log(user)
 
     const accessToken = signJwt(
       {

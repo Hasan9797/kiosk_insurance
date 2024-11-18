@@ -82,8 +82,6 @@ export class PartnerService {
       })
     })
 
-    console.log(result)
-
     return {
       jsonrpc: '2.0',
       result: result,

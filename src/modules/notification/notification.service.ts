@@ -10,7 +10,7 @@ export class NotificationService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly firebase: FirebaseService,
-  ) { }
+  ) {}
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query

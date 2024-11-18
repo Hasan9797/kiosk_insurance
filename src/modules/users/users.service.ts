@@ -17,7 +17,7 @@ import { User, UserBalance } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -34,8 +34,6 @@ export class UsersService {
       Number(page),
       ['structure'],
     )
-
-    console.log(users)
 
     const usersWithRoles: UserResponse[] = users.map((user: any) => ({
       id: user?.id,
@@ -312,7 +310,7 @@ export class UsersService {
 
     const userExists = await this.prisma.user.findFirst({
       where: {
-        login: data?.login.toUpperCase(),
+        login: data?.login,
       },
     })
 
@@ -352,12 +350,12 @@ export class UsersService {
 
     const code = `${roleCapitalLetter}${count + 1}`
 
-    const hashedPassword = await bcrypt.hash(data.password.toUpperCase(), saltOrRounds)
+    const hashedPassword = await bcrypt.hash(data.password, saltOrRounds)
 
     const newUser = await this.prisma.user.create({
       data: {
         name: data?.name,
-        login: data?.login.toUpperCase(),
+        login: data?.login,
         password: hashedPassword,
         code: code,
         role: data?.role,
