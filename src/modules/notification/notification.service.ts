@@ -1,6 +1,6 @@
 import { HttpStatus, NotificationType, NotificationTypeOutPut, Pagination, UserRoles } from '@enums'
-import { FilterService, formatResponse, paginationResponse, FirebaseService } from '@helpers'
-import { CreateNotificationRequest, NotificationResponse, UpdateNotificationRequest } from '@interfaces'
+import { FilterService, formatResponse, paginationResponse, FirebaseService, addFilter } from '@helpers'
+import { CreateNotificationRequest, NotificationResponse } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Notify } from '@prisma/client'
 import { PrismaService } from 'prisma/prisma.service'
@@ -85,18 +85,16 @@ export class NotificationService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const skip = (page - 1) * limit
+    parsedFilters.push(addFilter('userId', userId, 'equals'))
 
-    const notifications = await this.prisma.notify.findMany({
-      where: {
-        userId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-      take: limit,
-      skip: skip,
-    })
+    const notifications: Notify[] = await FilterService?.applyFilters(
+      'notify',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['user'],
+    )
 
     const result: NotificationResponse[] = []
 

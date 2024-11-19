@@ -8,9 +8,10 @@ import {
   UserStatus,
   UserStatusOutPut,
 } from '@enums'
-import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { addFilter, FilterService, formatResponse, paginationResponse } from '@helpers'
 import { BalanceHistory, FindAllUserBalanceHistoryResponse, FindOneUserBalanceHistoryResponse } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { UserBalance } from '@prisma/client'
 import { PrismaService } from 'prisma/prisma.service'
 
 @Injectable()
@@ -141,6 +142,8 @@ export class BalanceHistoryService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
+    parsedFilters.push(addFilter('userId', userId, 'equals'))
+
     const userBalanceHistorys = await FilterService?.applyFilters(
       'userBalanceHistory',
       parsedFilters,
@@ -183,21 +186,19 @@ export class BalanceHistoryService {
     })
 
     const pagination = paginationResponse(userBalanceHistorys.length, limit, page)
-
     return formatResponse<BalanceHistory[]>(HttpStatus.OK, result, pagination)
   }
 
-  async findStaticUserBalanceHistory(
-    query: any,
-    userId: number,
-  ): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
+  async findStaticUserBalanceHistory(query: any, userId: number) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const userBalanceHistorys = await FilterService?.applyFilters(
+    parsedFilters.push(addFilter('userId', userId, 'equals'))
+
+    const userBalanceHistorys: UserBalance[] = await FilterService?.applyFilters(
       'userBalanceHistory',
       parsedFilters,
       parsedSort,

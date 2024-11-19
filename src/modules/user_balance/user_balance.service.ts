@@ -51,7 +51,7 @@ export class UserBalanceService {
       })
     })
 
-    return formatResponse<Balance[]>(HttpStatus.OK, result)
+    return formatResponse<Balance[]>(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number) {

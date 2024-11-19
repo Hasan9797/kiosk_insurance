@@ -43,7 +43,7 @@ export class PayService {
       { vendor_form },
     )
 
-    const newTransaction = await this.prisma.transaction.create({
+    await this.prisma.transaction.create({
       data: {
         userId: userId,
         payerPhone: data?.phone_number,
@@ -108,10 +108,9 @@ export class PayService {
       { confirm_form },
     )
 
-    const { id, transaction_id, bank_transaction_id, reference_number, amount, merchantId, terminalId } =
-      result?.getIdsPreparePayCard()
+    const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
 
-    const updatedTransaction = await this.prisma.transaction.update({
+    await this.prisma.transaction.update({
       where: {
         id: existTransaction.id,
       },
@@ -145,10 +144,9 @@ export class PayService {
       data,
     )
 
-    const { id, transaction_id, bank_transaction_id, reference_number, amount, merchantId, terminalId } =
-      result?.getIdsPreparePayCard()
+    const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
 
-    const updatedTransaction = await this.prisma.transaction.update({
+    await this.prisma.transaction.update({
       where: {
         id: existTransaction.id,
       },

@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Query, Req, UseGuards } from '@nestjs/common'
 import { NotificationService } from './notification.service'
 import { ApiTags } from '@nestjs/swagger'
-import { CreateNotificationDTO, UpdateNotificationDTO } from './dto'
+import { CreateNotificationDTO } from './dto'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from '@guards'
 

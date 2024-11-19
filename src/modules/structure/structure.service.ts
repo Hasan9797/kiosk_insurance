@@ -3,7 +3,6 @@ import { CreateStructureRequest, UpdateStructureRequest, StructureResponse, Dele
 import { PrismaService } from 'prisma/prisma.service'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { HttpStatus, Pagination, RegionStatus, RegionStatusOutPut, StructureEnum, StructureEnumOutPut } from '@enums'
-import { Structure } from '@prisma/client'
 
 @Injectable()
 export class StructureService {
@@ -50,7 +49,7 @@ export class StructureService {
 
     const pagination = paginationResponse(structures.length, limit, page)
 
-    return formatResponse<StructureResponse[]>(HttpStatus.OK, result)
+    return formatResponse<StructureResponse[]>(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number) {

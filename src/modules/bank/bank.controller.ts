@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common'
 import { BankService } from './bank.service'
 import { CreateBankDTO } from './dto'
 import { UpdateBankDTO } from './dto/update-bank.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { CheckTokenGuard } from '@guards'
+import { Roles } from '@decorators'
+import { UserRoles } from '@enums'
 
 @ApiTags('Bank Service')
 @Controller({
@@ -12,26 +15,36 @@ import { ApiTags } from '@nestjs/swagger'
 export class BankController {
   constructor(private readonly bankService: BankService) {}
 
+  @UseGuards(CheckTokenGuard)
+  // @Roles({ role: [UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.SUPER_ADMIN, UserRoles.INCASATOR] })
   @Get()
   findAll(@Query() query: any) {
     return this.bankService.findAll(query)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.ADMIN] })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bankService.findOne(+id)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.ADMIN] })
   @Post()
   create(@Body() createBankDto: CreateBankDTO) {
     return this.bankService.create(createBankDto)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.ADMIN] })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBankDto: UpdateBankDTO) {
     return this.bankService.update(+id, updateBankDto)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.ADMIN] })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.bankService.remove(+id)

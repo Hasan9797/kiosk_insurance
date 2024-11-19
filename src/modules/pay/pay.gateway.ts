@@ -19,8 +19,11 @@ export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   constructor(private readonly payService: PayService) {}
 
-  afterInit(server: Server) {
-    console.log('Socket server initialized')
+  afterInit() {
+    // {server: Server} argument qilib beriladi kerak bo'lsa
+    setTimeout(() => {
+      console.log('Socket server initialized successfully.')
+    })
   }
 
   handleConnection(client: Socket) {
@@ -35,7 +38,5 @@ export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   @SubscribeMessage('pay')
   async handlePayment(@MessageBody() data: any, @Req() request: CustomRequest): Promise<any> {
     this.payService.saveEveryCash({ amount: 1000 }, request?.user?.id)
-    this.server.emit('payResponse', { amount: 'salam' })
-    this.server.emit('pay', 'salam')
   }
 }

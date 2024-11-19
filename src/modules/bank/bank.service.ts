@@ -10,7 +10,6 @@ import {
 } from '@interfaces'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
-import { Bank } from '@prisma/client'
 
 @Injectable()
 export class BankService {

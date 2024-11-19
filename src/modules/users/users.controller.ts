@@ -19,8 +19,8 @@ export class UsersController {
   }
 
   @Get('operators')
-  findOperators() {
-    return this.usersService.getOperators()
+  findOperators(@Query() query: any) {
+    return this.usersService.getOperators(query)
   }
 
   @Get('incasators')

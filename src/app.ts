@@ -20,7 +20,6 @@ import { pspConfig } from '@config'
 import { AuthModule } from 'auth/auth.module'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
-import * as admin from 'firebase-admin'
 
 @Module({
   imports: [

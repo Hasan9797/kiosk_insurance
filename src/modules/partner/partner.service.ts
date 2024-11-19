@@ -1,7 +1,6 @@
 import { HttpStatus, Pagination, PartnerStatus, PartnerStatusOutPut } from '@enums'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import {
-  ApiResponse,
   Companies,
   CreatePartnerRequest,
   CreatePartnerResponse,
@@ -15,7 +14,6 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { Partner } from '@prisma/client'
 import { FindAllPartnerResponse } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
-import { equal } from 'assert'
 export { PartnerStatus, PartnerStatusOutPut } from '@enums'
 
 @Injectable()

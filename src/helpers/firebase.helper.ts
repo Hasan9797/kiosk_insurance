@@ -14,7 +14,7 @@ export class FirebaseService implements OnModuleInit {
           clientEmail: process.env.FIREBASE_SENDER_EMAIL,
         }),
       })
-      console.log('Firebase initialized successfully')
+      console.log('Firebase initialized successfully.')
     }
   }
 
