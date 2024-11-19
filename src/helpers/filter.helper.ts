@@ -27,8 +27,8 @@ export class FilterService {
         query.where = {
           ...query.where,
           createdAt: {
-            gte: date[0],
-            lte: date[1],
+            gte: new Date(date[0]),
+            lte: new Date(date[1]),
           },
         }
       } else if (filter.operator === 'to' && filter.column === 'createdAt') {
