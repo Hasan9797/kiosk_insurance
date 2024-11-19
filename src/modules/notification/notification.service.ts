@@ -1,6 +1,6 @@
 import { HttpStatus, NotificationType, NotificationTypeOutPut, Pagination, UserRoles } from '@enums'
 import { FilterService, formatResponse, paginationResponse, FirebaseService } from '@helpers'
-import { CreateNotificationRequest, NotificationResponse, UpdateNotificationRequest } from '@interfaces'
+import { CreateNotificationRequest, NotificationResponse } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Notify } from '@prisma/client'
 import { PrismaService } from 'prisma/prisma.service'
@@ -10,7 +10,7 @@ export class NotificationService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly firebase: FirebaseService,
-  ) {}
+  ) { }
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query

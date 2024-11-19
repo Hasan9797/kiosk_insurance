@@ -85,7 +85,7 @@ export class FilterService {
     query.skip = skip
 
     includeRelations.forEach((relation) => {
-      ; (query.include as any)[relation] = true
+      ;(query.include as any)[relation] = true
     })
 
     const model: any = prisma[modelName as keyof PrismaClient]

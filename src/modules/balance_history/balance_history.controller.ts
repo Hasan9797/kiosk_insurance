@@ -3,6 +3,8 @@ import { BalanceHistoryService } from './balance_history.service'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from '@guards'
+import { Roles } from '@decorators'
+import { UserRoles } from '@enums'
 
 @ApiTags('User Balance History Service')
 @Controller({
@@ -25,6 +27,7 @@ export class BalanceHistoryController {
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.INCASATOR] })
   @Get('static-history')
   staticBalanceHistory(@Query() query: any, @Req() request: CustomRequest) {
     return this.balanceHistoryService.findStaticUserBalanceHistory(query, request?.user?.id)

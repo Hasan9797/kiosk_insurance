@@ -1,5 +1,5 @@
 import { Region } from '@interfaces'
-import { Changer, Pagination } from '@interfaces'
+import { Changer } from '@interfaces'
 export interface CreateStructureRequest {
   name: string
   status: number

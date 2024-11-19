@@ -1,4 +1,3 @@
-import { Pagination } from '@interfaces'
 import { Changer } from '@interfaces'
 
 export interface CreatePartnerRequest {
