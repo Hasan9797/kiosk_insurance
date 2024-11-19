@@ -8,7 +8,7 @@ import {
   UserStatus,
   UserStatusOutPut,
 } from '@enums'
-import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { addFilter, FilterService, formatResponse, paginationResponse } from '@helpers'
 import {
   BalanceHistory,
   FindAllUserBalanceHistoryResponse,
@@ -146,6 +146,8 @@ export class BalanceHistoryService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
+    parsedFilters.push(addFilter('userId', userId, 'equals'))
+
     const userBalanceHistorys = await FilterService?.applyFilters(
       'userBalanceHistory',
       parsedFilters,
@@ -188,27 +190,20 @@ export class BalanceHistoryService {
     })
 
     const pagination = paginationResponse(userBalanceHistorys.length, limit, page)
-
     return formatResponse<BalanceHistory[]>(HttpStatus.OK, result, pagination)
   }
 
   async findStaticUserBalanceHistory(
     query: any,
     userId: number,
-  ): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
+  ) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    console.log(userId)
-
-    parsedFilters.push({
-      column: 'userId',
-      value: userId,
-      operator: 'equals',
-    })
+    parsedFilters.push(addFilter('userId', userId, 'equals'))
 
     const userBalanceHistorys: UserBalance[] = await FilterService?.applyFilters(
       'userBalanceHistory',
@@ -218,8 +213,6 @@ export class BalanceHistoryService {
       Number(page),
       ['user'],
     )
-
-    console.log(userBalanceHistorys)
 
     const pagination = paginationResponse(userBalanceHistorys.length, limit, page)
 

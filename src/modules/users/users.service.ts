@@ -12,12 +12,12 @@ import {
   StructureEnum,
 } from '@enums'
 import * as bcrypt from 'bcrypt'
-import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { addFilter, FilterService, formatResponse, paginationResponse } from '@helpers'
 import { User, UserBalance } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -70,18 +70,23 @@ export class UsersService {
     return formatResponse<UserResponse[]>(HttpStatus.OK, usersWithRoles, pagination)
   }
 
-  async getOperators() {
-    const operators = await this.prisma.user.findMany({
-      where: {
-        role: UserRoles.OPERATOR,
-        deletedAt: {
-          equals: null,
-        },
-      },
-      include: {
-        structure: true,
-      },
-    })
+  async getOperators(query: any) {
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
+
+    const parsedSort = sort ? JSON?.parse(sort) : {}
+
+    const parsedFilters = filters ? JSON?.parse(filters) : []
+
+    parsedFilters.push(addFilter('role', UserRoles.OPERATOR, 'equals'))
+
+    const operators: User[] = await FilterService?.applyFilters(
+      'user',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['structure'],
+    )
 
     const operatorsWithRoles: UserResponse[] = operators.map((operator: any) => ({
       id: operator.id,
@@ -104,16 +109,17 @@ export class UsersService {
         id: operator?.structure?.id,
         name: operator?.structure?.name,
         status: {
-          int: operator.structure.status,
-          string: StructureEnumOutPut[StructureEnum[operator.structure.status] as keyof typeof StructureEnumOutPut],
+          int: operator?.structure?.status,
+          string: StructureEnumOutPut[StructureEnum[operator?.structure?.status] as keyof typeof StructureEnumOutPut],
         },
-        createdAt: operator.structure.createdAt,
+        createdAt: operator?.structure?.createdAt,
       },
-      incasatorId: operator.incasatorId,
-      createdAt: operator.createdAt,
+      incasatorId: operator?.incasatorId,
+      createdAt: operator?.createdAt,
     }))
 
-    return formatResponse<UserResponse[]>(HttpStatus.OK, operatorsWithRoles)
+    const pagination = paginationResponse(operatorsWithRoles.length, limit, page)
+    return formatResponse<UserResponse[]>(HttpStatus.OK, operatorsWithRoles, pagination)
   }
 
   async getAccountans() {
