@@ -9,18 +9,14 @@ import {
   UserStatusOutPut,
 } from '@enums'
 import { addFilter, FilterService, formatResponse, paginationResponse } from '@helpers'
-import {
-  BalanceHistory,
-  FindAllUserBalanceHistoryResponse,
-  FindOneUserBalanceHistoryResponse,
-} from '@interfaces'
+import { BalanceHistory, FindAllUserBalanceHistoryResponse, FindOneUserBalanceHistoryResponse } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { UserBalance } from '@prisma/client'
 import { PrismaService } from 'prisma/prisma.service'
 
 @Injectable()
 export class BalanceHistoryService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<Omit<FindAllUserBalanceHistoryResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -50,7 +46,7 @@ export class BalanceHistoryService {
           int: history?.type,
           string:
             UserBalanceHistoryStatusOutPut[
-            UserBalanceHistoryStatus[history?.type] as keyof typeof UserBalanceHistoryStatusOutPut
+              UserBalanceHistoryStatus[history?.type] as keyof typeof UserBalanceHistoryStatusOutPut
             ],
         },
         createdAt: history?.createdAt,
@@ -99,7 +95,7 @@ export class BalanceHistoryService {
         int: userBalanceHistory?.type,
         string:
           UserBalanceHistoryStatusOutPut[
-          UserBalanceHistoryStatus[userBalanceHistory?.type] as keyof typeof UserBalanceHistoryStatusOutPut
+            UserBalanceHistoryStatus[userBalanceHistory?.type] as keyof typeof UserBalanceHistoryStatusOutPut
           ],
       },
       createdAt: userBalanceHistory?.createdAt,
@@ -167,7 +163,7 @@ export class BalanceHistoryService {
           int: history?.type,
           string:
             UserBalanceHistoryStatusOutPut[
-            UserBalanceHistoryStatus[history?.type] as keyof typeof UserBalanceHistoryStatusOutPut
+              UserBalanceHistoryStatus[history?.type] as keyof typeof UserBalanceHistoryStatusOutPut
             ],
         },
         createdAt: history?.createdAt,
@@ -193,10 +189,7 @@ export class BalanceHistoryService {
     return formatResponse<BalanceHistory[]>(HttpStatus.OK, result, pagination)
   }
 
-  async findStaticUserBalanceHistory(
-    query: any,
-    userId: number,
-  ) {
+  async findStaticUserBalanceHistory(query: any, userId: number) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
@@ -226,7 +219,7 @@ export class BalanceHistoryService {
           int: history?.type,
           string:
             UserBalanceHistoryStatusOutPut[
-            UserBalanceHistoryStatus[history?.type] as keyof typeof UserBalanceHistoryStatusOutPut
+              UserBalanceHistoryStatus[history?.type] as keyof typeof UserBalanceHistoryStatusOutPut
             ],
         },
         createdAt: history?.createdAt,

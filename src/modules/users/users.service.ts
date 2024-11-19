@@ -13,11 +13,11 @@ import {
 } from '@enums'
 import * as bcrypt from 'bcrypt'
 import { addFilter, FilterService, formatResponse, paginationResponse } from '@helpers'
-import { User, UserBalance } from '@prisma/client'
+import { User } from '@prisma/client'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query

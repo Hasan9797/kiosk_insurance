@@ -13,7 +13,7 @@ import { Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
 
 @Injectable()
 export class BankService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<Omit<FindBankResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query

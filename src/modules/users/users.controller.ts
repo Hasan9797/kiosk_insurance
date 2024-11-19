@@ -11,7 +11,7 @@ import { CheckTokenGuard } from '@guards'
   version: '1',
 })
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   findAll(@Query() query: any) {
@@ -19,9 +19,7 @@ export class UsersController {
   }
 
   @Get('operators')
-  findOperators(
-    @Query() query: any
-  ) {
+  findOperators(@Query() query: any) {
     return this.usersService.getOperators(query)
   }
 

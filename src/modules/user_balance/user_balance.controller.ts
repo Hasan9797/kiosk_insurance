@@ -1,6 +1,6 @@
 import { ApiTags } from '@nestjs/swagger'
 import { UserBalanceService } from './user_balance.service'
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req, UseGuards } from '@nestjs/common'
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from '@guards'
 

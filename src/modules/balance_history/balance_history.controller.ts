@@ -12,7 +12,7 @@ import { UserRoles } from '@enums'
   version: '1',
 })
 export class BalanceHistoryController {
-  constructor(private readonly balanceHistoryService: BalanceHistoryService) { }
+  constructor(private readonly balanceHistoryService: BalanceHistoryService) {}
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.ACCOUNTANT, UserRoles.ADMIN, UserRoles.SUPER_ADMIN] })

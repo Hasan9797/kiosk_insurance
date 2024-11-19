@@ -13,7 +13,7 @@ import { UserRoles } from '@enums'
   path: 'banks',
 })
 export class BankController {
-  constructor(private readonly bankService: BankService) { }
+  constructor(private readonly bankService: BankService) {}
 
   @UseGuards(CheckTokenGuard)
   // @Roles({ role: [UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.SUPER_ADMIN, UserRoles.INCASATOR] })

@@ -11,7 +11,7 @@ import { CheckTokenGuard } from '@guards'
   path: 'notifications',
 })
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) { }
+  constructor(private readonly notificationService: NotificationService) {}
 
   @UseGuards(CheckTokenGuard)
   @Get()

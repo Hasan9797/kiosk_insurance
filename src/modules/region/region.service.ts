@@ -1,12 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import {
-  CreateRegionRequest,
-  DeleteRequestResponse,
-  FindAllRegionResponse,
-  FindOneRegionResponse,
-  Region,
-  UpdateRegionRequest,
-} from '@interfaces'
+import { CreateRegionRequest, DeleteRequestResponse, Region, UpdateRegionRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { HttpStatus, Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
@@ -36,7 +29,7 @@ export class RegionService {
 
     const pagination = paginationResponse(regions.length, limit, page)
 
-    return formatResponse<Region[]>(HttpStatus.OK, result)
+    return formatResponse<Region[]>(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number) {
