@@ -35,7 +35,7 @@ export class FilterService {
         query.where = {
           ...query.where,
           createdAt: {
-            lte: filter.value,
+            lte: new Date(filter.value),
           },
         }
       } else {
@@ -85,7 +85,7 @@ export class FilterService {
     query.skip = skip
 
     includeRelations.forEach((relation) => {
-      ;(query.include as any)[relation] = true
+      ; (query.include as any)[relation] = true
     })
 
     const model: any = prisma[modelName as keyof PrismaClient]
