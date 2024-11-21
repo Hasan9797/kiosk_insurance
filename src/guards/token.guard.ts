@@ -1,5 +1,5 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { isJWT } from 'class-validator'
 import { ErrorCodes } from '@enums'
@@ -34,9 +34,9 @@ export class CheckTokenGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<Role>(ROLES_KEY, [context.getHandler(), context.getClass()])
 
-    if (!requiredRoles) {
-      return true
-    }
+    // if (!requiredRoles) {
+    //   return true
+    // }
 
     const request = context.switchToHttp().getRequest<CustomRequest>()
 
@@ -61,8 +61,8 @@ export class CheckTokenGuard implements CanActivate {
       throw new UnauthorizedException(ErrorCodes.UNAUTHORIZED)
     }
 
-    if (!requiredRoles.role.some((role) => user.role === role)) {
-      throw new UnauthorizedException(ErrorCodes.PERMISSION_DENIED)
+    if (!requiredRoles?.role?.some((role) => user?.role === role)) {
+      throw new ForbiddenException(ErrorCodes.PERMISSION_DENIED)
     }
 
     request.user = verified
