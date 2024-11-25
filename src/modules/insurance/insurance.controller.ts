@@ -12,6 +12,8 @@ import {
 } from './dto'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
+import { Roles } from '@decorators'
+import { UserRoles } from '@enums'
 
 @ApiTags('Company Service')
 @Controller({
@@ -21,6 +23,7 @@ export class InsuranceController {
   constructor(private readonly insuranceService: InsuranceService) {}
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-companies')
   async getCompany() {
     const result = await this.insuranceService.findCompany()
@@ -28,55 +31,63 @@ export class InsuranceController {
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-company-services')
-  async getServices(@Body() getServiceDto: getServiceRequestDTO) {
+  async getServices(@Body() getServiceDto: any) {
     const result = await this.insuranceService.findService(getServiceDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step')
-  async getStep(@Body() getStepDto: getStepRequestDTO) {
+  async getStep(@Body() getStepDto: any) {
     const result = await this.insuranceService.getStep(getStepDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-one')
-  async stepOne(@Body() stepOneDto: stepOneRequestDTO) {
+  async stepOne(@Body() stepOneDto: any) {
     const result = await this.insuranceService.getStep(stepOneDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-two')
-  async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
+  async stepTwo(@Body() stepTwoDto: any) {
     const result = await this.insuranceService.getStep(stepTwoDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-three')
-  async stepThree(@Body() stepThreeDto: StepThreeRequestDto) {
+  async stepThree(@Body() stepThreeDto: any) {
     const result = await this.insuranceService.getStep(stepThreeDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-four')
-  async stepFour(@Body() stepFourDto: StepFourRequestDto) {
+  async stepFour(@Body() stepFourDto: any) {
     const result = await this.insuranceService.getStep(stepFourDto)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('create-insurance')
-  async createInvoice(@Body() createInvoiceDto: CreateInsuranceRequestDto, @Req() request: CustomRequest) {
+  async createInvoice(@Body() createInvoiceDto: any, @Req() request: CustomRequest) {
     const result = await this.insuranceService.createInsurance(createInvoiceDto, request?.user?.id)
     return result
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-polis-url')
   async getPolisUrl(@Body() getPolisUrlDTO: any) {
     const result = await this.insuranceService.getPolisUrl(getPolisUrlDTO)

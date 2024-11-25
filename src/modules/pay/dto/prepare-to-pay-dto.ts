@@ -8,7 +8,7 @@ export class PrepareToPayDTO implements PrepareToPayRequest {
 
   @IsNotEmpty()
   @IsString()
-  summa: string
+  amount: string
 
   @IsNumber()
   @IsOptional()
