@@ -194,20 +194,20 @@ export class PayService {
   }
 
   async payByCash(userId: number) {
-    const existTransaction = await this.prisma.transaction.findFirst({
+    const existInsurance = await this.prisma.insurance.findFirst({
       where: {
         userId: userId,
-        status: TransactionStatus.NEW,
+        status: InsuranceStatus.NEW,
       },
     })
 
     const vendor_form = {
-      anketa_id: existTransaction.anketaId,
-      amount: '12000',
-      vendor_id: existTransaction.vendorId,
+      anketa_id: existInsurance.anketaId,
+      amount: 40000,
+      vendor_id: existInsurance.vendorId,
     }
 
-    const result = await this.payGateService.getFiscalDetails(
+    const result = await this.payGateService.payByCash(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
       { vendor_form },
