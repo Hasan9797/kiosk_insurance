@@ -198,6 +198,12 @@ export class PayService {
       where: {
         userId: userId,
         status: InsuranceStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     })
 
