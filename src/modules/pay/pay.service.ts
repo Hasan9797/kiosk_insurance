@@ -207,7 +207,8 @@ export class PayService {
       },
     })
 
-    console.log(existInsurance);
+    console.log(existInsurance, 'existInsurance');
+
 
 
     const vendor_form = {
