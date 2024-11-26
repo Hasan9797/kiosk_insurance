@@ -207,7 +207,7 @@ export class PayService {
       },
     })
 
-    console.log(existInsurance, 'existInsurance');
+    console.log(existInsurance, 'existInsuranc');
 
 
 
