@@ -27,6 +27,7 @@ export class InfinityRequestService {
 
     const url = this.getUrl()
     const authHeader = this.generateForAuth()
+
     try {
       const response = await firstValueFrom(
         this.httpService.post(url, jsonPayload, {
