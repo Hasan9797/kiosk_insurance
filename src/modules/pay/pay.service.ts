@@ -12,7 +12,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -198,8 +198,18 @@ export class PayService {
       where: {
         userId: userId,
         status: InsuranceStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     })
+
+    console.log(existInsurance, 'existInsuranc');
+
+
 
     const vendor_form = {
       anketa_id: existInsurance.anketaId,
