@@ -12,7 +12,7 @@ import { UserRoles } from '@enums'
   version: '1',
 })
 export class PayController {
-  constructor(private readonly payService: PayService) {}
+  constructor(private readonly payService: PayService) { }
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
@@ -61,5 +61,12 @@ export class PayController {
   @Post('get-receipt')
   checkReceipt(@Body() dto: any) {
     return this.payService.checkTransactionStatus(dto)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('get-fiscal-details')
+  getFiscalDetails(@Body() dto: any) {
+    return this.payService.getFiscalData(dto)
   }
 }
