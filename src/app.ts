@@ -15,6 +15,7 @@ import {
   BalanceHistoryModule,
   ReportModule,
   NotificationModule,
+  TransactionModule,
 } from '@modules'
 import { pspConfig } from '@config'
 import { AuthModule } from 'auth/auth.module'
@@ -46,18 +47,9 @@ import { join } from 'path'
     BalanceHistoryModule,
     ReportModule,
     NotificationModule,
+    TransactionModule,
   ],
   controllers: [],
   providers: [],
 })
-export class App {
-  constructor() {
-    // admin.initializeApp({
-    //   credential: admin.credential.cert({
-    //     projectId: process.env.FIREBASE_SENDER_ID,
-    //     privateKey: process.env.FIREBASE_SENDER_TOKEN.replace(/\\n/g, '\n'),
-    //     clientEmail: process.env.FIREBASE_SENDER_EMAIL,
-    //   }),
-    // })
-  }
-}
+export class App {}
