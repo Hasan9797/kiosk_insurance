@@ -26,7 +26,7 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   // So'rovni yuborish
   async send() {
@@ -164,7 +164,7 @@ export class InfinityRequestService {
   }
 
   getError(): any {
-    return this.response?.error.message || this.errorUnknown
+    return this.response?.error?.message || this?.errorUnknown
   }
 
   getErrorUnknown(): any {
