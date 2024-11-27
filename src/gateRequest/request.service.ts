@@ -1,10 +1,17 @@
-import { Injectable, HttpException, InternalServerErrorException } from '@nestjs/common'
+import {
+  Injectable,
+  HttpException,
+  InternalServerErrorException,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ConfigService } from '@nestjs/config'
 import { firstValueFrom } from 'rxjs'
 import * as crypto from 'crypto'
-import { REQUEST_ERRORS } from '@enums'
+import { HttpStatus, REQUEST_ERRORS } from '@enums'
 import { GetInsuranceIds, TransactionPreparePayCardResponse } from '@interfaces'
+import { CustomInternalServerErrorException } from '@helpers'
 
 @Injectable()
 export class InfinityRequestService {
@@ -41,6 +48,10 @@ export class InfinityRequestService {
       )
       this.response = response.data
 
+      if (this.isOk() === false) {
+        throw new InternalServerErrorException(this.getError())
+      }
+
       if (!this.response) {
         this.setErrorUnknown({
           code: REQUEST_ERRORS.INVALID_ANSWER,
@@ -50,14 +61,7 @@ export class InfinityRequestService {
 
       return this
     } catch (error: any) {
-      if (error.response) {
-        throw new HttpException(`AXIOS request failed: ${error.message}`, error.response.status)
-      } else {
-        console.log(error)
-        console.log(error.response)
-
-        throw new InternalServerErrorException('AXIOS request failed: ' + error.message)
-      }
+      throw new InternalServerErrorException(this.getError())
     }
   }
 
@@ -144,7 +148,7 @@ export class InfinityRequestService {
       reference_number: this.response.result.details.reference_number,
       amount: this.response.result.details.amount,
       merchantId: this.response.result.details.merchantId,
-      terminalId: this.response.result.details.terminalId,
+      terminalId: this.response.result.details.terurlminalId,
     }
     return result
   }
