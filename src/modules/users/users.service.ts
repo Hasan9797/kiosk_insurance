@@ -228,34 +228,34 @@ export class UsersService {
       },
     })
 
-    const result: UserResponse[] = operators.map((operator: any) => ({
-      id: operator.id,
-      name: operator.name,
-      login: operator.login,
-      code: operator.code,
+    const result: UserResponse[] = operators?.map((operator: any) => ({
+      id: operator?.id,
+      name: operator?.name,
+      login: operator?.login,
+      code: operator?.code,
       role: {
-        int: operator.role,
-        string: UserRolesOutPut[UserRoles[operator.role] as keyof typeof UserRolesOutPut],
+        int: operator?.role,
+        string: UserRolesOutPut[UserRoles[operator?.role] as keyof typeof UserRolesOutPut],
       },
       status: {
-        int: operator.status,
-        string: UserStatusOutPut[UserStatus[operator.status] as keyof typeof UserStatusOutPut],
+        int: operator?.status,
+        string: UserStatusOutPut[UserStatus[operator?.status] as keyof typeof UserStatusOutPut],
       },
-      cashCount: operator.cashCount,
-      fcmToken: operator.fcmToken,
-      latitude: operator.latitude,
-      longitude: operator.longitude,
+      cashCount: operator?.cashCount,
+      fcmToken: operator?.fcmToken,
+      latitude: operator?.latitude,
+      longitude: operator?.longitude,
       structure: {
         id: operator?.structure?.id,
         name: operator?.structure?.name,
         status: {
-          int: operator.structure.status,
-          string: StructureEnumOutPut[StructureEnum[operator.structure.status] as keyof typeof StructureEnumOutPut],
+          int: operator?.structure?.status,
+          string: StructureEnumOutPut[StructureEnum[operator?.structure?.status] as keyof typeof StructureEnumOutPut],
         },
-        createdAt: operator.structure.createdAt,
+        createdAt: operator?.structure?.createdAt,
       },
-      incasatorId: operator.incasatorId,
-      createdAt: operator.createdAt,
+      incasatorId: operator?.incasatorId,
+      createdAt: operator?.createdAt,
     }))
 
     return formatResponse<UserResponse[]>(HttpStatus.OK, result)
