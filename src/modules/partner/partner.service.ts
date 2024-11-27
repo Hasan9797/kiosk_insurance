@@ -18,7 +18,7 @@ export { PartnerStatus, PartnerStatusOutPut } from '@enums'
 
 @Injectable()
 export class PartnerService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any): Promise<FindAllPartnerResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -245,7 +245,10 @@ export class PartnerService {
 
     const updatedPartner = await this.prisma.partner.update({
       where: { id },
-      data: updateData,
+      data: {
+        ...updateData,
+        partnerId: data.partnerId
+      },
     })
 
     const result: PartnerModel = {
