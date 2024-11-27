@@ -19,7 +19,7 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   // So'rovni yuborish
   async send() {
@@ -27,7 +27,7 @@ export class InfinityRequestService {
 
     const url = this.getUrl()
     const authHeader = this.generateForAuth()
-    console.log(authHeader, jsonPayload);
+    console.log(authHeader, jsonPayload)
 
     try {
       const response = await firstValueFrom(
@@ -53,8 +53,8 @@ export class InfinityRequestService {
       if (error.response) {
         throw new HttpException(`AXIOS request failed: ${error.message}`, error.response.status)
       } else {
-        console.log(error);
-        console.log(error.response);
+        console.log(error)
+        console.log(error.response)
 
         throw new InternalServerErrorException('AXIOS request failed: ' + error.message)
       }

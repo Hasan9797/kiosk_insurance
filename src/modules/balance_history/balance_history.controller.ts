@@ -15,28 +15,28 @@ export class BalanceHistoryController {
   constructor(private readonly balanceHistoryService: BalanceHistoryService) {}
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ACCOUNTANT, UserRoles.ADMIN, UserRoles.SUPER_ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
   @Get()
   findAll(@Query() query: any) {
     return this.balanceHistoryService.findAll(query)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ACCOUNTANT, UserRoles.ADMIN, UserRoles.SUPER_ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
   @Get('one-user/:id')
   oneUserHistory(@Query() query: any, @Param('id') id: string) {
     return this.balanceHistoryService.findOneUserBalanceHistory(query, +id)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.INCASATOR, UserRoles.OPERATOR] })
+  @Roles({ role: [UserRoles.OPERATOR, UserRoles.INCASATOR] })
   @Get('static-history')
   staticBalanceHistory(@Query() query: any, @Req() request: CustomRequest) {
     return this.balanceHistoryService.findStaticUserBalanceHistory(query, request?.user?.id)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ACCOUNTANT, UserRoles.ADMIN, UserRoles.SUPER_ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.balanceHistoryService.findOne(+id)
