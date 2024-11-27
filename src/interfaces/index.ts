@@ -72,3 +72,5 @@ export type {
   NotificationResponse,
   UpdateNotificationRequest,
 } from './notification.interface'
+
+export type { CreateVendorRequest, UpdateVendorRequest, VendorModel } from './vendor-interface'

@@ -228,3 +228,14 @@ model Notify {
 
   user User @relation(fields: [userId], references: [id])
 }
+
+model Vendor {
+  id           Int       @id @default(autoincrement())
+  title        String
+  vendorId     Int       @map("vendor_id")
+  type         Int
+  numberPrefix String[]  @map("start_number")
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  deletedAt    DateTime? @map("deleted_at")
+}

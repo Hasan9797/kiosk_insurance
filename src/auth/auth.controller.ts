@@ -5,6 +5,8 @@ import { LoginResponse } from '@interfaces'
 import { RefreshTokenDTO, LoginDtoRequest } from './dto'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from '@guards'
+import { Roles } from '@decorators'
+import { UserRoles } from '@enums'
 
 @ApiTags('Auth')
 @Controller({
@@ -20,12 +22,16 @@ export class AuthController {
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('refresh')
   async refreshToken(@Body() body: RefreshTokenDTO, @Req() request: CustomRequest) {
     return await this.service.refreshToken(body.token, request.user.id)
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({
+    role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.OPERATOR, UserRoles.INCASATOR],
+  })
   @Get('me')
   async getMe(@Req() request: CustomRequest) {
     return await this.service.getMe(request.user.id)
