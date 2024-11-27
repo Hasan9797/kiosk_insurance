@@ -218,7 +218,7 @@ export class UsersService {
   async getOperatorsStatic(userId: number) {
     const operators = await this.prisma.user.findMany({
       where: {
-        incasatorId: +userId,
+        incasatorId: userId,
         deletedAt: {
           equals: null,
         },
