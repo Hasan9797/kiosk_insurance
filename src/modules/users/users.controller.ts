@@ -58,7 +58,7 @@ export class UsersController {
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.OPERATOR] })
   @Post()
   async create(@Body() createUserDto: CreateUserDTO) {
     return this.usersService.create(createUserDto)

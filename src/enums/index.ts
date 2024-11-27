@@ -1,3 +1,4 @@
+export * from './vendor.enum'
 export * from './region.enum'
 export * from './partner.enum'
 export * from './structure.enum'
