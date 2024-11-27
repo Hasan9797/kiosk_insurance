@@ -18,7 +18,7 @@ export { PartnerStatus, PartnerStatusOutPut } from '@enums'
 
 @Injectable()
 export class PartnerService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: any): Promise<FindAllPartnerResponse> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -218,20 +218,18 @@ export class PartnerService {
   async update(id: number, data: UpdatePartnerRequest, file: Express.Multer.File): Promise<void> {
     const existingPartner = await this.prisma.partner.findUnique({
       where: {
-        id: id
+        id: id,
       },
     })
 
-    await this.prisma.partner.update(
-      {
-        where: {
-          id: id
-        },
-        data: {
-          partnerId: data.partnerId
-        }
-      }
-    )
+    await this.prisma.partner.update({
+      where: {
+        id: id,
+      },
+      data: {
+        partnerId: data.partnerId,
+      },
+    })
 
     // if (!existingPartner) {
     //   throw new NotFoundException('Partner not found')
@@ -256,7 +254,6 @@ export class PartnerService {
     //   ...(file && { image: file.filename }),
     // }
     // console.log(updateData);
-
 
     // const updatedPartner = await this.prisma.partner.update({
     //   where: { id },
