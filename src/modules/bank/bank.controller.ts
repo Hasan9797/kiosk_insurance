@@ -16,35 +16,35 @@ export class BankController {
   constructor(private readonly bankService: BankService) {}
 
   @UseGuards(CheckTokenGuard)
-  // @Roles({ role: [UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.SUPER_ADMIN, UserRoles.INCASATOR] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.INCASATOR] })
   @Get()
   findAll(@Query() query: any) {
     return this.bankService.findAll(query)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.INCASATOR] })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bankService.findOne(+id)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.INCASATOR] })
   @Post()
   create(@Body() createBankDto: CreateBankDTO) {
     return this.bankService.create(createBankDto)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.INCASATOR] })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBankDto: UpdateBankDTO) {
     return this.bankService.update(+id, updateBankDto)
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.ADMIN] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.INCASATOR] })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.bankService.remove(+id)
