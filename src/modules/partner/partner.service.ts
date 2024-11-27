@@ -215,59 +215,74 @@ export class PartnerService {
     return formatResponse(HttpStatus.OK, result)
   }
 
-  async update(id: number, data: UpdatePartnerRequest, file: Express.Multer.File): Promise<UpdatePartnerResponse> {
+  async update(id: number, data: UpdatePartnerRequest, file: Express.Multer.File): Promise<void> {
     const existingPartner = await this.prisma.partner.findUnique({
-      where: { id },
+      where: {
+        id: id
+      },
     })
 
-    if (!existingPartner) {
-      throw new NotFoundException('Partner not found')
-    }
-
-    if (data.name && data.name !== existingPartner.name) {
-      const partnerNameExists = await this.prisma.partner.findFirst({
+    await this.prisma.partner.update(
+      {
         where: {
-          name: data.name,
-          deletedAt: { equals: null },
-          id: { not: id },
+          id: id
         },
-      })
-
-      if (partnerNameExists) {
-        throw new ConflictException('Another Partner with this name already exists!')
+        data: {
+          partnerId: data.partnerId
+        }
       }
-    }
+    )
 
-    const updateData = {
-      ...data,
-      ...(file && { image: file.filename }),
-    }
+    // if (!existingPartner) {
+    //   throw new NotFoundException('Partner not found')
+    // }
 
-    const updatedPartner = await this.prisma.partner.update({
-      where: { id },
-      data: {
-        ...updateData,
-        partnerId: data.partnerId
-      },
-    })
+    // if (data.name && data.name !== existingPartner.name) {
+    //   const partnerNameExists = await this.prisma.partner.findFirst({
+    //     where: {
+    //       name: data.name,
+    //       deletedAt: { equals: null },
+    //       id: { not: id },
+    //     },
+    //   })
 
-    const result: PartnerModel = {
-      id: updatedPartner.id,
-      name: updatedPartner.name,
-      partnerId: updatedPartner.partnerId,
-      image: updatedPartner?.image,
-      status: {
-        int: updatedPartner.status,
-        string: PartnerStatusOutPut[PartnerStatus[updatedPartner.status] as keyof typeof PartnerStatusOutPut],
-      },
-      unLimitedAmountTashkent: updatedPartner.unLimitedAmountTashkent,
-      limitedAmountTashkent: updatedPartner.limitedAmountTashkent,
-      unLimitedAmountInRegion: updatedPartner.unLimitedAmountInRegion,
-      limitedAmountInRegion: updatedPartner.limitedAmountInRegion,
-      createdAt: updatedPartner.createdAt,
-    }
+    //   if (partnerNameExists) {
+    //     throw new ConflictException('Another Partner with this name already exists!')
+    //   }
+    // }
 
-    return formatResponse(HttpStatus.OK, result)
+    // const updateData = {
+    //   ...data,
+    //   ...(file && { image: file.filename }),
+    // }
+    // console.log(updateData);
+
+
+    // const updatedPartner = await this.prisma.partner.update({
+    //   where: { id },
+    //   data: {
+    //     ...updateData,
+    //     partnerId: data.partnerId
+    //   },
+    // })
+
+    // const result: PartnerModel = {
+    //   id: updatedPartner.id,
+    //   name: updatedPartner.name,
+    //   partnerId: updatedPartner.partnerId,
+    //   image: updatedPartner?.image,
+    //   status: {
+    //     int: updatedPartner.status,
+    //     string: PartnerStatusOutPut[PartnerStatus[updatedPartner.status] as keyof typeof PartnerStatusOutPut],
+    //   },
+    //   unLimitedAmountTashkent: updatedPartner.unLimitedAmountTashkent,
+    //   limitedAmountTashkent: updatedPartner.limitedAmountTashkent,
+    //   unLimitedAmountInRegion: updatedPartner.unLimitedAmountInRegion,
+    //   limitedAmountInRegion: updatedPartner.limitedAmountInRegion,
+    //   createdAt: updatedPartner.createdAt,
+    // }
+
+    // return formatResponse(HttpStatus.OK, result)
   }
 
   async remove(id: number): Promise<any> {
