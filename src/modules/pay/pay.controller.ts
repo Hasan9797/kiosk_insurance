@@ -3,6 +3,9 @@ import { PayService } from './pay.service'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from 'guards'
+import { ConfirmPayDTO, PreparePayCardDTO, PrepareToPayDTO, RefundCashDTO } from './dto'
+import { Roles } from '@decorators'
+import { UserRoles } from '@enums'
 
 @ApiTags('Pay Service')
 @Controller({
@@ -12,38 +15,65 @@ export class PayController {
   constructor(private readonly payService: PayService) {}
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('check-pay-card')
-  payByCard(@Body() createPayDto: any, @Req() request: CustomRequest) {
-    return this.payService.preparePay(createPayDto, request?.user?.id)
+  payByCard(@Body() prepareToPayDto: PrepareToPayDTO, @Req() request: CustomRequest) {
+    return this.payService.preparePay(prepareToPayDto, request?.user?.id)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('prepare-pay-card')
-  preparePay(@Body() preparePayDto: any) {
-    return this.payService.payByCard(preparePayDto)
+  preparePay(@Body() preparePayCard: PreparePayCardDTO, @Req() request: CustomRequest) {
+    return this.payService.payByCard(preparePayCard, request?.user?.id)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('confirm-pay-card')
-  confirmPayment(@Body() dto: any) {
-    return this.payService.confirmPayment(dto)
+  confirmPayment(@Body() confirmPayDto: ConfirmPayDTO, @Req() request: CustomRequest) {
+    return this.payService.confirmPayment(confirmPayDto, request?.user?.id)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('resend-sms')
-  resendSms(@Body() dto: any) {
-    return this.payService.resendSms(dto)
+  resendSms(@Req() request: CustomRequest) {
+    return this.payService.resendSms(request?.user?.id)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('check-status-transaction')
-  checkTransactionStatus(@Body() dto: any) {
-    return this.payService.checkTransactionStatus(dto)
+  checkTransactionStatus(@Req() request: CustomRequest) {
+    return this.payService.checkTransactionStatus(request?.user?.id)
   }
 
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('pay-by-cash')
+  payByCash(@Req() request: CustomRequest) {
+    return this.payService.payByCash(request?.user?.id)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-receipt')
   checkReceipt(@Body() dto: any) {
     return this.payService.checkTransactionStatus(dto)
   }
 
-  // @Post('save-every-cash')
-  // saveEveryCash(@Body() dto: any) {
-  //   return this.payService.confirmPayment(dto)
-  // }
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('get-fiscal-details')
+  getFiscalDetails(@Body() dto: any) {
+    return this.payService.getFiscalData(dto)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('refund-cash')
+  refundCash(@Body() refundCashDto: RefundCashDTO, @Req() request: CustomRequest) {
+    return this.payService.refundCash(refundCashDto, request?.user?.id)
+  }
 }

@@ -14,7 +14,7 @@ export class InsuranceGateService extends InfinityRequestService {
       .send()
   }
 
-  async findService(data: GetServiceRequest, serviceId: string, serviceKey: string) {
+  async findService(serviceId: string, serviceKey: string, data: GetServiceRequest) {
     return this.setServiceId(serviceId)
       .setServiceKey(serviceKey)
       .setMethod(MethodList.GET_SERVICES)
@@ -23,7 +23,7 @@ export class InsuranceGateService extends InfinityRequestService {
       .send()
   }
 
-  async getStep(data: any, serviceId: string, serviceKey: string) {
+  async getStep(serviceId: string, serviceKey: string, data: any) {
     return this.setServiceId(serviceId)
       .setServiceKey(serviceKey)
       .setMethod(MethodList.GET_STEP)
@@ -32,10 +32,19 @@ export class InsuranceGateService extends InfinityRequestService {
       .send()
   }
 
-  async createInsurance(data: any, serviceId: string, serviceKey: string) {
+  async createInsurance(serviceId: string, serviceKey: string, data: any) {
     return this.setServiceId(serviceId)
       .setServiceKey(serviceKey)
       .setMethod(MethodList.CREATE_INSURANCE)
+      .setUrl(process.env.INSURANCE_URL)
+      .setParams(data)
+      .send()
+  }
+
+  async getPolisUrl(serviceId: string, serviceKey: string, data: any) {
+    return this.setServiceId(serviceId)
+      .setServiceKey(serviceKey)
+      .setMethod(MethodList.GET_POLIS_URL)
       .setUrl(process.env.INSURANCE_URL)
       .setParams(data)
       .send()

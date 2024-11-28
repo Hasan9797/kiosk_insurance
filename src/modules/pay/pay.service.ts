@@ -1,8 +1,17 @@
-import { TransactionStatus } from '@enums'
+import {
+  InsuranceStatus,
+  NotificationType,
+  PaymentStatus,
+  TransactionStatus,
+  TransactionType,
+  notificationTextAfter1900,
+} from '@enums'
 import { FirebaseService } from '@helpers'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConfirmPaymentRequest, PrepareToPayRequest, RefundCashRequest } from '@interfaces'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PayGate } from 'gateRequest'
 import { PrismaService } from 'prisma/prisma.service'
+import { PreparePayCardDTO } from './dto'
 
 @Injectable()
 export class PayService {
@@ -12,16 +21,8 @@ export class PayService {
     private readonly firabase: FirebaseService,
   ) {}
 
-  async preparePay(data: any, userId: number): Promise<void> {
-    console.log(data)
-
-    const result = await this.payGateService.payByCard(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      data,
-    )
-
-    const user = await this.prisma.user.findUnique({
+  async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
+    await this.prisma.user.findUnique({
       where: {
         id: userId,
         deletedAt: {
@@ -30,76 +31,227 @@ export class PayService {
       },
     })
 
-    const { transaction_id, bank_transaction_id, reference_number, amount, merchantId, terminalId } =
-      result.getResult().details
-
-    const newTransaction = await this.prisma.transaction.create({
-      data: {
-        amount: amount,
+    const lastInsurance = await this.prisma.insurance.findFirst({
+      where: {
         userId: userId,
-        bankTransactionId: bank_transaction_id,
-        merchantId: merchantId,
-        structureId: user.structureId,
-        anketaId: data?.anketa_id,
-        vendorId: data?.vendor_id,
-        payerPhone: data?.phone_number,
-        terminalId: terminalId,
-        request: data,
-        status: TransactionStatus.NEW,
-        response: result?.getResponse(),
+        status: InsuranceStatus.NEW,
       },
     })
-  }
 
-  async payByCard(data: any) {
-    const result = await this.payGateService.payByCard(
+    const vendor_form = {
+      phone_number: data?.phone_number,
+      summa: '1000',
+      vendor_id: lastInsurance.vendorId,
+    }
+
+    const result = await this.payGateService.prepareToPay(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
-      { vendor_form: data, pay_form: { card_number: '8600492948515503', card_expire: '1128' } },
+      { vendor_form },
+    )
+
+    await this.prisma.transaction.create({
+      data: {
+        userId: userId,
+        payerPhone: data?.phone_number,
+        request: JSON.stringify(data),
+        response: result?.getResponse(),
+        status: TransactionStatus.NEW,
+      },
+    })
+
+    return result.getResponse()
+  }
+
+  async payByCard(data: PreparePayCardDTO, userId: number) {
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+        status: TransactionStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    const vendor_form = {
+      phone_number: existTransaction?.payerPhone,
+      amount: '1000',
+      vendor_id: existTransaction?.vendorId,
+    }
+
+    const pay_form = {
+      card_number: data?.card_number,
+      card_expire: data?.card_expire,
+    }
+
+    const result = await this.payGateService.preparePayByCard(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form, pay_form },
     )
     return result.getResponse()
   }
 
-  async resendSms(data: any) {
-    const result = await this.payGateService.payByCard(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      data,
-    )
-    return result.getResponse()
-  }
+  async confirmPayment(data: ConfirmPaymentRequest, userId: number) {
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+        status: TransactionStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
 
-  async checkTransactionStatus(data: any) {
-    const result = await this.payGateService.payByCard(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      data,
-    )
-    return result.getResponse()
-  }
+    const confirm_form = {
+      confirmation_code: data?.confirmation_code,
+      bank_transaction_id: existTransaction?.bankTransactionId,
+    }
 
-  async checkReceipt(data: any) {
-    const result = await this.payGateService.payByCard(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      data,
-    )
-    return result.getResponse()
-  }
-
-  async confirmPayment(data: any) {
     const result = await this.payGateService.confirmPayment(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      { confirm_form },
+    )
+
+    const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
+
+    await this.prisma.transaction.update({
+      where: {
+        id: existTransaction.id,
+      },
+      data: {
+        terminalId: terminalId,
+        bankTransactionId: bank_transaction_id,
+        amount: amount,
+        merchantId: merchantId,
+        partnerTransactionId: transaction_id,
+        request: JSON.stringify(data),
+        response: result.getResponse(),
+        updatedAt: new Date(),
+      },
+    })
+    return result.getResponse()
+  }
+
+  async resendSms(userId: number) {
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+        status: TransactionStatus.NEW,
+      },
+    })
+
+    const data = existTransaction.bankTransactionId
+
+    const result = await this.payGateService.resendSms(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
       data,
     )
 
+    const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
+
+    await this.prisma.transaction.update({
+      where: {
+        id: existTransaction.id,
+      },
+      data: {
+        terminalId: terminalId,
+        bankTransactionId: bank_transaction_id,
+        amount: amount,
+        merchantId: merchantId,
+        partnerTransactionId: transaction_id,
+        request: data,
+        response: result.getResponse(),
+        updatedAt: new Date(),
+      },
+    })
+
+    return result.getResponse()
+  }
+
+  async checkTransactionStatus(userId: number) {
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+        status: TransactionStatus.NEW,
+      },
+    })
+
+    const data = existTransaction.bankTransactionId
+
+    const result = await this.payGateService.checkTransactionStatus(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      data,
+    )
+
+    return result.getResponse()
+  }
+
+  async getFiscalData(data: any) {
+    const result = await this.payGateService.getFiscalDetails(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      data,
+    )
+    return result.getResponse()
+  }
+
+  async payByCash(userId: number) {
+    const existInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        userId: userId,
+        status: InsuranceStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: {
+          include: {
+            structure: true,
+          },
+        },
+      },
+    })
+
+    console.log(existInsurance, 'existInsurance')
+
+    const vendor_form = {
+      anketa_id: existInsurance.anketaId,
+      amount: 40000,
+      vendor_id: existInsurance.vendorId,
+    }
+
+    const result = await this.payGateService.payByCash(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form },
+    )
+
+    const { amount, transaction_id } = result.getResponse()
+
+    await this.prisma.transaction.create({
+      data: {
+        amount: amount,
+        partnerTransactionId: transaction_id,
+        insuranceId: existInsurance.id,
+        structureId: existInsurance?.user?.structure?.id,
+        request: JSON.stringify(vendor_form),
+        response: JSON.stringify(result?.getResponse()),
+        paymentType: TransactionType.BY_CASH,
+      },
+    })
     return result.getResponse()
   }
 
   async saveEveryCash(data: any, userId: number) {
-    console.log(userId, 'salam')
-
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -107,24 +259,79 @@ export class PayService {
           equals: null,
         },
       },
+      include: {
+        insurances: {
+          where: {
+            userId: userId,
+            status: InsuranceStatus.NEW,
+          },
+        },
+      },
     })
-
-    const cashCountRightNow = user.cashCount
-
-    console.log(cashCountRightNow)
 
     if (!user) {
       throw new NotFoundException('User not found with given ID!')
     }
 
-    if (cashCountRightNow === 1900 && cashCountRightNow < 1900) {
-      const firebaseToken =
-        'dMYhX-6vRF2jppve7RJ-c-:APA91bEJsUGVU9zNxgf1JN-RJC1ZBSsI_5A3P2OUTs1h-T82ES5CfXUi7eUga_Ko-PpumQwWMQNM0nwkHC7RbYAGnqT7fDJ4VL74gaDKB7_vYuABTkS7MF1kqi3xkfE-x7AFqq8QytjG'
-      if (firebaseToken) {
-        await this.firabase.sendPushNotification(firebaseToken, 'Ketdi', 'Naqd pul 1900 dan oshdi')
-      }
-    }
+    const incasator = await this.prisma.user.findUnique({
+      where: {
+        id: user.incasatorId,
+      },
+    })
 
+    const existingInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        userId: userId,
+        status: InsuranceStatus.NEW,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    await this.prisma.insurance.update({
+      where: {
+        id: existingInsurance.id,
+      },
+      data: {
+        amount: Number(existingInsurance.amount) + Number(data.amount),
+      },
+    })
+
+    const cashCountRightNow = user.cashCount
+
+    if (cashCountRightNow >= 1900) {
+      const firebaseToken = incasator.fcmToken
+      if (firebaseToken) {
+        await this.firabase.sendPushNotification(
+          firebaseToken,
+          NotificationType.WARNING.toString(),
+          `Sizga tegishli ${user.code} raqamli KIOSKda kupyuralar soni 1900 dan oshdi`,
+        )
+
+        await this.prisma.notify.create({
+          data: {
+            title: NotificationType.WARNING.toString(),
+            type: NotificationType.WARNING,
+            content: notificationTextAfter1900.CONTENT.toString(),
+            userId: userId,
+          },
+        })
+      }
+
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          cashCount: cashCountRightNow + 1,
+        },
+      })
+      return
+    }
     await this.prisma.user.update({
       where: {
         id: userId,
@@ -133,17 +340,76 @@ export class PayService {
         cashCount: cashCountRightNow + 1,
       },
     })
+  }
 
-    const insurance = await this.prisma.insurance.update({
+  async refundCash(data: RefundCashRequest, userId: number) {
+    const existingInsurance = await this.prisma.insurance.findFirst({
       where: {
-        id: userId,
+        status: InsuranceStatus.NEW,
+        userId: userId,
         deletedAt: {
           equals: null,
         },
-        status: 'created',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    console.log(Number(existingInsurance?.amount) - Number(existTransaction.amount))
+
+    const refundAmount = Number(existingInsurance?.amount) - Number(existTransaction.amount)
+
+    if (refundAmount < 0 && refundAmount < 500) {
+      throw new BadRequestException('Refund Amount Must be more than 500 sum')
+    }
+
+    const vendor_form = {
+      phone_number: data?.phoneNumber,
+      summa: refundAmount.toString(),
+      vendor_id: existingInsurance?.vendorId,
+    }
+
+    const newTransaction = await this.prisma.transaction.create({
+      data: {
+        amount: refundAmount,
+        status: TransactionType.REFUND,
+        payerPhone: data?.phoneNumber,
+        request: JSON.stringify(vendor_form),
+        insuranceId: existingInsurance.id,
+        userId: userId,
+      },
+    })
+
+    const transaction_form = {
+      partner_transaction_id: newTransaction.id,
+    }
+
+    const result = await this.payGateService.payByCash(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form, transaction_form },
+    )
+
+    const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
+
+    await this.prisma.transaction.update({
+      where: {
+        id: newTransaction.id,
       },
       data: {
-        amount: data?.amount,
+        response: JSON.stringify(result?.getResponse()),
+        partnerTransactionId: transaction_id,
+        merchantId: merchantId,
+        terminalId: terminalId,
       },
     })
   }

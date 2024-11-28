@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsString, IsOptional, Length, Matches } from 'class-validator'
 import { StepThreeData, StepThreeRequest } from '@interfaces'
 
 class DataDto implements StepThreeData {
   @IsString()
   @IsNotEmpty()
+  @Matches(/^\d{2}\.\d{2}\.\d{4}$/, { message: 'texpdate must be in the format dd.MM.yyyy' })
   texpdate: string
 
   @IsString()
@@ -19,8 +20,8 @@ class DataDto implements StepThreeData {
   vehicle: string
 
   @IsString()
-  @IsNotEmpty()
-  model: string
+  @IsOptional()
+  model: string | null
 
   @IsString()
   @IsNotEmpty()
@@ -55,10 +56,13 @@ class DataDto implements StepThreeData {
   appl_name: string | null
 
   @IsNumber()
+  @IsNotEmpty()
   owner_fy: number
 
   @IsString()
   @IsNotEmpty()
+  @Length(14, 14, { message: 'owner_pinfl must be exactly 14 digits' })
+  @Matches(/^[0-9]{14}$/, { message: 'owner_pinfl must contain only numbers' })
   owner_pinfl: string
 
   @IsString()
@@ -97,25 +101,34 @@ class DataDto implements StepThreeData {
   @IsNotEmpty()
   owner_inn: string
 
+  @IsOptional()
   @IsString()
-  owner_orgname: string
+  owner_orgname: string | null
 
   @IsString()
   @IsNotEmpty()
+  @Length(2, 2, { message: 'owner_pasp_sery must be exactly 2 uppercase letters' })
+  @Matches(/^[A-Z]{2}$/, { message: 'owner_pasp_sery must contain only uppercase letters' })
   owner_pasp_sery: string
 
   @IsString()
   @IsNotEmpty()
+  @Length(7, 7, { message: 'owner_pasp_num must be exactly 7 digits' })
+  @Matches(/^[0-9]{7}$/, { message: 'owner_pasp_num must contain only numbers' })
   owner_pasp_num: string
 
   @IsNumber()
+  @IsNotEmpty()
   applicant_isowner: number
 
   @IsString()
   @IsNotEmpty()
+  @Length(12, 12, { message: 'owner_phone must be exactly 12 digits starting with 998' })
+  @Matches(/^998[0-9]{9}$/, { message: 'owner_phone must start with 998 followed by 9 digits' })
   owner_phone: string
 
   @IsNumber()
+  @IsNotEmpty()
   owner_isdriver: number
 
   @IsOptional()
@@ -139,6 +152,7 @@ class DataDto implements StepThreeData {
   address: string
 
   @IsNumber()
+  @IsNotEmpty()
   prem: number
 
   @IsOptional()
@@ -146,15 +160,19 @@ class DataDto implements StepThreeData {
   appl_inn: string | null
 
   @IsNumber()
+  @IsNotEmpty()
   driver_limit: number
 
   @IsNumber()
+  @IsNotEmpty()
   period: number
 
   @IsNumber()
+  @IsNotEmpty()
   discount: number
 
   @IsString()
+  @IsNotEmpty()
   owner_birthdate: string
 
   @IsOptional()
@@ -162,6 +180,7 @@ class DataDto implements StepThreeData {
   appl_rayon: string | null
 
   @IsNumber()
+  @IsNotEmpty()
   use_territory: number
 
   @IsOptional()
@@ -170,6 +189,8 @@ class DataDto implements StepThreeData {
 
   @IsOptional()
   @IsString()
+  @Length(14, 14, { message: 'appl_pinfl must be exactly 14 digits' })
+  @Matches(/^[0-9]{14}$/, { message: 'appl_pinfl must contain only numbers' })
   appl_pinfl: string | null
 
   @IsOptional()
@@ -179,9 +200,11 @@ class DataDto implements StepThreeData {
 
 export class StepThreeRequestDto implements StepThreeRequest {
   @IsNumber()
+  @IsNotEmpty()
   company_id: number
 
   @IsNumber()
+  @IsNotEmpty()
   service_id: number
 
   @IsOptional()
@@ -189,15 +212,20 @@ export class StepThreeRequestDto implements StepThreeRequest {
   old_polis: string | null
 
   @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d{2}\.\d{2}\.\d{4}$/, { message: 'contract_begin must be in the format dd.MM.yyyy' })
   contract_begin: string
 
   @IsNumber()
+  @IsNotEmpty()
   step: number
 
   @IsNumber()
+  @IsNotEmpty()
   is_renewal: number
 
   @IsNumber()
+  @IsNotEmpty()
   opl_type: number
 
   @IsOptional()

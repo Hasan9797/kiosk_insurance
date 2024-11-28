@@ -1,5 +1,5 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { isJWT } from 'class-validator'
 import { ErrorCodes } from '@enums'
@@ -7,6 +7,8 @@ import { verifyJwt } from '@helpers'
 import { jwtConstants } from '@constants'
 import { CustomRequest } from 'custom/request.custom'
 import { PrismaService } from 'prisma/prisma.service'
+import { Role } from '@decorators'
+import { ROLES_KEY } from '@constants'
 
 @Injectable()
 export class CheckTokenGuard implements CanActivate {
@@ -15,26 +17,30 @@ export class CheckTokenGuard implements CanActivate {
     private readonly prisma: PrismaService,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<CustomRequest>()
-
+  private getAccessToken(context: ExecutionContext): string | undefined {
     const type = context.getType()
-
-    let accessToken: string | undefined
 
     if (type === 'http') {
       const request = context.switchToHttp().getRequest<CustomRequest>()
-      accessToken = request.headers.authorization?.replace(/^(bearer)\s/i, '')
+      return request.headers.authorization?.replace(/^(bearer)\s/i, '')
     } else if (type === 'ws') {
       const client = context.switchToWs().getClient()
-      console.log(client.handshake.headers.authorization)
-
-      accessToken = client.handshake.headers.authorization
+      return client.handshake.headers.authorization
     }
 
-    // const accessToken = request.headers.authorization?.replace(/^(bearer)\s/i, '')
+    return undefined
+  }
 
-    console.log(accessToken)
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const requiredRoles = this.reflector.getAllAndOverride<Role>(ROLES_KEY, [context.getHandler(), context.getClass()])
+
+    // if (!requiredRoles) {
+    //   return true
+    // }
+
+    const request = context.switchToHttp().getRequest<CustomRequest>()
+
+    const accessToken: string | undefined = this.getAccessToken(context)
 
     if (!accessToken || !isJWT(accessToken)) {
       throw new UnauthorizedException(ErrorCodes.ACCESS_TOKEN_NOT_VALID)
@@ -42,14 +48,12 @@ export class CheckTokenGuard implements CanActivate {
 
     const verified = verifyJwt(accessToken, jwtConstants.secret)
 
-    // const user = await this.usersRepository.findOne({
-    //   where: { login: verified.login },
-    //   relations: { permissions: true },
-    // })
-
     const user = await this.prisma.user.findUnique({
       where: {
         id: verified.id,
+        deletedAt: {
+          equals: null,
+        },
       },
     })
 
@@ -57,8 +61,11 @@ export class CheckTokenGuard implements CanActivate {
       throw new UnauthorizedException(ErrorCodes.UNAUTHORIZED)
     }
 
-    request.user = verified
+    if (!requiredRoles?.role?.some((role) => user?.role === role)) {
+      throw new ForbiddenException(ErrorCodes.PERMISSION_DENIED)
+    }
 
+    request.user = verified
     return true
   }
 }

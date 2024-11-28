@@ -1,27 +1,40 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateDepositRequest, FindAllDepositResponse, FindOneDepositResponse } from '@interfaces'
+import {
+  CreateDepositRequest,
+  FindAllDepositResponse,
+  FindOneDepositResponse,
+  UpdateFcmTokenRequest,
+  DepositResponse,
+} from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { DepositStatus, DepositStatusOutPut } from 'enums/deposit.enum'
-import { FilterService } from '@helpers'
+import { FilterService, paginationResponse, formatResponse } from '@helpers'
 import * as admin from 'firebase-admin'
-import { UserBalanceHistoryStatus } from '@enums'
+import { HttpStatus, UserBalanceHistoryStatus } from '@enums'
 import { Pagination } from 'enums/pagination.enum'
+import { Deposit } from '@prisma/client'
 @Injectable()
 export class DepositService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any): Promise<FindAllDepositResponse> {
+  async findAll(query: any): Promise<Omit<FindAllDepositResponse, 'pagination'>> {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
+
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const deposits = await FilterService?.applyFilters('deposit', parsedFilters, parsedSort)
+    const deposits: Deposit[] = await FilterService?.applyFilters(
+      'deposit',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+    )
 
     const result = []
 
     for (const deposit of deposits) {
-      // DepositStatus ga qarab DepositStatusOutPut qiymatini aniqlash
       let statusOutPut = ''
 
       switch (deposit.status) {
@@ -61,9 +74,9 @@ export class DepositService {
       })
     }
 
-    return {
-      data: result,
-    }
+    const pagination = paginationResponse(deposits.length, limit, page)
+
+    return formatResponse(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number): Promise<FindOneDepositResponse> {
@@ -99,9 +112,9 @@ export class DepositService {
         statusOutPut = 'UNKNOWN'
     }
 
-    const result = {
+    const result: DepositResponse = {
       id: deposit.id,
-      amount: Number(deposit.amount),
+      amount: Number(deposit?.amount),
       status: {
         int: deposit?.status,
         string: statusOutPut,
@@ -118,23 +131,32 @@ export class DepositService {
       createdAt: deposit.createdAt,
     }
 
-    return {
-      data: result,
-    }
+    return formatResponse<DepositResponse>(HttpStatus.OK, result)
   }
 
-  async findIncasatorStatic(userId: number): Promise<FindAllDepositResponse> {
-    const depositStatic = await this.prisma.deposit.findMany({
-      where: {
-        incasatorId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
+  async findDepositStatic(userId: number, query: any) {
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
-    const result = depositStatic.map((deposit) => {
-      // DepositStatus ga qarab DepositStatusOutPut qiymatini aniqlash
+    const parsedSort = sort ? JSON?.parse(sort) : {}
+
+    const parsedFilters = filters ? JSON?.parse(filters) : []
+
+    const depositStatic: Deposit[] = await FilterService?.applyFilters(
+      'deposit',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+    )
+
+    const deposits = depositStatic.reduce((acc, deposit) => {
+      if (deposit?.incasatorId === userId) {
+        acc.push(deposit)
+      }
+      return acc
+    }, [])
+
+    const result: DepositResponse[] = deposits.map((deposit) => {
       let statusOutPut = ''
 
       switch (deposit.status) {
@@ -174,9 +196,9 @@ export class DepositService {
       }
     })
 
-    return {
-      data: result,
-    }
+    const pagination = paginationResponse(deposits.length, limit, page)
+
+    return formatResponse<DepositResponse[]>(HttpStatus.OK, result, pagination)
   }
 
   async create(data: CreateDepositRequest, incasatorId: number) {
@@ -269,7 +291,7 @@ export class DepositService {
           },
         },
         data: {
-          balance: totalAmountInOperator?.balance + incasatorBalance?.balance,
+          balance: Number(totalAmountInOperator?.balance) + Number(incasatorBalance?.balance),
           updatedAt: new Date(),
         },
       })
@@ -350,7 +372,7 @@ export class DepositService {
       },
     })
 
-    const user = await this.prisma.userBalance.findFirst({
+    await this.prisma.userBalance.findFirst({
       where: {
         userId: userId,
         deletedAt: {
@@ -450,6 +472,33 @@ export class DepositService {
       })
 
     return response
+  }
+
+  async updateFcmToken(data: UpdateFcmTokenRequest, userId: number): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    if (!user) {
+      throw new NotFoundException('User not found with given ID!')
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      data: {
+        fcmToken: data?.fcmToken,
+      },
+    })
   }
 
   async remove(id: number) {

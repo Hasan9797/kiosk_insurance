@@ -1,10 +1,10 @@
-import { Injectable, HttpException, InternalServerErrorException, BadRequestException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ConfigService } from '@nestjs/config'
 import { firstValueFrom } from 'rxjs'
 import * as crypto from 'crypto'
 import { REQUEST_ERRORS } from '@enums'
-import { GetInsuranceIds } from '@interfaces'
+import { GetInsuranceIds, TransactionPreparePayCardResponse } from '@interfaces'
 
 @Injectable()
 export class InfinityRequestService {
@@ -27,6 +27,7 @@ export class InfinityRequestService {
 
     const url = this.getUrl()
     const authHeader = this.generateForAuth()
+    console.log(authHeader, jsonPayload)
 
     try {
       const response = await firstValueFrom(
@@ -40,65 +41,11 @@ export class InfinityRequestService {
       )
       this.response = response.data
 
-      // this.response = {
-      //   "id": 207,
-      //   "error": null,
-      //   "result": {
-      //     "masked_phone_number": "+99890*****50",
-      //     "time_out": 120,
-      //     "confirm_form": [
-      //       {
-      //         "label": "Код подтверждения",
-      //         "key": "confirmation_code",
-      //         "element": "input",
-      //         "type": "int",
-      //         "value": "",
-      //         "mask": "######",
-      //         "regex": "^[0-9]{6}$",
-      //         "placeholder": "",
-      //         "size": 6,
-      //         "order": 10,
-      //         "is_required": 1
-      //       },
-      //       {
-      //         "key": "bank_transaction_id",
-      //         "value": 6236,
-      //         "show": 0,
-      //         "is_required": 1
-      //       }
-      //     ],
-      //     "request_method": "pam.confirm_pay"
-      //   }
-      // }
+      console.log(response)
 
-      // this.response = {
-      //   "method": "pam.confirm_pay",
-      //   "params": {
-      //     "confirm_form": {
-      //       "confirmation_code": "000000",
-      //       "bank_transaction_id": 127
-      //     }
-      //   },
-      //   "id": 207
-      // }
-
-      // this.response = {
-      //   "id": 207,
-      //   "error": null,
-      //   "result": {
-      //     "details": {
-      //       "id": "8g78g88d7gdq5ytq89utyq45",
-      //       "masked_card_number": "860053******9500",
-      //       "transaction_id": 4534534,
-      //       "bank_transaction_id": 6845346,
-      //       "reference_number": 5464563454,
-      //       "amount": 1000,
-      //       "merchantId": 33005329,
-      //       "terminalId": 33004331,
-      //       "date": 12425135346
-      //     }
-      //   }
-      // }
+      if (this.isOk() === false) {
+        throw new InternalServerErrorException(this.getError())
+      }
 
       if (!this.response) {
         this.setErrorUnknown({
@@ -109,11 +56,9 @@ export class InfinityRequestService {
 
       return this
     } catch (error: any) {
-      if (error.response) {
-        throw new HttpException(`AXIOS request failed: ${error.message}`, error.response.status)
-      } else {
-        throw new InternalServerErrorException('AXIOS request failed: ' + error.message)
-      }
+      console.log(error.response.data)
+
+      throw new InternalServerErrorException(this.getError())
     }
   }
 
@@ -192,6 +137,19 @@ export class InfinityRequestService {
     return this.response?.result || []
   }
 
+  getIdsPreparePayCard(): TransactionPreparePayCardResponse {
+    const result = {
+      id: this.response.result.details.id,
+      transaction_id: this.response.result.details.transaction_id,
+      bank_transaction_id: this.response.result.details.bank_transaction_id,
+      reference_number: this.response.result.details.reference_number,
+      amount: this.response.result.details.amount,
+      merchantId: this.response.result.details.merchantId,
+      terminalId: this.response.result.details.terurlminalId,
+    }
+    return result
+  }
+
   getInsuranceIds(): GetInsuranceIds {
     const result = {
       order_id: this?.response?.result?.order_id,
@@ -203,7 +161,7 @@ export class InfinityRequestService {
   }
 
   getError(): any {
-    return this.response?.error.message || this.errorUnknown
+    return this.response?.error?.message || this?.errorUnknown
   }
 
   getErrorUnknown(): any {

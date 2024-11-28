@@ -1,45 +1,38 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import {
-  CreateRegionRequest,
-  FindAllRegionResponse,
-  FindOneRegionResponse,
-  QueryParams,
-  UpdateRegionRequest,
-} from '@interfaces'
+import { CreateRegionRequest, DeleteRequestResponse, Region, UpdateRegionRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
-import { FilterService } from '@helpers'
+import { FilterService, formatResponse, paginationResponse } from '@helpers'
+import { HttpStatus, Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
 @Injectable()
 export class RegionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: any): Promise<FindAllRegionResponse> {
-    const { limit, sort, filters } = query
-
-    const parsedLimit = parseInt(limit, 10)
+  async findAll(query: any) {
+    const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
 
     const parsedSort = sort ? JSON?.parse(sort) : {}
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const regions = await FilterService?.applyFilters('region', parsedFilters, parsedSort)
+    const regions = await FilterService?.applyFilters('region', parsedFilters, parsedSort, Number(limit), Number(page))
 
-    const result = []
+    const result: Region[] = []
 
     for (const region of regions) {
       result?.push({
         id: region?.id,
         name: region?.name,
-        status: region?.status,
+        status: region?.status || 1,
         createdAt: region?.createdAt,
       })
     }
 
-    return {
-      data: result,
-    }
+    const pagination = paginationResponse(regions.length, limit, page)
+
+    return formatResponse<Region[]>(HttpStatus.OK, result, pagination)
   }
 
-  async findOne(id: number): Promise<FindOneRegionResponse> {
+  async findOne(id: number) {
     const region = await this.prisma.region.findFirst({
       where: {
         id: id,
@@ -53,19 +46,20 @@ export class RegionService {
       throw new NotFoundException('Region not found with this ID!')
     }
 
-    const result = {
+    const result: Region = {
       id: region?.id,
       name: region?.name,
-      status: region?.status,
+      status: {
+        int: region?.status,
+        string: RegionStatusOutPut[RegionStatus[region?.status] as keyof typeof RegionStatusOutPut],
+      },
       createdAt: region?.createdAt,
     }
 
-    return {
-      data: result,
-    }
+    return formatResponse<Region>(HttpStatus.OK, result)
   }
 
-  async create(data: CreateRegionRequest): Promise<void> {
+  async create(data: CreateRegionRequest) {
     const regionExists = await this.prisma.region.findFirst({
       where: {
         name: data?.name,
@@ -79,12 +73,24 @@ export class RegionService {
       throw new ConflictException('Region exists with this name!')
     }
 
-    await this.prisma.region.create({
+    const newRegion = await this.prisma.region.create({
       data: data,
     })
+
+    const result: Region = {
+      id: newRegion?.id,
+      name: newRegion?.name,
+      status: {
+        int: newRegion?.status,
+        string: RegionStatusOutPut[RegionStatus[newRegion?.status] as keyof typeof RegionStatusOutPut],
+      },
+      createdAt: newRegion?.createdAt,
+    }
+
+    return formatResponse<Region>(HttpStatus.OK, result)
   }
 
-  async update(id: number, data: UpdateRegionRequest): Promise<void> {
+  async update(id: number, data: UpdateRegionRequest) {
     const regionExists = await this.prisma.region.findUnique({
       where: {
         id: id,
@@ -108,7 +114,7 @@ export class RegionService {
       throw new ConflictException('Region exists with this name!')
     }
 
-    await this.prisma.region.update({
+    const updatedRegion = await this.prisma.region.update({
       where: {
         id: id,
       },
@@ -117,9 +123,20 @@ export class RegionService {
         updatedAt: new Date(),
       },
     })
+
+    const result: Region = {
+      id: updatedRegion?.id,
+      name: updatedRegion?.name,
+      status: {
+        int: updatedRegion?.status,
+        string: RegionStatusOutPut[RegionStatus[updatedRegion?.status] as keyof typeof RegionStatusOutPut],
+      },
+      createdAt: updatedRegion?.createdAt,
+    }
+    return formatResponse<Region>(HttpStatus.OK, result)
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<DeleteRequestResponse> {
     const regionExists = await this.prisma.region.findUnique({
       where: {
         id: id,
@@ -141,5 +158,9 @@ export class RegionService {
         deletedAt: new Date(),
       },
     })
+
+    return {
+      status: HttpStatus.NO_CONTENT,
+    }
   }
 }

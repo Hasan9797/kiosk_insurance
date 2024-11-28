@@ -11,12 +11,17 @@ import {
   DepositModule,
   PartnerModule,
   StructureModule,
+  UserBalanceModule,
+  BalanceHistoryModule,
+  ReportModule,
+  NotificationModule,
+  TransactionModule,
+  VendorModule,
 } from '@modules'
 import { pspConfig } from '@config'
 import { AuthModule } from 'auth/auth.module'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
-import * as admin from 'firebase-admin'
 
 @Module({
   imports: [
@@ -39,18 +44,14 @@ import * as admin from 'firebase-admin'
     PartnerModule,
     StructureModule,
     DepositModule,
+    UserBalanceModule,
+    BalanceHistoryModule,
+    ReportModule,
+    NotificationModule,
+    TransactionModule,
+    VendorModule,
   ],
   controllers: [],
   providers: [],
 })
-export class App {
-  constructor() {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_SENDER_ID,
-        privateKey: process.env.FIREBASE_SENDER_TOKEN.replace(/\\n/g, '\n'),
-        clientEmail: process.env.FIREBASE_SENDER_EMAIL,
-      }),
-    })
-  }
-}
+export class App {}

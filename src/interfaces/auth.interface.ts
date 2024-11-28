@@ -5,4 +5,9 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   accessToken: string
+  refreshToken: string
+}
+
+export interface RefreshTokenRequest {
+  token: string
 }

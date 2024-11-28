@@ -9,10 +9,12 @@ export class FilterService {
     sort: { column: string; value: 'asc' | 'desc' },
     limit?: number,
     page?: number,
+    includeRelations: Array<string> = [],
   ): Promise<any> {
     const query: Prisma.UserFindManyArgs = {
       where: {},
       orderBy: {},
+      include: {},
     }
 
     filters.forEach((filter) => {
@@ -25,15 +27,15 @@ export class FilterService {
         query.where = {
           ...query.where,
           createdAt: {
-            gte: date[0],
-            lte: date[1],
+            gte: new Date(date[0]),
+            lte: new Date(date[1]),
           },
         }
       } else if (filter.operator === 'to' && filter.column === 'createdAt') {
         query.where = {
           ...query.where,
           createdAt: {
-            lte: filter.value,
+            lte: new Date(filter.value),
           },
         }
       } else {
@@ -71,10 +73,20 @@ export class FilterService {
     }
 
     query.where = {
+      ...query.where,
       deletedAt: {
         equals: null,
       },
     }
+
+    const skip = (page - 1) * limit
+
+    query.take = limit
+    query.skip = skip
+
+    includeRelations.forEach((relation) => {
+      ;(query.include as any)[relation] = true
+    })
 
     const model: any = prisma[modelName as keyof PrismaClient]
     return model['findMany'](query)

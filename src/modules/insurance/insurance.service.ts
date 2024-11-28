@@ -1,7 +1,8 @@
 import { InsuranceGateService } from 'gateRequest'
 import { Injectable } from '@nestjs/common'
-import { GetServiceRequest, GetStepRequest } from '@interfaces'
+import { CreateInsuranceRequest, GetServiceRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
+import { InsuranceStatus } from '@enums'
 
 @Injectable()
 export class InsuranceService {
@@ -20,42 +21,55 @@ export class InsuranceService {
 
   async findService(data: GetServiceRequest) {
     const result = await this.insuranceGateService.findService(
-      data,
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      data,
     )
     return result.getResponse()
   }
 
-  async getStep(data: GetStepRequest) {
+  async getStep(data: any) {
     const result = await this.insuranceGateService.getStep(
-      data,
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      data,
     )
     return result.getResponse()
   }
 
-  async createInsurance(data: any, userId: any) {
-    console.log(userId)
-
+  async createInsurance(data: CreateInsuranceRequest, userId: number) {
     const result = await this.insuranceGateService.createInsurance(
-      data,
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
+      data,
     )
-    return result.getResponse()
 
-    /*
-    id
-    anketaId
-    status
-    polisId
-    orderId
-    vendorId
-    userId
-    companyId
-    serviceId
-    */
+    const { anketa_id, order_id, polis_id, vendor_id } = result.getInsuranceIds()
+
+    await this.prisma.insurance.create({
+      data: {
+        anketaId: anketa_id,
+        orderId: order_id,
+        request: JSON.stringify(data) || {},
+        response: JSON.stringify(result?.getResponse()) || {},
+        userId: userId,
+        companyId: data.company_id,
+        serviceId: data.service_id,
+        polisId: polis_id,
+        vendorId: vendor_id,
+        status: InsuranceStatus.NEW,
+      },
+    })
+    return result.getResponse()
+  }
+
+  async getPolisUrl(data: any) {
+    const result = await this.insuranceGateService.getPolisUrl(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      data,
+    )
+
+    return result.getResponse()
   }
 }

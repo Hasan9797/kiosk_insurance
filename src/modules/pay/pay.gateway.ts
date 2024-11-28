@@ -12,19 +12,20 @@ import { PayService } from './pay.service'
 import { Req, UseGuards } from '@nestjs/common'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
+import { Roles } from '@decorators'
+import { UserRoles } from '@enums'
 
-@WebSocketGateway(3001, {
-  cors: {
-    origin: '*',
-  },
-})
+@WebSocketGateway(Number(process.env.APP_SOCKET_PORT) || 2117)
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
   constructor(private readonly payService: PayService) {}
 
-  afterInit(server: Server) {
-    console.log('Socket server initialized')
+  afterInit() {
+    // {server: Server} argument qilib beriladi kerak bo'lsa
+    setTimeout(() => {
+      console.log('Socket server initialized successfully.')
+    })
   }
 
   handleConnection(client: Socket) {
@@ -36,10 +37,9 @@ export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
   @SubscribeMessage('pay')
   async handlePayment(@MessageBody() data: any, @Req() request: CustomRequest): Promise<any> {
-    this.payService.saveEveryCash(data, request?.user?.id)
-    // console.log('salam')
-    this.server.emit('payResponse', { amount: 'salam' })
+    this.payService.saveEveryCash({ amount: 10000 }, request?.user?.id)
   }
 }

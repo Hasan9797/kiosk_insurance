@@ -15,3 +15,13 @@ export enum UserRolesOutPut {
   SUPPORT = 'ПОДДЕРЖКА',
   INCASATOR = 'ИНКАССАТОР',
 }
+
+export enum UserStatus {
+  ACTIVE = 1,
+  NONACTIVE = 0,
+}
+
+export enum UserStatusOutPut {
+  ACTIVE = 'АКТИВНЫЙ',
+  NONACTIVE = 'ПАССИВНЫЙ',
+}
