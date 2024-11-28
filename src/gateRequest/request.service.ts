@@ -1,17 +1,10 @@
-import {
-  Injectable,
-  HttpException,
-  InternalServerErrorException,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ConfigService } from '@nestjs/config'
 import { firstValueFrom } from 'rxjs'
 import * as crypto from 'crypto'
-import { HttpStatus, REQUEST_ERRORS } from '@enums'
+import { REQUEST_ERRORS } from '@enums'
 import { GetInsuranceIds, TransactionPreparePayCardResponse } from '@interfaces'
-import { CustomInternalServerErrorException } from '@helpers'
 
 @Injectable()
 export class InfinityRequestService {
@@ -48,6 +41,8 @@ export class InfinityRequestService {
       )
       this.response = response.data
 
+      console.log(response)
+
       if (this.isOk() === false) {
         throw new InternalServerErrorException(this.getError())
       }
@@ -61,6 +56,8 @@ export class InfinityRequestService {
 
       return this
     } catch (error: any) {
+      console.log(error.response.data)
+
       throw new InternalServerErrorException(this.getError())
     }
   }
