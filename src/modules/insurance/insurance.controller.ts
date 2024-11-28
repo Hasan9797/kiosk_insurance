@@ -13,7 +13,7 @@ import {
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
 import { Roles } from '@decorators'
-import { UserRoles } from '@enums'
+import { InsuranceStep, UserRoles } from '@enums'
 
 @ApiTags('Company Service')
 @Controller({
@@ -50,6 +50,7 @@ export class InsuranceController {
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-one')
   async stepOne(@Body() stepOneDto: any) {
+    stepOneDto.step = InsuranceStep.STEPONE
     const result = await this.insuranceService.getStep(stepOneDto)
     return result
   }
@@ -58,6 +59,7 @@ export class InsuranceController {
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-two')
   async stepTwo(@Body() stepTwoDto: any) {
+    stepTwoDto.step = InsuranceStep.STEPTWO
     const result = await this.insuranceService.getStep(stepTwoDto)
     return result
   }
@@ -66,6 +68,7 @@ export class InsuranceController {
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-three')
   async stepThree(@Body() stepThreeDto: any) {
+    stepThreeDto.step = InsuranceStep.STEPTHREE
     const result = await this.insuranceService.getStep(stepThreeDto)
     return result
   }
