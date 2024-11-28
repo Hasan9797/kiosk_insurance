@@ -287,6 +287,9 @@ export class PayService {
           equals: null,
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
     await this.prisma.insurance.update({
