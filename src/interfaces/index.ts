@@ -16,6 +16,7 @@ export type {
   PreparePayCardRequest,
   PrepareToPayRequest,
   ConfirmPaymentRequest,
+  RefundCashRequest,
 } from './request.interface'
 export type { LoginResponse, LoginRequest, RefreshTokenRequest } from './auth.interface'
 export type { JwtModel } from './jwt.interaface'

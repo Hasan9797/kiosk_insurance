@@ -4,7 +4,6 @@ import { HttpStatus, Pagination, VendorType, VendorTypeOutPut } from '@enums'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { Vendor } from '@prisma/client'
 import { CreateVendorRequest, DeleteRequestResponse, UpdateVendorRequest, VendorModel } from '@interfaces'
-import { title } from 'process'
 
 @Injectable()
 export class VendorService {

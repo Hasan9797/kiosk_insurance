@@ -14,20 +14,60 @@ export class TransactionService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const transactions: [] = await FilterService?.applyFilters(
+    const transactions = await FilterService?.applyFilters(
       'transaction',
       parsedFilters,
       parsedSort,
       Number(limit),
       Number(page),
+      ['user'],
     )
 
     console.log(transactions)
 
     const pagination = paginationResponse(transactions.length, limit, page)
 
+    const result: any = []
+    transactions?.map((transaction: any) => {
+      result.push({
+        id: transaction.id,
+        userId: transaction?.userId,
+        insuranceId: transaction?.insuranceId,
+        vendorId: transaction?.vendorId,
+        anketaId: transaction?.anketaId,
+        amount: transaction?.amount?.toString(),
+        structureId: transaction?.structureId,
+        payerPhone: transaction?.payerPhone,
+        merchantId: transaction?.merchantId,
+        partnerTransactionId: transaction?.partnerTransactionId,
+        status: {
+          id: transaction?.status,
+          string: transaction?.status,
+        },
+        paymentId: transaction?.paymentId,
+        partnerId: transaction?.partnerId,
+        cardNumber: transaction?.cardNumber,
+        cardExpire: transaction?.cardExpire,
+        retry: transaction?.retry,
+        createdAt: transaction?.createdAt,
+        user: {
+          id: transaction?.user?.id,
+          name: transaction?.user?.name,
+          login: transaction?.user?.login,
+          code: transaction?.user?.code,
+          role: transaction?.user?.role,
+          status: transaction?.user?.status,
+          cashCount: transaction?.user?.cashCount,
+          latitude: transaction?.user?.latitude,
+          longitude: transaction?.user?.longitude,
+          structureId: transaction?.user?.structureId,
+          incasatorId: transaction?.user?.incasatorId,
+        },
+      })
+    })
+
     return {
-      data: transactions,
+      data: result,
       pagination: pagination,
     }
   }
@@ -49,15 +89,5 @@ export class TransactionService {
     return {
       data: transaction,
     }
-  }
-
-  create(createTransactionDto: any) {}
-
-  update(id: number, updateTransactionDto: any) {
-    return `This action updates a #${id} transaction`
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} transaction`
   }
 }

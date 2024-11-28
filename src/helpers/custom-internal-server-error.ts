@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { HttpException } from '@nestjs/common'
 
 export class CustomInternalServerErrorException extends HttpException {
   constructor(statusCode: number, message: string) {

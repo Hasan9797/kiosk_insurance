@@ -29,3 +29,7 @@ export interface PrepareToPayRequest {
 export interface ConfirmPaymentRequest {
   confirmation_code: string
 }
+
+export interface RefundCashRequest {
+  phoneNumber: string
+}

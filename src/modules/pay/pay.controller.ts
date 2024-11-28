@@ -3,7 +3,7 @@ import { PayService } from './pay.service'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from 'guards'
-import { ConfirmPayDTO, PreparePayCardDTO, PrepareToPayDTO } from './dto'
+import { ConfirmPayDTO, PreparePayCardDTO, PrepareToPayDTO, RefundCashDTO } from './dto'
 import { Roles } from '@decorators'
 import { UserRoles } from '@enums'
 
@@ -68,5 +68,12 @@ export class PayController {
   @Post('get-fiscal-details')
   getFiscalDetails(@Body() dto: any) {
     return this.payService.getFiscalData(dto)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('refund-cash')
+  refundCash(@Body() refundCashDto: RefundCashDTO, @Req() request: CustomRequest) {
+    return this.payService.refundCash(refundCashDto, request?.user?.id)
   }
 }

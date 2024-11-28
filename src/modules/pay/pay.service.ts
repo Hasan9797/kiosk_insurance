@@ -1,6 +1,13 @@
-import { InsuranceStatus, NotificationType, TransactionStatus, notificationTextAfter1900 } from '@enums'
+import {
+  InsuranceStatus,
+  NotificationType,
+  PaymentStatus,
+  TransactionStatus,
+  TransactionType,
+  notificationTextAfter1900,
+} from '@enums'
 import { FirebaseService } from '@helpers'
-import { ConfirmPaymentRequest, PrepareToPayRequest } from '@interfaces'
+import { ConfirmPaymentRequest, PrepareToPayRequest, RefundCashRequest } from '@interfaces'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PayGate } from 'gateRequest'
 import { PrismaService } from 'prisma/prisma.service'
@@ -205,9 +212,16 @@ export class PayService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        user: {
+          include: {
+            structure: true,
+          },
+        },
+      },
     })
 
-    console.log(existInsurance, 'existInsuranc')
+    console.log(existInsurance, 'existInsurance')
 
     const vendor_form = {
       anketa_id: existInsurance.anketaId,
@@ -220,6 +234,20 @@ export class PayService {
       process.env.QUICKPAY_SERVICE_KEY,
       { vendor_form },
     )
+
+    const { amount, transaction_id } = result.getResponse()
+
+    await this.prisma.transaction.create({
+      data: {
+        amount: amount,
+        partnerTransactionId: transaction_id,
+        insuranceId: existInsurance.id,
+        structureId: existInsurance?.user?.structure?.id,
+        request: JSON.stringify(vendor_form),
+        response: JSON.stringify(result?.getResponse()),
+        paymentType: TransactionType.BY_CASH,
+      },
+    })
     return result.getResponse()
   }
 
@@ -307,6 +335,72 @@ export class PayService {
       },
       data: {
         cashCount: cashCountRightNow + 1,
+      },
+    })
+  }
+
+  async refundCash(data: RefundCashRequest, userId: number) {
+    const existingInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        status: InsuranceStatus.NEW,
+        userId: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    const refundAmount = existingInsurance?.amount - existTransaction.amount
+
+    const vendor_form = {
+      phone_number: data?.phoneNumber,
+      summa: refundAmount,
+      vendor_id: existTransaction?.vendorId,
+    }
+
+    const newTransaction = await this.prisma.transaction.create({
+      data: {
+        amount: refundAmount,
+        status: TransactionType.REFUND,
+        payerPhone: data?.phoneNumber,
+        request: JSON.stringify(vendor_form),
+        insuranceId: existingInsurance.id,
+        userId: userId,
+      },
+    })
+
+    const transaction_form = {
+      partner_transaction_id: newTransaction.id,
+    }
+
+    const result = await this.payGateService.payByCash(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form, transaction_form },
+    )
+
+    const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
+
+    await this.prisma.transaction.update({
+      where: {
+        id: newTransaction.id,
+      },
+      data: {
+        response: JSON.stringify(result?.getResponse()),
+        partnerTransactionId: transaction_id,
+        merchantId: merchantId,
+        terminalId: terminalId,
       },
     })
   }
