@@ -8,7 +8,7 @@ import {
 } from '@enums'
 import { FirebaseService } from '@helpers'
 import { ConfirmPaymentRequest, PrepareToPayRequest, RefundCashRequest } from '@interfaces'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { PayGate } from 'gateRequest'
 import { PrismaService } from 'prisma/prisma.service'
 import { PreparePayCardDTO } from './dto'
@@ -361,12 +361,18 @@ export class PayService {
         createdAt: 'desc',
       },
     })
-    const refundAmount = existingInsurance?.amount - existTransaction.amount
+    console.log(Number(existingInsurance?.amount) - Number(existTransaction.amount))
+
+    const refundAmount = Number(existingInsurance?.amount) - Number(existTransaction.amount)
+
+    if (refundAmount < 0 && refundAmount < 500) {
+      throw new BadRequestException('Refund Amount Must be more than 500 sum')
+    }
 
     const vendor_form = {
       phone_number: data?.phoneNumber,
-      summa: refundAmount,
-      vendor_id: existTransaction?.vendorId,
+      summa: refundAmount.toString(),
+      vendor_id: existingInsurance?.vendorId,
     }
 
     const newTransaction = await this.prisma.transaction.create({
