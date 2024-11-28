@@ -40,6 +40,6 @@ export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   @Roles({ role: [UserRoles.OPERATOR] })
   @SubscribeMessage('pay')
   async handlePayment(@MessageBody() data: any, @Req() request: CustomRequest): Promise<any> {
-    this.payService.saveEveryCash({ amount: 1000 }, request?.user?.id)
+    this.payService.saveEveryCash({ amount: 10000 }, request?.user?.id)
   }
 }
