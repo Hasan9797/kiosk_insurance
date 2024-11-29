@@ -4,10 +4,7 @@ export type {
   GetStepRequest,
   StepOneRequest,
   StepTwoRequest,
-  StepFourData,
   StepThreeRequest,
-  StepThreeData,
-  StepFourRequest,
 } from './create-insurance'
 
 export type {

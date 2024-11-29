@@ -27,7 +27,6 @@ export class InfinityRequestService {
 
     const url = this.getUrl()
     const authHeader = this.generateForAuth()
-    console.log(authHeader, jsonPayload)
 
     try {
       const response = await firstValueFrom(
@@ -40,8 +39,6 @@ export class InfinityRequestService {
         }),
       )
       this.response = response.data
-
-      console.log(response)
 
       if (this.isOk() === false) {
         throw new InternalServerErrorException(this.getError())
@@ -56,8 +53,6 @@ export class InfinityRequestService {
 
       return this
     } catch (error: any) {
-      console.log(error.response.data)
-
       throw new InternalServerErrorException(this.getError())
     }
   }
