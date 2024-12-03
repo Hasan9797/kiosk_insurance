@@ -44,7 +44,7 @@ export class InsuranceService {
       data,
     )
 
-    const { anketa_id, order_id, polis_id, vendor_id } = result.getInsuranceIds()
+    const { anketa_id, order_id, polis_id, vendor_id, id } = result.getInsuranceIds()
 
     await this.prisma.insurance.create({
       data: {
@@ -58,16 +58,29 @@ export class InsuranceService {
         polisId: polis_id,
         vendorId: vendor_id,
         status: InsuranceStatus.NEW,
+        createResId: id,
       },
     })
     return result.getResponse()
   }
 
-  async getPolisUrl(data: any) {
+  async getPolisUrl(data: any, userId: number) {
+    const lastInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        userId: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
     const result = await this.insuranceGateService.getPolisUrl(
       process.env.QUICKPAY_SERVICE_ID,
       process.env.QUICKPAY_SERVICE_KEY,
-      data,
+      { id: lastInsurance.createResId },
     )
 
     return result.getResponse()

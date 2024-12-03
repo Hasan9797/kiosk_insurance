@@ -59,7 +59,7 @@ export class PartnerController {
   }
 
   @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT, UserRoles.OPERATOR] })
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {

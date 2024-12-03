@@ -221,8 +221,6 @@ export class PayService {
       },
     })
 
-    console.log(existInsurance, 'existInsurance')
-
     const vendor_form = {
       anketa_id: existInsurance.anketaId,
       amount: 40000,
@@ -364,8 +362,6 @@ export class PayService {
         createdAt: 'desc',
       },
     })
-    console.log(Number(existingInsurance?.amount) - Number(existTransaction.amount))
-
     const refundAmount = Number(existingInsurance?.amount) - Number(existTransaction.amount)
 
     if (refundAmount < 0 && refundAmount < 500) {
