@@ -23,8 +23,6 @@ export class TransactionService {
       ['user'],
     )
 
-    console.log(transactions)
-
     const pagination = paginationResponse(transactions.length, limit, page)
 
     const result: any = []

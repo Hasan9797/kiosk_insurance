@@ -52,7 +52,6 @@ async function bootstrap() {
   })
 
   app.useWebSocketAdapter(new IoAdapter(app))
-
   await app.listen(appConfig.port, appConfig.host)
 }
 bootstrap()

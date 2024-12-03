@@ -41,8 +41,6 @@ export class InfinityRequestService {
       )
       this.response = response.data
 
-      console.log(response)
-
       if (this.isOk() === false) {
         throw new InternalServerErrorException(this.getError())
       }
@@ -57,7 +55,6 @@ export class InfinityRequestService {
       return this
     } catch (error: any) {
       console.log(error.response.data)
-
       throw new InternalServerErrorException(this.getError())
     }
   }
@@ -152,6 +149,7 @@ export class InfinityRequestService {
 
   getInsuranceIds(): GetInsuranceIds {
     const result = {
+      id: this?.response?.result?.id,
       order_id: this?.response?.result?.order_id,
       anketa_id: this?.response?.result?.anketa_id,
       polis_id: this?.response?.result?.polis_id,

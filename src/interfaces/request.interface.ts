@@ -1,4 +1,5 @@
 export interface GetInsuranceIds {
+  id: number
   order_id: string
   anketa_id: string
   polis_id: number

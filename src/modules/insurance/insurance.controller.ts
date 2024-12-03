@@ -92,8 +92,8 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-polis-url')
-  async getPolisUrl(@Body() getPolisUrlDTO: any) {
-    const result = await this.insuranceService.getPolisUrl(getPolisUrlDTO)
+  async getPolisUrl(@Body() getPolisUrlDTO: any, @Req() request: CustomRequest) {
+    const result = await this.insuranceService.getPolisUrl(getPolisUrlDTO, request.user.id)
     return result
   }
 }
