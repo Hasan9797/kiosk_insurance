@@ -21,7 +21,6 @@ export class InfinityRequestService {
     private readonly configService: ConfigService,
   ) {}
 
-  // So'rovni yuborish
   async send() {
     const jsonPayload = this.getRequest()
 
@@ -59,7 +58,6 @@ export class InfinityRequestService {
     }
   }
 
-  // Parametrlarni set qilish
   setParams(params: any): InfinityRequestService {
     this.params = params
     return this
@@ -80,13 +78,11 @@ export class InfinityRequestService {
     return this
   }
 
-  // Javobni saqlash
   setResponse(response: any): InfinityRequestService {
     this.response = response
     return this
   }
 
-  // Xato haqida ma'lumot berish
   setErrorUnknown(error: any) {
     this.errorUnknown = error
   }
@@ -112,7 +108,6 @@ export class InfinityRequestService {
     return Math.floor(Math.random() * 1000)
   }
 
-  // Authorization header generatsiya qilish
   private generateForAuth(): string {
     const timestamp = Date.now()
 
@@ -196,7 +191,6 @@ export class InfinityRequestService {
     return this.response?.result?.details || []
   }
 
-  // So'rov tayyorlash
   getRequest(): any {
     return {
       jsonrpc: '2.0',
