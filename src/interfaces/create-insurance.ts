@@ -21,129 +21,153 @@ export interface GetStepRequest {
 export interface StepOneRequest {
   company_id: number
   service_id: number
+  seria: string
+  number: string
+  govNumber: string
   step: number
-  texpsery: string
-  texpnumber: string
-  renumber: string
-}
-
-interface VehicleData {
-  type: string
-  marka: string
-  vmodel: string
-  texpdate: string
-  year: string
-  dvigatel: string
-  model: string
-  kuzov: string
-  texpsery: string
-  texpnumber: string
-  renumber: string
-  vehicle: string
 }
 
 export interface StepTwoRequest {
   company_id: number
   service_id: number
   step: number
-  owner_pinfl: string
-  owner_fy: number
-  use_territory: number
-  owner_isdriver: number
-  owner_pasp_sery: string
-  owner_pasp_num: string
-  appl_pasp_sery: string | null
-  appl_pasp_num: string | null
-  appl_fizyur: string | null
-  appl_pinfl: string | null
-  driver_limit: number
-  period: number
-  applicant_isowner: number
-  owner_phone: string
-  discount: number
-  data: VehicleData
-}
-
-export interface StepThreeData {
-  texpdate: string
-  year: string
-  dvigatel: string
-  vehicle: string
-  model: string
-  kuzov: string
-  texpsery: string
-  texpnumber: string
-  renumber: string
-  type: string
-  marka: string
-  vmodel: string
-  appl_name: string | null
-  owner_fy: number
-  owner_pinfl: string
-  owner_oblast: string
-  has_benefit: string
-  appl_birthdate: string | null
-  owner_rayon: string
-  owner_surname: string
-  owner_name: string
-  owner_patronym: string
-  appl_surname: string | null
-  owner_inn: string
-  owner_orgname: string
-  owner_pasp_sery: string
-  owner_pasp_num: string
-  applicant_isowner: number
-  owner_phone: string
-  owner_isdriver: number
-  appl_pasp_num: string | null
-  appl_orgname: string | null
-  appl_patronym: string | null
-  appl_oblast: string | null
-  address: string
-  prem: number
-  appl_inn: string | null
-  driver_limit: number
-  period: number
-  discount: number
-  owner_birthdate: string
-  appl_rayon: string | null
-  use_territory: number
-  appl_fizyur: string | null
-  appl_pinfl: string | null
-  appl_pasp_sery: string | null
+  applicantIsOwner: string
+  phoneNumber: string
+  seria: string
+  number: string
+  driverNumberRestriction: string
 }
 
 export interface StepThreeRequest {
   company_id: number
   service_id: number
-  old_polis: string | null
-  contract_begin: string
+  step_status: number
+  relative?: number
+  seria?: string
+  number?: string
+  birthDate?: string
   step: number
-  is_renewal: number
-  opl_type: number
-  dog_num: string | null
-  dog_date: string | null
-  data: StepThreeData
 }
 
-export interface StepFourData {
-  old_polis: string | null
-  contract_begin: string
-  dog_num: string | null
-  dog_date: string | null
-  is_renewal: number
-  opl_type: number
+interface Vehicle {
+  govNumber: string
+  engineNumber: string
+  issueYear: number
+  typeId: number
+  modelCustomName: string
+  techPassport: {
+    issueDate: string
+    number: string
+    seria: string
+  }
+  regionId: number
+  bodyNumber: string
+  terrainId: number
 }
 
-export interface StepFourRequest {
+interface Applicant {
+  person: {
+    passportData: {
+      pinfl: number
+      issuedBy: string
+      seria: string
+      number: string
+      issueDate: string
+    }
+    birthDate: string
+    fullName: {
+      lastname: string
+      middlename: string
+      firstname: string
+    }
+    gender: string
+    phoneNumber: string
+    districtId: number
+    regionId: number
+  }
+  address: string
+  residentOfUzb: number
+  citizenshipId: number
+  organization: {
+    inn: string | ''
+    name: string | ''
+    phoneNumber: string | ''
+  }
+  email: string | ''
+}
+
+interface Owner {
+  applicantIsOwner: string
+  organization: {
+    inn: string | ''
+    name: string | ''
+  }
+  person: {
+    passportData: {
+      issueDate: string
+      issuedBy: string
+      pinfl: string
+      number: string
+      seria: string
+    }
+    fullName: {
+      middlename: string
+      firstname: string
+      lastname: string
+    }
+  }
+}
+
+interface Details {
+  specialNote: string | ''
+  insuredActivityType: string
+  driverNumberRestriction: string
+  issueDate: string
+  startDate: string
+  endDate: string
+}
+
+interface Cost {
+  discountId: number
+  sumInsured: string
+  contractTermConclusionId: number
+  commission: number
+  insurancePremium: number
+  discountSum: number
+  insurancePremiumPaidToInsurer: number
+  useTerritoryId: number
+}
+
+interface Driver {
+  fullName: {
+    lastname: string
+    firstname: string
+    middlename: string
+  }
+  passportData: {
+    seria: string
+    pinfl: string
+    issueDate: string
+    issuedBy: string
+    number: string
+  }
+  birthDate: string
+  relative: number
+  residentOfUzb: number
+  licenseNumber: string
+  licenseIssueDate: string
+  licenseSeria: string
+}
+
+export interface CreateInsuranceRequest {
   company_id: number
   service_id: number
-  step: number
-  paspsery: string
-  paspnumber: string
-  pinfl: string
-  relative: number
-  resident: number
-  step_status: number
-  data: StepFourData
+  data: {
+    vehicle: Vehicle
+    applicant: Applicant
+    owner: Owner
+    details: Details
+    cost: Cost
+    drivers: Driver[]
+  }
 }

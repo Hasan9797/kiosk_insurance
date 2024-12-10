@@ -19,14 +19,13 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async send() {
     const jsonPayload = this.getRequest()
 
     const url = this.getUrl()
     const authHeader = this.generateForAuth()
-    console.log(authHeader, jsonPayload)
 
     try {
       const response = await firstValueFrom(
@@ -53,7 +52,6 @@ export class InfinityRequestService {
 
       return this
     } catch (error: any) {
-      console.log(error.response.data)
       throw new InternalServerErrorException(this.getError())
     }
   }
