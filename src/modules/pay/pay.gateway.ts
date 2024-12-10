@@ -15,7 +15,7 @@ import { CustomRequest } from 'custom'
 import { Roles } from '@decorators'
 import { UserRoles } from '@enums'
 
-@WebSocketGateway(Number(process.env.APP_PORT) || 2117)
+@WebSocketGateway(Number(process.env.APP_SOCKET_PORT) || 2117)
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
