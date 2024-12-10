@@ -20,7 +20,7 @@ import { InsuranceStep, UserRoles } from '@enums'
   version: '1',
 })
 export class InsuranceController {
-  constructor(private readonly insuranceService: InsuranceService) {}
+  constructor(private readonly insuranceService: InsuranceService) { }
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
@@ -33,7 +33,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-company-services')
-  async getServices(@Body() getServiceDto: any) {
+  async getServices(@Body() getServiceDto: getServiceRequestDTO) {
     const result = await this.insuranceService.findService(getServiceDto)
     return result
   }
@@ -41,7 +41,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step')
-  async getStep(@Body() getStepDto: any) {
+  async getStep(@Body() getStepDto: getStepRequestDTO) {
     const result = await this.insuranceService.getStep(getStepDto)
     return result
   }
@@ -49,7 +49,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-one')
-  async stepOne(@Body() stepOneDto: any) {
+  async stepOne(@Body() stepOneDto: stepOneRequestDTO) {
     stepOneDto.step = InsuranceStep.STEPONE
     const result = await this.insuranceService.getStep(stepOneDto)
     return result
@@ -58,7 +58,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-two')
-  async stepTwo(@Body() stepTwoDto: any) {
+  async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
     stepTwoDto.step = InsuranceStep.STEPTWO
     const result = await this.insuranceService.getStep(stepTwoDto)
     return result
