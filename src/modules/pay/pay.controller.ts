@@ -3,7 +3,7 @@ import { PayService } from './pay.service'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomRequest } from 'custom'
 import { CheckTokenGuard } from 'guards'
-import { ConfirmPayDTO, PreparePayCardDTO, PrepareToPayDTO, RefundCashDTO } from './dto'
+import { ConfirmPayDTO, PreparePayCardDTO, PrepareToPayDTO, RefundCashDTO, SaveEveryCashDTO } from './dto'
 import { Roles } from '@decorators'
 import { UserRoles } from '@enums'
 
@@ -12,7 +12,7 @@ import { UserRoles } from '@enums'
   version: '1',
 })
 export class PayController {
-  constructor(private readonly payService: PayService) {}
+  constructor(private readonly payService: PayService) { }
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
@@ -75,5 +75,12 @@ export class PayController {
   @Post('refund-cash')
   refundCash(@Body() refundCashDto: RefundCashDTO, @Req() request: CustomRequest) {
     return this.payService.refundCash(refundCashDto, request?.user?.id)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('save-cash')
+  saveEveryCash(@Body() saveCashDto: any, @Req() request: CustomRequest) {
+    return this.payService.saveEveryCash(saveCashDto, request?.user?.id)
   }
 }
