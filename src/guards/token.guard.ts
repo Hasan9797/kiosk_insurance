@@ -25,7 +25,7 @@ export class CheckTokenGuard implements CanActivate {
       return request.headers.authorization?.replace(/^(bearer)\s/i, '')
     } else if (type === 'ws') {
       const client = context.switchToWs().getClient()
-      return client.handshake.headers.authorization
+      return client.handshake.query.token
     }
 
     return undefined

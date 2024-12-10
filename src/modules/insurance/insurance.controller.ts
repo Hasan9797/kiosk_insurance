@@ -19,7 +19,7 @@ import { CreateInsuranceRequest } from '@interfaces'
   version: '1',
 })
 export class InsuranceController {
-  constructor(private readonly insuranceService: InsuranceService) { }
+  constructor(private readonly insuranceService: InsuranceService) {}
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
