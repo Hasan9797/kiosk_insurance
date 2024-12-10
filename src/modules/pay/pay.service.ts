@@ -19,7 +19,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -250,6 +250,11 @@ export class PayService {
   }
 
   async saveEveryCash(data: any, userId: number) {
+    if (!data.amount || data.amount < 0) {
+      throw new BadRequestException('Invalid amount!!!')
+    }
+    console.log(data, 'salamn');
+
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -328,16 +333,26 @@ export class PayService {
           cashCount: cashCountRightNow + 1,
         },
       })
-      return
     }
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        cashCount: cashCountRightNow + 1,
-      },
-    })
+    let status = 0
+    const amountInsurance = 40000
+    const amountInKiosk = Number(existingInsurance.amount)
+    let refund = Number(existingInsurance.amount) - amountInsurance
+
+    if (refund < 0) {
+      refund = 0
+    }
+
+    if (amountInsurance < amountInKiosk) {
+      status = 1
+    }
+
+    return {
+      amountInKiosk,
+      amountInsurance,
+      refund,
+      status
+    }
   }
 
   async refundCash(data: RefundCashRequest, userId: number) {
