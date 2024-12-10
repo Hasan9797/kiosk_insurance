@@ -4,23 +4,22 @@ import { InsuranceService } from './insurance.service'
 import {
   getServiceRequestDTO,
   getStepRequestDTO,
-  StepFourRequestDto,
   stepOneRequestDTO,
-  StepThreeRequestDto,
   StepTwoRequestDTO,
-  CreateInsuranceRequestDto,
+  StepThreeRequestDTO,
 } from './dto'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
 import { Roles } from '@decorators'
 import { InsuranceStep, UserRoles } from '@enums'
+import { CreateInsuranceRequest } from '@interfaces'
 
 @ApiTags('Company Service')
 @Controller({
   version: '1',
 })
 export class InsuranceController {
-  constructor(private readonly insuranceService: InsuranceService) {}
+  constructor(private readonly insuranceService: InsuranceService) { }
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
@@ -33,7 +32,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-company-services')
-  async getServices(@Body() getServiceDto: any) {
+  async getServices(@Body() getServiceDto: getServiceRequestDTO) {
     const result = await this.insuranceService.findService(getServiceDto)
     return result
   }
@@ -41,7 +40,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step')
-  async getStep(@Body() getStepDto: any) {
+  async getStep(@Body() getStepDto: getStepRequestDTO) {
     const result = await this.insuranceService.getStep(getStepDto)
     return result
   }
@@ -49,7 +48,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-one')
-  async stepOne(@Body() stepOneDto: any) {
+  async stepOne(@Body() stepOneDto: stepOneRequestDTO) {
     stepOneDto.step = InsuranceStep.STEPONE
     const result = await this.insuranceService.getStep(stepOneDto)
     return result
@@ -58,7 +57,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-two')
-  async stepTwo(@Body() stepTwoDto: any) {
+  async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
     stepTwoDto.step = InsuranceStep.STEPTWO
     const result = await this.insuranceService.getStep(stepTwoDto)
     return result
@@ -67,7 +66,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-three')
-  async stepThree(@Body() stepThreeDto: any) {
+  async stepThree(@Body() stepThreeDto: StepThreeRequestDTO) {
     stepThreeDto.step = InsuranceStep.STEPTHREE
     const result = await this.insuranceService.getStep(stepThreeDto)
     return result
@@ -75,17 +74,9 @@ export class InsuranceController {
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
-  @Post('get-step-four')
-  async stepFour(@Body() stepFourDto: any) {
-    const result = await this.insuranceService.getStep(stepFourDto)
-    return result
-  }
-
-  @UseGuards(CheckTokenGuard)
-  @Roles({ role: [UserRoles.OPERATOR] })
   @Post('create-insurance')
-  async createInvoice(@Body() createInvoiceDto: any, @Req() request: CustomRequest) {
-    const result = await this.insuranceService.createInsurance(createInvoiceDto, request?.user?.id)
+  async createInvoice(@Body() createInsuranceDto: CreateInsuranceRequest, @Req() request: CustomRequest) {
+    const result = await this.insuranceService.createInsurance(createInsuranceDto, request?.user?.id)
     return result
   }
 
