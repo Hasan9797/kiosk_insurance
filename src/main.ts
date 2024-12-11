@@ -51,9 +51,9 @@ async function bootstrap() {
     },
   })
 
-  const server = app.getHttpServer();
-  const io = new IoAdapter(server);
-  app.useWebSocketAdapter(io);
+  const server = app.getHttpServer()
+  const io = new IoAdapter(server)
+  app.useWebSocketAdapter(io)
   await app.listen(appConfig.port, appConfig.host)
 }
 bootstrap()

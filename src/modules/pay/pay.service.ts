@@ -5,6 +5,7 @@ import {
   TransactionStatus,
   TransactionType,
   notificationTextAfter1900,
+  RefundStatus,
 } from '@enums'
 import { FirebaseService } from '@helpers'
 import { ConfirmPaymentRequest, PrepareToPayRequest, RefundCashRequest } from '@interfaces'
@@ -19,7 +20,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) { }
+  ) {}
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -246,14 +247,31 @@ export class PayService {
         paymentType: TransactionType.BY_CASH,
       },
     })
-    return result.getResponse()
+
+    let status = 0
+    const amountInsurance = 40000
+    const amountInKiosk = Number(existInsurance.amount)
+    let refund = Number(existInsurance.amount) - amountInsurance
+
+    if (refund < 0) {
+      refund = RefundStatus.NO
+    }
+
+    if (amountInsurance < amountInKiosk) {
+      status = RefundStatus.YES
+    }
+
+    const response = result.getResponse()
+    response.refundStatus = status
+
+    return response
   }
 
   async saveEveryCash(data: any, userId: number) {
     if (!data.amount || data.amount < 0) {
       throw new BadRequestException('Invalid amount!!!')
     }
-    console.log(data, 'salamn');
+    console.log(data, 'salamn')
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -351,11 +369,12 @@ export class PayService {
       amountInKiosk,
       amountInsurance,
       refund,
-      status
+      status,
     }
   }
 
   async refundCash(data: RefundCashRequest, userId: number) {
+    const staticAmountInsurance = 40000
     const existingInsurance = await this.prisma.insurance.findFirst({
       where: {
         status: InsuranceStatus.NEW,
@@ -386,7 +405,7 @@ export class PayService {
     const vendor_form = {
       phone_number: data?.phoneNumber,
       summa: refundAmount.toString(),
-      vendor_id: existingInsurance?.vendorId,
+      vendor_id: 100081,
     }
 
     const newTransaction = await this.prisma.transaction.create({
@@ -395,6 +414,17 @@ export class PayService {
         status: TransactionType.REFUND,
         payerPhone: data?.phoneNumber,
         request: JSON.stringify(vendor_form),
+        insuranceId: existingInsurance.id,
+        userId: userId,
+      },
+    })
+
+    const newCashBackTransaction = await this.prisma.transaction.create({
+      data: {
+        amount: staticAmountInsurance * 0.1,
+        status: TransactionType.CASHBACK,
+        payerPhone: data?.phoneNumber,
+        // request: JSON.stringify(vendor_form),
         insuranceId: existingInsurance.id,
         userId: userId,
       },
@@ -410,6 +440,21 @@ export class PayService {
       { vendor_form, transaction_form },
     )
 
+    const resultCashBack = await this.payGateService.payByCash(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      {
+        vendor_form: {
+          phone_number: data?.phoneNumber,
+          summa: (staticAmountInsurance * 0.1).toString(),
+          vendor_id: 100081,
+        },
+        transaction_form: {
+          partner_transaction_id: newCashBackTransaction.id,
+        },
+      },
+    )
+
     const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
 
     await this.prisma.transaction.update({
@@ -421,6 +466,18 @@ export class PayService {
         partnerTransactionId: transaction_id,
         merchantId: merchantId,
         terminalId: terminalId,
+      },
+    })
+
+    await this.prisma.transaction.update({
+      where: {
+        id: newCashBackTransaction.id,
+      },
+      data: {
+        response: JSON.stringify(resultCashBack?.getResponse()),
+        partnerTransactionId: resultCashBack.getResponse().result.details.transaction_id,
+        merchantId: resultCashBack.getResponse().result.details.merchantId,
+        terminalId: resultCashBack.getResponse().result.details.terminalId,
       },
     })
   }

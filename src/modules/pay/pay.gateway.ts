@@ -19,7 +19,7 @@ import { UserRoles } from '@enums'
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
-  constructor(private readonly payService: PayService) { }
+  constructor(private readonly payService: PayService) {}
 
   afterInit() {
     // {server: Server} argument qilib beriladi kerak bo'lsa
