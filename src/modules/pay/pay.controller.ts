@@ -12,7 +12,7 @@ import { UserRoles } from '@enums'
   version: '1',
 })
 export class PayController {
-  constructor(private readonly payService: PayService) { }
+  constructor(private readonly payService: PayService) {}
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
