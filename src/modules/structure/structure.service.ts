@@ -36,7 +36,7 @@ export class StructureService {
         },
         createdAt: structure?.createdAt,
         region: {
-          id: structure?.id,
+          id: structure?.region?.id,
           name: structure?.region?.name,
           status: {
             int: structure?.region?.status,

@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { CreateRegionRequest, DeleteRequestResponse, Region, UpdateRegionRequest } from '@interfaces'
 import { PrismaService } from 'prisma/prisma.service'
 import { FilterService, formatResponse, paginationResponse } from '@helpers'
-import { HttpStatus, Pagination, RegionStatus, RegionStatusOutPut } from '@enums'
+import { HttpStatus, Pagination, RegionStatus, RegionStatusOutPut, StructureEnum, StructureEnumOutPut } from '@enums'
 @Injectable()
 export class RegionService {
   constructor(private readonly prisma: PrismaService) {}
@@ -14,7 +14,14 @@ export class RegionService {
 
     const parsedFilters = filters ? JSON?.parse(filters) : []
 
-    const regions = await FilterService?.applyFilters('region', parsedFilters, parsedSort, Number(limit), Number(page))
+    const regions = await FilterService?.applyFilters(
+      'region',
+      parsedFilters,
+      parsedSort,
+      Number(limit),
+      Number(page),
+      ['structures'],
+    )
 
     const result: Region[] = []
 
@@ -22,14 +29,27 @@ export class RegionService {
       result?.push({
         id: region?.id,
         name: region?.name,
-        status: region?.status || 1,
+        status: {
+          int: region?.status,
+          string: RegionStatusOutPut[RegionStatus[region.status] as keyof typeof RegionStatusOutPut],
+        },
+        structures: region?.structures?.map((structure: any) => ({
+          id: structure?.id,
+          name: structure?.name,
+          status: {
+            int: structure?.status,
+            string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut],
+          },
+          createdAt: structure?.createdAt,
+        })),
+
         createdAt: region?.createdAt,
       })
     }
 
     const pagination = paginationResponse(regions.length, limit, page)
 
-    return formatResponse<Region[]>(HttpStatus.OK, result, pagination)
+    return formatResponse<any>(HttpStatus.OK, result, pagination)
   }
 
   async findOne(id: number) {
@@ -39,6 +59,9 @@ export class RegionService {
         deletedAt: {
           equals: null,
         },
+      },
+      include: {
+        structures: true,
       },
     })
 
@@ -51,8 +74,18 @@ export class RegionService {
       name: region?.name,
       status: {
         int: region?.status,
-        string: RegionStatusOutPut[RegionStatus[region?.status] as keyof typeof RegionStatusOutPut],
+        string: RegionStatusOutPut[RegionStatus[region.status] as keyof typeof RegionStatusOutPut],
       },
+      structures: region?.structures?.map((structure: any) => ({
+        id: structure?.id,
+        name: structure?.name,
+        status: {
+          int: structure?.status,
+          string: StructureEnumOutPut[StructureEnum[structure.status] as keyof typeof StructureEnumOutPut],
+        },
+        createdAt: structure?.createdAt,
+      })),
+
       createdAt: region?.createdAt,
     }
 

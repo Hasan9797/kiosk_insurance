@@ -9,10 +9,18 @@ export interface UpdateRegionRequest {
   status?: number
 }
 
+interface Structure {
+  id: number
+  name: string
+  status: Changer
+  createdAt: Date
+}
+
 export interface Region {
   id: number
   name: string
   status: Changer
+  structures?: Structure[]
   createdAt: Date
 }
 
