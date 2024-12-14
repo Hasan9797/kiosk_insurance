@@ -13,6 +13,7 @@ import { CustomRequest } from 'custom'
 import { Roles } from '@decorators'
 import { InsuranceStep, UserRoles } from '@enums'
 import { CreateInsuranceRequest } from '@interfaces'
+import { formatDate } from '@helpers'
 
 @ApiTags('Company Service')
 @Controller({
@@ -59,6 +60,8 @@ export class InsuranceController {
   @Post('get-step-two')
   async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
     stepTwoDto.step = InsuranceStep.STEPTWO
+    stepTwoDto.startDate = formatDate()
+    console.log(stepTwoDto)
     const result = await this.insuranceService.getStep(stepTwoDto)
     return result
   }

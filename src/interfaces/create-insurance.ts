@@ -36,6 +36,7 @@ export interface StepTwoRequest {
   seria: string
   number: string
   driverNumberRestriction: string
+  startDate?: string
 }
 
 export interface StepThreeRequest {
