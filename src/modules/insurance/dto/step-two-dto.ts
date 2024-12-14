@@ -45,5 +45,10 @@ export class StepTwoRequestDTO implements StepTwoRequest {
   @IsBooleanString()
   driverNumberRestriction: string
 
+  // @IsNotEmpty()
+  // @IsString()
+  // @Matches(/\d{4}-\d{2}-\d{2}/, { message: 'Start Date format must be YYYY-MM-DD!' })
+  startDate: string
+
   step: number
 }

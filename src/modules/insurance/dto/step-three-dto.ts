@@ -16,7 +16,7 @@ export class StepThreeRequestDTO implements StepThreeRequest {
   @Max(2)
   step_status: number
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Min(0)
   @Max(99)
