@@ -88,6 +88,19 @@ export class FilterService {
       ;(query.include as any)[relation] = true
     })
 
+    // includeRelations.forEach((relation) => {
+    //   if (relation.includes('.')) {
+    //     const [mainRelation, nestedRelation] = relation.split('.')
+    //     query.include[mainRelation] = {
+    //       include: {
+    //         [nestedRelation]: true,
+    //       },
+    //     }
+    //   } else {
+    //     query.include[relation] = true
+    //   }
+    // })
+
     const model: any = prisma[modelName as keyof PrismaClient]
     return model['findMany'](query)
   }
