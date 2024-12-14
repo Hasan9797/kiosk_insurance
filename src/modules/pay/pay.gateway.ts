@@ -15,11 +15,11 @@ import { CustomRequest } from 'custom'
 import { Roles } from '@decorators'
 import { UserRoles } from '@enums'
 
-@WebSocketGateway(Number(process.env.APP_PORT))
+@WebSocketGateway(Number(process.env.APP_SOCKET_PORT))
 export class PayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server
 
-  constructor(private readonly payService: PayService) {}
+  constructor(private readonly payService: PayService) { }
 
   afterInit() {
     // {server: Server} argument qilib beriladi kerak bo'lsa
