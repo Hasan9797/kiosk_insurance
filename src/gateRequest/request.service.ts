@@ -19,7 +19,7 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async send() {
     const jsonPayload = this.getRequest()
@@ -51,7 +51,7 @@ export class InfinityRequestService {
       }
       return this
     } catch (error: any) {
-      console.log(error);
+      console.log(error)
       throw new InternalServerErrorException(this.getError())
     }
   }
