@@ -5,7 +5,7 @@ import { FilterService, formatResponse, paginationResponse } from '@helpers'
 import { HttpStatus, Pagination, RegionStatus, RegionStatusOutPut, StructureEnum, StructureEnumOutPut } from '@enums'
 @Injectable()
 export class RegionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: any) {
     const { limit = Pagination.LIMIT, page = Pagination.PAGE, sort, filters } = query
@@ -52,6 +52,15 @@ export class RegionService {
     const pagination = paginationResponse(regions.length, limit, page)
 
     return formatResponse<any>(HttpStatus.OK, result, pagination)
+  }
+
+  async findStatics() {
+    const regionStatuses = Object.fromEntries(
+      Object.entries(RegionStatusOutPut).map(([key, value]) => [key, value])
+    );
+
+    console.log(regionStatuses);
+
   }
 
   async findOne(id: number) {

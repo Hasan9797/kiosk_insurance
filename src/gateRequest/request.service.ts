@@ -19,7 +19,7 @@ export class InfinityRequestService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async send() {
     const jsonPayload = this.getRequest()
@@ -39,9 +39,9 @@ export class InfinityRequestService {
       )
       this.response = response.data
 
-      if (this.isOk() === false) {
-        throw new InternalServerErrorException(this.getError())
-      }
+      // if (this.isOk() === false) {
+      //   throw new InternalServerErrorException(this.getError())
+      // }
 
       if (!this.response) {
         this.setErrorUnknown({
@@ -49,9 +49,9 @@ export class InfinityRequestService {
           message: REQUEST_ERRORS.UNKNOWN_RESPONSE_ERROR,
         })
       }
-
       return this
     } catch (error: any) {
+      console.log(error);
       throw new InternalServerErrorException(this.getError())
     }
   }
