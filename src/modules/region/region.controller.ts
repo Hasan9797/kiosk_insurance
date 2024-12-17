@@ -13,13 +13,20 @@ import { UserRoles } from '@enums'
   path: 'regions',
 })
 export class RegionController {
-  constructor(private readonly regionService: RegionService) {}
+  constructor(private readonly regionService: RegionService) { }
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
   @Get()
   findAll(@Query() query: QueryParams) {
     return this.regionService.findAll(query)
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.SUPER_ADMIN, UserRoles.ADMIN, UserRoles.ACCOUNTANT] })
+  @Get('statics')
+  findStatics() {
+    return this.regionService.findStatics()
   }
 
   @UseGuards(CheckTokenGuard)
