@@ -20,7 +20,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -419,16 +419,16 @@ export class PayService {
       },
     })
 
-    const newCashBackTransaction = await this.prisma.transaction.create({
-      data: {
-        amount: staticAmountInsurance * 0.1,
-        status: TransactionType.CASHBACK,
-        payerPhone: data?.phoneNumber,
-        // request: JSON.stringify(vendor_form),
-        insuranceId: existingInsurance.id,
-        userId: userId,
-      },
-    })
+    // const newCashBackTransaction = await this.prisma.transaction.create({
+    //   data: {
+    //     amount: staticAmountInsurance * 0.1,
+    //     status: TransactionType.CASHBACK,
+    //     payerPhone: data?.phoneNumber,
+    //     // request: JSON.stringify(vendor_form),
+    //     insuranceId: existingInsurance.id,
+    //     userId: userId,
+    //   },
+    // })
 
     const transaction_form = {
       partner_transaction_id: newTransaction.id,
@@ -440,20 +440,20 @@ export class PayService {
       { vendor_form, transaction_form },
     )
 
-    const resultCashBack = await this.payGateService.payByCash(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      {
-        vendor_form: {
-          phone_number: data?.phoneNumber,
-          summa: (staticAmountInsurance * 0.1).toString(),
-          vendor_id: 100081,
-        },
-        transaction_form: {
-          partner_transaction_id: newCashBackTransaction.id,
-        },
-      },
-    )
+    // const resultCashBack = await this.payGateService.payByCash(
+    //   process.env.QUICKPAY_SERVICE_ID,
+    //   process.env.QUICKPAY_SERVICE_KEY,
+    //   {
+    //     vendor_form: {
+    //       phone_number: data?.phoneNumber,
+    //       summa: (staticAmountInsurance * 0.1).toString(),
+    //       vendor_id: 100081,
+    //     },
+    //     transaction_form: {
+    //       partner_transaction_id: newCashBackTransaction.id,
+    //     },
+    //   },
+    // )
 
     const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
 
@@ -469,16 +469,18 @@ export class PayService {
       },
     })
 
-    await this.prisma.transaction.update({
-      where: {
-        id: newCashBackTransaction.id,
-      },
-      data: {
-        response: JSON.stringify(resultCashBack?.getResponse()),
-        partnerTransactionId: resultCashBack.getResponse().result.details.transaction_id,
-        merchantId: resultCashBack.getResponse().result.details.merchantId,
-        terminalId: resultCashBack.getResponse().result.details.terminalId,
-      },
-    })
+    return result.getResponse()
+
+    // await this.prisma.transaction.update({
+    //   where: {
+    //     id: newCashBackTransaction.id,
+    //   },
+    //   data: {
+    //     response: JSON.stringify(resultCashBack?.getResponse()),
+    //     partnerTransactionId: resultCashBack.getResponse().result.details.transaction_id,
+    //     merchantId: resultCashBack.getResponse().result.details.merchantId,
+    //     terminalId: resultCashBack.getResponse().result.details.terminalId,
+    //   },
+    // })
   }
 }
