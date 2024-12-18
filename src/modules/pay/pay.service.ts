@@ -455,19 +455,19 @@ export class PayService {
     //   },
     // )
 
-    const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
+    // const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
 
-    await this.prisma.transaction.update({
-      where: {
-        id: newTransaction.id,
-      },
-      data: {
-        response: JSON.stringify(result?.getResponse()),
-        partnerTransactionId: transaction_id,
-        merchantId: merchantId,
-        terminalId: terminalId,
-      },
-    })
+    // await this.prisma.transaction.update({
+    //   where: {
+    //     id: newTransaction.id,
+    //   },
+    //   data: {
+    //     response: JSON.stringify(result?.getResponse()),
+    //     partnerTransactionId: transaction_id,
+    //     merchantId: merchantId,
+    //     terminalId: terminalId,
+    //   },
+    // })
 
     return result.getResponse()
 
