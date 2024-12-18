@@ -61,7 +61,6 @@ export class InsuranceController {
   async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
     stepTwoDto.step = InsuranceStep.STEPTWO
     stepTwoDto.startDate = formatDate()
-    console.log(stepTwoDto)
     const result = await this.insuranceService.getStep(stepTwoDto)
     return result
   }

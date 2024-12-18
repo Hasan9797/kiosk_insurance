@@ -23,8 +23,6 @@ export class RegionService {
       ['structures'],
     )
 
-    console.log(regions)
-
     const result: Region[] = []
 
     for (const region of regions) {

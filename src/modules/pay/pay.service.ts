@@ -20,7 +20,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) { }
+  ) {}
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -271,8 +271,6 @@ export class PayService {
     if (!data.amount || data.amount < 0) {
       throw new BadRequestException('Invalid amount!!!')
     }
-    console.log(data, 'salamn')
-
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -402,10 +400,27 @@ export class PayService {
       throw new BadRequestException('Refund Amount Must be more than 500 sum')
     }
 
+    const numberPrefix = data.phoneNumber[3] + data.phoneNumber[4]
+
+    const vendor = await this.prisma.vendor.findFirst({
+      where: {
+        numberPrefix: {
+          has: numberPrefix,
+        },
+        deletedAt: {
+          equals: null,
+        },
+      },
+    })
+
+    if (!vendor) {
+      throw new NotFoundException('Can not find vendor with this phone number!')
+    }
+
     const vendor_form = {
       phone_number: data?.phoneNumber,
       summa: refundAmount.toString(),
-      vendor_id: 100081,
+      vendor_id: vendor.vendorId,
     }
 
     const newTransaction = await this.prisma.transaction.create({
@@ -433,6 +448,8 @@ export class PayService {
     const transaction_form = {
       partner_transaction_id: newTransaction.id,
     }
+
+    console.log(vendor_form, transaction_form)
 
     const result = await this.payGateService.payByCash(
       process.env.QUICKPAY_SERVICE_ID,
