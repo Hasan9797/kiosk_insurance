@@ -263,6 +263,7 @@ export class PayService {
 
     const response = result.getResponse()
     response.refundStatus = status
+    response.refundAmount = refund
 
     return response
   }

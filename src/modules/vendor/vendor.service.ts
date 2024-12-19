@@ -72,9 +72,10 @@ export class VendorService {
   }
 
   async create(data: CreateVendorRequest) {
-    const existsVendor = await this.prisma.vendor.findMany({
+    const existsVendor = await this.prisma.vendor.findFirst({
       where: {
-        OR: [{ title: data?.title }, { vendorId: data?.vendorId }],
+        title: data?.title,
+        vendorId: data.vendorId,
         deletedAt: {
           equals: null,
         },
