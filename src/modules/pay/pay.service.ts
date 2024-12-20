@@ -6,6 +6,7 @@ import {
   TransactionType,
   notificationTextAfter1900,
   RefundStatus,
+  Vendors,
 } from '@enums'
 import { FirebaseService } from '@helpers'
 import { ConfirmPaymentRequest, PrepareToPayRequest, RefundCashRequest } from '@interfaces'
@@ -401,27 +402,27 @@ export class PayService {
       throw new BadRequestException('Refund Amount Must be more than 500 sum')
     }
 
-    const numberPrefix = data.phoneNumber[3] + data.phoneNumber[4]
+    // const numberPrefix = data.phoneNumber[3] + data.phoneNumber[4]
 
-    const vendor = await this.prisma.vendor.findFirst({
-      where: {
-        numberPrefix: {
-          has: numberPrefix,
-        },
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
+    // const vendor = await this.prisma.vendor.findFirst({
+    //   where: {
+    //     numberPrefix: {
+    //       has: numberPrefix,
+    //     },
+    //     deletedAt: {
+    //       equals: null,
+    //     },
+    //   },
+    // })
 
-    if (!vendor) {
-      throw new NotFoundException('Can not find vendor with this phone number!')
-    }
+    // if (!vendor) {
+    //   throw new NotFoundException('Can not find vendor with this phone number!')
+    // }
 
     const vendor_form = {
       phone_number: data?.phoneNumber,
       summa: refundAmount.toString(),
-      vendor_id: vendor.vendorId,
+      vendor_id: Vendors.PAYNET,
     }
 
     const newTransaction = await this.prisma.transaction.create({
