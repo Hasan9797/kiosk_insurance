@@ -237,7 +237,7 @@ export class PayService {
 
     const { amount, transaction_id } = result.getResponse()
 
-    const transaction = await this.prisma.transaction.create({
+    await this.prisma.transaction.create({
       data: {
         amount: amount,
         partnerTransactionId: transaction_id,
@@ -250,13 +250,9 @@ export class PayService {
     })
 
     let status = 0
-    const amountInsurance = Number(transaction.amount); //40000
-    console.log('Pay amountInsurance', amountInsurance);
-    
+    const amountInsurance = 40000
     const amountInKiosk = Number(existInsurance.amount)
-    console.log('Pay amountInsurance', amountInKiosk);
-
-    let refund = amountInKiosk - amountInsurance
+    let refund = Number(existInsurance.amount) - amountInsurance
 
     if (refund < 0) {
       refund = RefundStatus.NO
@@ -326,6 +322,12 @@ export class PayService {
       },
     })
 
+    const updatedInsurance = await this.prisma.insurance.findUnique({
+      where: {
+        id: existingInsurance.id,
+      },
+    });
+
     const cashCountRightNow = user.cashCount
 
     if (cashCountRightNow >= 1900) {
@@ -358,8 +360,8 @@ export class PayService {
     }
     let status = 0
     const amountInsurance = 40000
-    const amountInKiosk = Number(existingInsurance.amount)
-    let refund = amountInKiosk - amountInsurance
+    const amountInKiosk = Number(updatedInsurance.amount)
+    let refund = Number(updatedInsurance.amount) - amountInsurance
 
     if (refund < 0) {
       refund = 0
@@ -425,7 +427,7 @@ export class PayService {
 
     const vendor_form = {
       clientid: data?.phoneNumber,
-      amount: String(refundAmount) || "5000",
+      amount: refundAmount.toString(),
       vendor_id: Vendors.PAYNET,
     }
 
