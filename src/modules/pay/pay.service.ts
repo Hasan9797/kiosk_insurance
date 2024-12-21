@@ -361,6 +361,8 @@ export class PayService {
     let status = 0
     const amountInsurance = 40000
     const amountInKiosk = Number(updatedInsurance.amount)
+    console.log('amountInKiosk', amountInKiosk);
+    
     let refund = Number(updatedInsurance.amount) - amountInsurance
 
     if (refund < 0) {
@@ -403,6 +405,10 @@ export class PayService {
       },
     })
     const refundAmount = Number(existingInsurance?.amount) - Number(existTransaction?.amount)
+
+    console.log('transaction amount',existingInsurance?.amount);
+    console.log('insurance amount',existTransaction?.amount);
+    console.log('refund amount', refundAmount);
 
     if (refundAmount < 500) {
       throw new BadRequestException('Refund Amount Must be more than 500 sum')
