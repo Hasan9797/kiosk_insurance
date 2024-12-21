@@ -250,9 +250,13 @@ export class PayService {
     })
 
     let status = 0
-    const amountInsurance = transaction.amount; //40000
+    const amountInsurance = Number(transaction.amount); //40000
+    console.log('Pay amountInsurance', amountInsurance);
+    
     const amountInKiosk = Number(existInsurance.amount)
-    let refund = Number(existInsurance.amount) - Number(amountInsurance)
+    console.log('Pay amountInsurance', amountInKiosk);
+
+    let refund = amountInKiosk - amountInsurance
 
     if (refund < 0) {
       refund = RefundStatus.NO
@@ -355,7 +359,7 @@ export class PayService {
     let status = 0
     const amountInsurance = 40000
     const amountInKiosk = Number(existingInsurance.amount)
-    let refund = Number(existingInsurance.amount) - Number(amountInsurance)
+    let refund = amountInKiosk - amountInsurance
 
     if (refund < 0) {
       refund = 0
@@ -421,7 +425,7 @@ export class PayService {
 
     const vendor_form = {
       clientid: data?.phoneNumber,
-      amount: refundAmount.toString() || "5000",
+      amount: String(refundAmount) || "5000",
       vendor_id: Vendors.PAYNET,
     }
 
