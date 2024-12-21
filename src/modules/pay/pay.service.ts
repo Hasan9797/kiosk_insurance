@@ -326,7 +326,7 @@ export class PayService {
       where: {
         id: existingInsurance.id,
       },
-    });
+    })
 
     const cashCountRightNow = user.cashCount
 
@@ -361,8 +361,8 @@ export class PayService {
     let status = 0
     const amountInsurance = 40000
     const amountInKiosk = Number(updatedInsurance.amount)
-    console.log('amountInKiosk', amountInKiosk);
-    
+    console.log('amountInKiosk', amountInKiosk)
+
     let refund = Number(updatedInsurance.amount) - amountInsurance
 
     if (refund < 0) {
@@ -406,9 +406,9 @@ export class PayService {
     })
     const refundAmount = Number(existingInsurance?.amount) - Number(existTransaction?.amount)
 
-    console.log('transaction amount',existingInsurance?.amount);
-    console.log('insurance amount',existTransaction?.amount);
-    console.log('refund amount', refundAmount);
+    console.log('transaction amount', existingInsurance?.amount)
+    console.log('insurance amount', existTransaction?.amount)
+    console.log('refund amount', refundAmount)
 
     if (refundAmount < 500) {
       throw new BadRequestException('Refund Amount Must be more than 500 sum')
@@ -432,10 +432,12 @@ export class PayService {
     // }
 
     const vendor_form = {
-      clientid: "998999893328", //data?.phoneNumber,
-      amount: "1000",//refundAmount.toString(),
+      clientid: data?.phoneNumber,
+      amount: '1000', //refundAmount.toString(),
       vendor_id: Vendors.PAYNET,
     }
+
+    console.log(refundAmount)
 
     const newTransaction = await this.prisma.transaction.create({
       data: {
