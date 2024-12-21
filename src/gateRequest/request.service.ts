@@ -37,8 +37,8 @@ export class InfinityRequestService {
           timeout: 30000,
         }),
       )
-      
-      this.setResponse(response.data);
+
+      this.setResponse(response.data)
 
       // if (this.isOk() === false) {
       //   throw new InternalServerErrorException(this.getError())

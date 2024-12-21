@@ -53,7 +53,7 @@ export class PayController {
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('pay-by-cash')
   payByCash(@Req() request: CustomRequest) {
-    return this.payService.payByCash(request?.user?.id);
+    return this.payService.payByCash(request?.user?.id)
   }
 
   @UseGuards(CheckTokenGuard)
