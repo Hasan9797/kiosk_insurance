@@ -21,7 +21,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) { }
+  ) {}
 
   async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -251,8 +251,8 @@ export class PayService {
 
     let status = 0
     const amountInsurance = transaction.amount; //40000
-    const amountInKiosk = existInsurance.amount
-    let refund = existInsurance.amount - amountInsurance
+    const amountInKiosk = Number(existInsurance.amount)
+    let refund = Number(existInsurance.amount) - amountInsurance
 
     if (refund < 0) {
       refund = RefundStatus.NO
@@ -355,7 +355,7 @@ export class PayService {
     let status = 0
     const amountInsurance = 40000
     const amountInKiosk = Number(existingInsurance.amount)
-    let refund = existingInsurance.amount - amountInsurance
+    let refund = Number(existingInsurance.amount) - Number(amountInsurance)
 
     if (refund < 0) {
       refund = 0
@@ -396,7 +396,7 @@ export class PayService {
         createdAt: 'desc',
       },
     })
-    const refundAmount = existingInsurance?.amount - existTransaction?.amount
+    const refundAmount = Number(existingInsurance?.amount) - Number(existTransaction?.amount)
 
     if (refundAmount < 500) {
       throw new BadRequestException('Refund Amount Must be more than 500 sum')
