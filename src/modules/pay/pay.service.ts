@@ -252,7 +252,7 @@ export class PayService {
     let status = 0
     const amountInsurance = transaction.amount; //40000
     const amountInKiosk = Number(existInsurance.amount)
-    let refund = Number(existInsurance.amount) - amountInsurance
+    let refund = existInsurance.amount - amountInsurance
 
     if (refund < 0) {
       refund = RefundStatus.NO
