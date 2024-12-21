@@ -398,7 +398,7 @@ export class PayService {
 
     const existTransaction = await this.prisma.transaction.findFirst({
       where: {
-        userId: userId,
+        insuranceId: existingInsurance.id,
       },
       orderBy: {
         createdAt: 'desc',
