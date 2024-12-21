@@ -420,8 +420,8 @@ export class PayService {
     // }
 
     const vendor_form = {
-      phone_number: data?.phoneNumber,
-      summa: refundAmount.toString(),
+      clientid: data?.phoneNumber,
+      amount: refundAmount.toString(),
       vendor_id: Vendors.PAYNET,
     }
 
@@ -451,7 +451,7 @@ export class PayService {
       partner_transaction_id: newTransaction.id,
     }
 
-    console.log(vendor_form, transaction_form)
+    // console.log(vendor_form, transaction_form)
 
     const result = await this.payGateService.payByCash(
       process.env.QUICKPAY_SERVICE_ID,
