@@ -37,7 +37,8 @@ export class InfinityRequestService {
           timeout: 30000,
         }),
       )
-      this.response = response.data
+      
+      this.setResponse(response.data);
 
       // if (this.isOk() === false) {
       //   throw new InternalServerErrorException(this.getError())
@@ -49,6 +50,7 @@ export class InfinityRequestService {
           message: REQUEST_ERRORS.UNKNOWN_RESPONSE_ERROR,
         })
       }
+
       return this
     } catch (error: any) {
       console.log(error)
@@ -76,9 +78,9 @@ export class InfinityRequestService {
     return this
   }
 
-  setResponse(response: any): InfinityRequestService {
+  setResponse(response: any) {
     this.response = response
-    return this
+    // return this
   }
 
   setErrorUnknown(error: any) {
