@@ -399,6 +399,7 @@ export class PayService {
     const existTransaction = await this.prisma.transaction.findFirst({
       where: {
         insuranceId: existingInsurance.id,
+        paymentType: TransactionType.BY_CASH,
       },
       orderBy: {
         createdAt: 'desc',
@@ -442,11 +443,12 @@ export class PayService {
     const newTransaction = await this.prisma.transaction.create({
       data: {
         amount: refundAmount,
-        status: TransactionType.REFUND,
+        status: TransactionStatus.NEW,
         payerPhone: data?.phoneNumber,
         request: JSON.stringify(vendor_form),
         insuranceId: existingInsurance.id,
         userId: userId,
+        paymentType: TransactionType.REFUND,
       },
     })
 
