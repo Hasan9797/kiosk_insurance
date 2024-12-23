@@ -434,7 +434,7 @@ export class PayService {
 
     const vendor_form = {
       clientid: data?.phoneNumber,
-      amount: refundAmount.toString(),
+      amount: '1000',
       vendor_id: Vendors.PAYNET,
     }
 
