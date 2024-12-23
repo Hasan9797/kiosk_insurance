@@ -7,6 +7,7 @@ import { App } from './app'
 import { appConfig } from 'config/app.config'
 import { swaggerConfig } from '@config'
 import { IoAdapter } from '@nestjs/platform-socket.io'
+import { start } from 'repl'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(App, new ExpressAdapter(), {
@@ -52,7 +53,7 @@ async function bootstrap() {
   })
 
   const server = app.getHttpServer()
-
+  console.log('start')
   const io = new IoAdapter(server)
   app.useWebSocketAdapter(io)
 
