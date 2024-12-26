@@ -14,6 +14,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PayGate } from 'gateRequest'
 import { PrismaService } from 'prisma/prisma.service'
 import { PreparePayCardDTO } from './dto'
+import { calculateCashback } from 'helpers/calculate-cashback.helper'
 
 @Injectable()
 export class PayService {
@@ -383,6 +384,7 @@ export class PayService {
 
   async refundCash(data: RefundCashRequest, userId: number) {
     const staticAmountInsurance = 40000
+    const cashback = await this.prisma.cashbackSettings.findFirst()
     const existingInsurance = await this.prisma.insurance.findFirst({
       where: {
         status: InsuranceStatus.NEW,
@@ -415,23 +417,6 @@ export class PayService {
       throw new BadRequestException('Refund Amount Must be more than 500 sum')
     }
 
-    // const numberPrefix = data.phoneNumber[3] + data.phoneNumber[4]
-
-    // const vendor = await this.prisma.vendor.findFirst({
-    //   where: {
-    //     numberPrefix: {
-    //       has: numberPrefix,
-    //     },
-    //     deletedAt: {
-    //       equals: null,
-    //     },
-    //   },
-    // })
-
-    // if (!vendor) {
-    //   throw new NotFoundException('Can not find vendor with this phone number!')
-    // }
-
     const vendor_form = {
       clientid: data?.phoneNumber,
       amount: '1000',
@@ -452,22 +437,9 @@ export class PayService {
       },
     })
 
-    // const newCashBackTransaction = await this.prisma.transaction.create({
-    //   data: {
-    //     amount: staticAmountInsurance * 0.1,
-    //     status: TransactionType.CASHBACK,
-    //     payerPhone: data?.phoneNumber,
-    //     // request: JSON.stringify(vendor_form),
-    //     insuranceId: existingInsurance.id,
-    //     userId: userId,
-    //   },
-    // })
-
     const transaction_form = {
       partner_transaction_id: newTransaction.id,
     }
-
-    // console.log(vendor_form, transaction_form)
 
     const result = await this.payGateService.payByCash(
       process.env.QUICKPAY_SERVICE_ID,
@@ -475,47 +447,67 @@ export class PayService {
       { vendor_form, transaction_form },
     )
 
-    // const resultCashBack = await this.payGateService.payByCash(
-    //   process.env.QUICKPAY_SERVICE_ID,
-    //   process.env.QUICKPAY_SERVICE_KEY,
-    //   {
-    //     vendor_form: {
-    //       phone_number: data?.phoneNumber,
-    //       summa: (staticAmountInsurance * 0.1).toString(),
-    //       vendor_id: 100081,
-    //     },
-    //     transaction_form: {
-    //       partner_transaction_id: newCashBackTransaction.id,
-    //     },
-    //   },
-    // )
-
-    // const { transaction_id, merchantId, terminalId } = result.getResponse().result.details
-
-    // await this.prisma.transaction.update({
-    //   where: {
-    //     id: newTransaction.id,
-    //   },
-    //   data: {
-    //     response: JSON.stringify(result?.getResponse()),
-    //     partnerTransactionId: transaction_id,
-    //     merchantId: merchantId,
-    //     terminalId: terminalId,
-    //   },
-    // })
+    if (cashback.enabled === true) {
+      this.cashBackPaynet(userId, data?.phoneNumber)
+    }
 
     return result.getResponse()
+  }
 
-    // await this.prisma.transaction.update({
-    //   where: {
-    //     id: newCashBackTransaction.id,
-    //   },
-    //   data: {
-    //     response: JSON.stringify(resultCashBack?.getResponse()),
-    //     partnerTransactionId: resultCashBack.getResponse().result.details.transaction_id,
-    //     merchantId: resultCashBack.getResponse().result.details.merchantId,
-    //     terminalId: resultCashBack.getResponse().result.details.terminalId,
-    //   },
-    // })
+  async cashBackPaynet(userId: number, phoneNumber: string) {
+    const cashBackSettings = await this.prisma.cashbackSettings.findFirst()
+    const existingInsurance = await this.prisma.insurance.findFirst({
+      where: {
+        status: InsuranceStatus.NEW,
+        userId: userId,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    const existTransaction = await this.prisma.transaction.findFirst({
+      where: {
+        insuranceId: existingInsurance.id,
+        userId: userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+    const cashback = calculateCashback(Number(existTransaction.amount), cashBackSettings.percentage)
+
+    const vendor_form = {
+      clientid: phoneNumber,
+      amount: '1000',
+      vendor_id: Vendors.PAYNET,
+    }
+
+    const newTransaction = await this.prisma.transaction.create({
+      data: {
+        amount: cashback,
+        status: TransactionStatus.NEW,
+        payerPhone: phoneNumber,
+        request: JSON.stringify(vendor_form),
+        insuranceId: existingInsurance.id,
+        userId: userId,
+        paymentType: TransactionType.REFUND,
+      },
+    })
+
+    const transaction_form = {
+      partner_transaction_id: newTransaction.id,
+    }
+
+    const result = await this.payGateService.payByCash(
+      process.env.QUICKPAY_SERVICE_ID,
+      process.env.QUICKPAY_SERVICE_KEY,
+      { vendor_form, transaction_form },
+    )
+
+    return result.getResponse()
   }
 }
