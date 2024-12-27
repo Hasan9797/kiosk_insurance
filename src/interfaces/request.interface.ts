@@ -19,6 +19,7 @@ export interface TransactionPreparePayCardResponse {
 export interface PreparePayCardRequest {
   card_number: string
   card_expire: string
+  phone_number: string
 }
 
 export interface PrepareToPayRequest {

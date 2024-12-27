@@ -78,7 +78,7 @@ export class PayService {
     })
 
     const vendor_form = {
-      phone_number: existTransaction?.payerPhone,
+      phone_number: data.phone_number,
       amount: '1000',
       vendor_id: existTransaction?.vendorId,
     }
@@ -384,7 +384,7 @@ export class PayService {
 
   async refundCash(data: RefundCashRequest, userId: number) {
     const staticAmountInsurance = 40000
-    const cashback = await this.prisma.cashbackSettings.findFirst()
+    // const cashback = await this.prisma.cashbackSettings.findFirst()
     const existingInsurance = await this.prisma.insurance.findFirst({
       where: {
         status: InsuranceStatus.NEW,
@@ -447,67 +447,67 @@ export class PayService {
       { vendor_form, transaction_form },
     )
 
-    if (cashback.enabled === true) {
-      this.cashBackPaynet(userId, data?.phoneNumber)
-    }
+    // if (cashback.enabled === true) {
+    //   this.cashBackPaynet(userId, data?.phoneNumber)
+    // }
 
     return result.getResponse()
   }
 
-  async cashBackPaynet(userId: number, phoneNumber: string) {
-    const cashBackSettings = await this.prisma.cashbackSettings.findFirst()
-    const existingInsurance = await this.prisma.insurance.findFirst({
-      where: {
-        status: InsuranceStatus.NEW,
-        userId: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+  // async cashBackPaynet(userId: number, phoneNumber: string) {
+  //   const cashBackSettings = await this.prisma.cashbackSettings.findFirst()
+  //   const existingInsurance = await this.prisma.insurance.findFirst({
+  //     where: {
+  //       status: InsuranceStatus.NEW,
+  //       userId: userId,
+  //       deletedAt: {
+  //         equals: null,
+  //       },
+  //     },
+  //     orderBy: {
+  //       createdAt: 'desc',
+  //     },
+  //   })
 
-    const existTransaction = await this.prisma.transaction.findFirst({
-      where: {
-        insuranceId: existingInsurance.id,
-        userId: userId,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
-    const cashback = calculateCashback(Number(existTransaction.amount), cashBackSettings.percentage)
+  //   const existTransaction = await this.prisma.transaction.findFirst({
+  //     where: {
+  //       insuranceId: existingInsurance.id,
+  //       userId: userId,
+  //     },
+  //     orderBy: {
+  //       createdAt: 'desc',
+  //     },
+  //   })
+  //   const cashback = calculateCashback(Number(existTransaction.amount), cashBackSettings.percentage)
 
-    const vendor_form = {
-      clientid: phoneNumber,
-      amount: '1000',
-      vendor_id: Vendors.PAYNET,
-    }
+  //   const vendor_form = {
+  //     clientid: phoneNumber,
+  //     amount: '1000',
+  //     vendor_id: Vendors.PAYNET,
+  //   }
 
-    const newTransaction = await this.prisma.transaction.create({
-      data: {
-        amount: cashback,
-        status: TransactionStatus.NEW,
-        payerPhone: phoneNumber,
-        request: JSON.stringify(vendor_form),
-        insuranceId: existingInsurance.id,
-        userId: userId,
-        paymentType: TransactionType.REFUND,
-      },
-    })
+  //   const newTransaction = await this.prisma.transaction.create({
+  //     data: {
+  //       amount: cashback,
+  //       status: TransactionStatus.NEW,
+  //       payerPhone: phoneNumber,
+  //       request: JSON.stringify(vendor_form),
+  //       insuranceId: existingInsurance.id,
+  //       userId: userId,
+  //       paymentType: TransactionType.REFUND,
+  //     },
+  //   })
 
-    const transaction_form = {
-      partner_transaction_id: newTransaction.id,
-    }
+  //   const transaction_form = {
+  //     partner_transaction_id: newTransaction.id,
+  //   }
 
-    const result = await this.payGateService.payByCash(
-      process.env.QUICKPAY_SERVICE_ID,
-      process.env.QUICKPAY_SERVICE_KEY,
-      { vendor_form, transaction_form },
-    )
+  //   const result = await this.payGateService.payByCash(
+  //     process.env.QUICKPAY_SERVICE_ID,
+  //     process.env.QUICKPAY_SERVICE_KEY,
+  //     { vendor_form, transaction_form },
+  //   )
 
-    return result.getResponse()
-  }
+  //   return result.getResponse()
+  // }
 }
