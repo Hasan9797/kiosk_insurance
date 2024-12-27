@@ -22,7 +22,7 @@ export interface PreparePayCardRequest {
 }
 
 export interface PrepareToPayRequest {
-  phone_number: string
+  anketa_id: string
   amount: string
   vendor_id: number
 }

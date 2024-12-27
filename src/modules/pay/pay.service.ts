@@ -22,9 +22,9 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
-  async preparePay(data: PrepareToPayRequest, userId: number): Promise<void> {
+  async preparePay(data: any, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -42,8 +42,8 @@ export class PayService {
     })
 
     const vendor_form = {
-      phone_number: data?.phone_number,
-      summa: '1000',
+      anketa_id: 'da26551c-0da5-4679-98ca-900d2ed8aadb',
+      amount: '1000',
       vendor_id: lastInsurance.vendorId,
     }
 
@@ -56,7 +56,7 @@ export class PayService {
     await this.prisma.transaction.create({
       data: {
         userId: userId,
-        payerPhone: data?.phone_number,
+        // payerPhone: data?.phone_number,
         request: JSON.stringify(data),
         response: result?.getResponse(),
         status: TransactionStatus.NEW,
