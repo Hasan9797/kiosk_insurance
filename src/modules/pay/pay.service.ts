@@ -22,7 +22,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) { }
+  ) {}
 
   async preparePay(data: any, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -42,7 +42,7 @@ export class PayService {
     })
 
     const vendor_form = {
-      anketa_id: 'da26551c-0da5-4679-98ca-900d2ed8aadb',
+      anketa_id: lastInsurance.anketaId,
       amount: '1000',
       vendor_id: lastInsurance.vendorId,
     }
