@@ -12,12 +12,12 @@ import { UserRoles } from '@enums'
   version: '1',
 })
 export class PayController {
-  constructor(private readonly payService: PayService) {}
+  constructor(private readonly payService: PayService) { }
 
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('check-pay-card')
-  payByCard(@Body() prepareToPayDto: PrepareToPayDTO, @Req() request: CustomRequest) {
+  payByCard(@Body() prepareToPayDto: any, @Req() request: CustomRequest) {
     return this.payService.preparePay(prepareToPayDto, request?.user?.id)
   }
 
