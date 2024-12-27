@@ -19,10 +19,11 @@ export interface TransactionPreparePayCardResponse {
 export interface PreparePayCardRequest {
   card_number: string
   card_expire: string
+  phone_number: string
 }
 
 export interface PrepareToPayRequest {
-  phone_number: string
+  anketa_id: string
   amount: string
   vendor_id: number
 }

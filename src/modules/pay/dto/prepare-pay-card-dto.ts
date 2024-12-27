@@ -9,4 +9,8 @@ export class PreparePayCardDTO implements PreparePayCardRequest {
   @IsNotEmpty()
   @IsString()
   card_expire: string
+
+  @IsNotEmpty()
+  @IsString()
+  phone_number: string
 }

@@ -17,7 +17,7 @@ export class PayController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('check-pay-card')
-  payByCard(@Body() prepareToPayDto: PrepareToPayDTO, @Req() request: CustomRequest) {
+  payByCard(@Body() prepareToPayDto: any, @Req() request: CustomRequest) {
     return this.payService.preparePay(prepareToPayDto, request?.user?.id)
   }
 
