@@ -39,6 +39,9 @@ export class PayService {
         userId: userId,
         status: InsuranceStatus.NEW,
       },
+      orderBy: {
+        createdAt: 'desc'
+      }
     })
 
     const vendor_form = {
@@ -56,7 +59,6 @@ export class PayService {
     await this.prisma.transaction.create({
       data: {
         userId: userId,
-        // payerPhone: data?.phone_number,
         request: JSON.stringify(data),
         response: result?.getResponse(),
         status: TransactionStatus.NEW,
@@ -75,12 +77,15 @@ export class PayService {
           equals: null,
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
     const vendor_form = {
-      // phone_number: data.phone_number,
-      amount: '1000',
       anketa_id: existInsurance?.anketaId,
+      amount: 1000,
+      vendor_id: existInsurance.vendorId.toString(),
     }
 
     const pay_form = {
@@ -97,20 +102,20 @@ export class PayService {
       { vendor_form, pay_form },
     )
 
-    await this.prisma.transaction.create({
-      data: {
-        amount: existInsurance.amount,
-        anketaId: existInsurance.anketaId,
-        cardExpire: data.card_expire,
-        cardNumber: data.card_number,
-        insuranceId: existInsurance.id,
-        payerPhone: data.phone_number,
-        request: JSON.stringify({ vendor_form, pay_form }),
-        response: JSON.stringify(result.getResponse()),
-        status: TransactionStatus.SUCCESS,
-        vendorId: existInsurance.vendorId,
-      },
-    })
+    // await this.prisma.transaction.create({
+    //   data: {
+    //     amount: existInsurance.amount,
+    //     anketaId: existInsurance.anketaId,
+    //     cardExpire: data.card_expire,
+    //     cardNumber: data.card_number,
+    //     insuranceId: existInsurance.id,
+    //     payerPhone: data.phone_number,
+    //     request: JSON.stringify({ vendor_form, pay_form }),
+    //     response: JSON.stringify(result.getResponse()),
+    //     status: TransactionStatus.SUCCESS,
+    //     vendorId: existInsurance.vendorId,
+    //   },
+    // })
     return result.getResponse()
   }
 
