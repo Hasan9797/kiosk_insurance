@@ -78,9 +78,9 @@ export class PayService {
     })
 
     const vendor_form = {
-      phone_number: data.phone_number,
+      // phone_number: data.phone_number,
       amount: '1000',
-      vendor_id: existInsurance?.vendorId,
+      anketa_id: existInsurance?.anketaId,
     }
 
     const pay_form = {
