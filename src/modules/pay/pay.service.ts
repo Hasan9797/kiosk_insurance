@@ -67,10 +67,10 @@ export class PayService {
   }
 
   async payByCard(data: PreparePayCardDTO, userId: number) {
-    const existTransaction = await this.prisma.transaction.findFirst({
+    const existInsurance = await this.prisma.insurance.findFirst({
       where: {
         userId: userId,
-        status: TransactionStatus.NEW,
+        status: InsuranceStatus.NEW,
         deletedAt: {
           equals: null,
         },
@@ -80,7 +80,7 @@ export class PayService {
     const vendor_form = {
       phone_number: data.phone_number,
       amount: '1000',
-      vendor_id: existTransaction?.vendorId,
+      vendor_id: existInsurance?.vendorId,
     }
 
     const pay_form = {
@@ -93,6 +93,21 @@ export class PayService {
       process.env.QUICKPAY_SERVICE_KEY,
       { vendor_form, pay_form },
     )
+
+    await this.prisma.transaction.create({
+      data: {
+        amount: existInsurance.amount,
+        anketaId: existInsurance.anketaId,
+        cardExpire: data.card_expire,
+        cardNumber: data.card_number,
+        insuranceId: existInsurance.id,
+        payerPhone: data.phone_number,
+        request: JSON.stringify({ vendor_form, pay_form }),
+        response: JSON.stringify(result.getResponse()),
+        status: TransactionStatus.SUCCESS,
+        vendorId: existInsurance.vendorId,
+      },
+    })
     return result.getResponse()
   }
 
