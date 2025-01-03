@@ -39,6 +39,7 @@ export class InfinityRequestService {
       )
 
       this.setResponse(response.data)
+      console.log(jsonPayload)
 
       // if (this.isOk() === false) {
       //   throw new InternalServerErrorException(this.getError())
