@@ -22,7 +22,7 @@ export class PayService {
     private readonly payGateService: PayGate,
     private readonly prisma: PrismaService,
     private readonly firabase: FirebaseService,
-  ) {}
+  ) { }
 
   async preparePay(data: any, userId: number): Promise<void> {
     await this.prisma.user.findUnique({
@@ -87,6 +87,9 @@ export class PayService {
       card_number: data?.card_number,
       card_expire: data?.card_expire,
     }
+
+    console.log(vendor_form, pay_form);
+
 
     const result = await this.payGateService.preparePayByCard(
       process.env.QUICKPAY_SERVICE_ID,
