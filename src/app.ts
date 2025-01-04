@@ -16,7 +16,6 @@ import {
   ReportModule,
   NotificationModule,
   TransactionModule,
-  VendorModule,
 } from '@modules'
 import { pspConfig } from '@config'
 import { AuthModule } from 'auth/auth.module'
@@ -49,7 +48,6 @@ import { join } from 'path'
     ReportModule,
     NotificationModule,
     TransactionModule,
-    VendorModule,
   ],
   controllers: [],
   providers: [],

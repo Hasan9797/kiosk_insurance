@@ -53,7 +53,6 @@ async function bootstrap() {
   })
 
   const server = app.getHttpServer()
-  console.log('start')
   const io = new IoAdapter(server)
   app.useWebSocketAdapter(io)
 

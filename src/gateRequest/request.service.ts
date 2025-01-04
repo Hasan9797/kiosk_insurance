@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config'
 import { firstValueFrom } from 'rxjs'
 import * as crypto from 'crypto'
 import { REQUEST_ERRORS } from '@enums'
-import { GetInsuranceIds, TransactionPreparePayCardResponse } from '@interfaces'
+import { BankTransactionId, GetInsuranceIds, TransactionPreparePayCardResponse } from '@interfaces'
 
 @Injectable()
 export class InfinityRequestService {
@@ -190,6 +190,14 @@ export class InfinityRequestService {
 
   getDetails(): any {
     return this.response?.result?.details || []
+  }
+
+  getBankTransactionId(data: any): BankTransactionId {
+    const bankTransactionId = data.result.confirm_form.find((item: any) => item.key === 'bank_transaction_id')?.value
+
+    return {
+      bank_transaction_id: bankTransactionId,
+    }
   }
 
   getRequest(): any {

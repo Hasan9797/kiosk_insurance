@@ -35,3 +35,7 @@ export interface ConfirmPaymentRequest {
 export interface RefundCashRequest {
   phoneNumber: string
 }
+
+export interface BankTransactionId {
+  bank_transaction_id: number
+}
