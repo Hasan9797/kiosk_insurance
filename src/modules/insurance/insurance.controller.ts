@@ -6,7 +6,8 @@ import {
   getStepRequestDTO,
   stepOneRequestDTO,
   StepTwoRequestDTO,
-  StepThreeRequestDTO,
+  StepThreeDTO,
+  StepFourDTO,
 } from './dto'
 import { CheckTokenGuard } from 'guards'
 import { CustomRequest } from 'custom'
@@ -58,7 +59,7 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-two')
-  async stepTwo(@Body() stepTwoDto: StepTwoRequestDTO) {
+  async stepTwo(@Body() stepTwoDto: any) {
     stepTwoDto.step = InsuranceStep.STEPTWO
     stepTwoDto.startDate = formatDate()
     const result = await this.insuranceService.getStep(stepTwoDto)
@@ -68,9 +69,18 @@ export class InsuranceController {
   @UseGuards(CheckTokenGuard)
   @Roles({ role: [UserRoles.OPERATOR] })
   @Post('get-step-three')
-  async stepThree(@Body() stepThreeDto: StepThreeRequestDTO) {
+  async stepThree(@Body() stepThreeDto: StepThreeDTO) {
     stepThreeDto.step = InsuranceStep.STEPTHREE
     const result = await this.insuranceService.getStep(stepThreeDto)
+    return result
+  }
+
+  @UseGuards(CheckTokenGuard)
+  @Roles({ role: [UserRoles.OPERATOR] })
+  @Post('get-step-four')
+  async stepFour(@Body() dto: StepFourDTO) {
+    dto.step = InsuranceStep.STEPFOUR
+    const result = await this.insuranceService.getStep(dto)
     return result
   }
 

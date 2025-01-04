@@ -59,6 +59,7 @@ export class InsuranceService {
         vendorId: vendor_id,
         status: InsuranceStatus.NEW,
         createResId: id,
+        insuranceCost: data.data.cost.insurancePremiumPaidToInsurer.toString(),
       },
     })
     return result.getResponse()

@@ -25,25 +25,19 @@ export class PayService {
   ) {}
 
   async preparePay(data: any, userId: number): Promise<void> {
-    await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-        deletedAt: {
-          equals: null,
-        },
-      },
-    })
-
     const lastInsurance = await this.prisma.insurance.findFirst({
       where: {
         userId: userId,
         status: InsuranceStatus.NEW,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
     const vendor_form = {
       anketa_id: lastInsurance.anketaId,
-      amount: '1000',
+      amount: lastInsurance.insuranceCost,
       vendor_id: lastInsurance.vendorId,
     }
 
@@ -56,7 +50,6 @@ export class PayService {
     await this.prisma.transaction.create({
       data: {
         userId: userId,
-        // payerPhone: data?.phone_number,
         request: JSON.stringify(data),
         response: result?.getResponse(),
         status: TransactionStatus.NEW,
@@ -75,12 +68,15 @@ export class PayService {
           equals: null,
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
     const vendor_form = {
-      phone_number: data.phone_number,
-      amount: '1000',
-      vendor_id: existInsurance?.vendorId,
+      anketa_id: existInsurance?.anketaId,
+      amount: parseInt(existInsurance.insuranceCost),
+      vendor_id: existInsurance.vendorId.toString(),
     }
 
     const pay_form = {
@@ -94,9 +90,11 @@ export class PayService {
       { vendor_form, pay_form },
     )
 
+    const bankTransactionId = result.getBankTransactionId(result.getResponse())
+
     await this.prisma.transaction.create({
       data: {
-        amount: existInsurance.amount,
+        amount: BigInt(existInsurance.insuranceCost),
         anketaId: existInsurance.anketaId,
         cardExpire: data.card_expire,
         cardNumber: data.card_number,
@@ -104,8 +102,10 @@ export class PayService {
         payerPhone: data.phone_number,
         request: JSON.stringify({ vendor_form, pay_form }),
         response: JSON.stringify(result.getResponse()),
-        status: TransactionStatus.SUCCESS,
+        status: TransactionStatus.NEW,
+        paymentType: TransactionType.BY_CARD,
         vendorId: existInsurance.vendorId,
+        bankTransactionId: bankTransactionId.bank_transaction_id,
       },
     })
     return result.getResponse()
@@ -116,9 +116,13 @@ export class PayService {
       where: {
         userId: userId,
         status: TransactionStatus.NEW,
+        paymentType: TransactionType.BY_CARD,
         deletedAt: {
           equals: null,
         },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     })
 
@@ -141,8 +145,6 @@ export class PayService {
       },
       data: {
         terminalId: terminalId,
-        bankTransactionId: bank_transaction_id,
-        amount: amount,
         merchantId: merchantId,
         partnerTransactionId: transaction_id,
         request: JSON.stringify(data),
@@ -169,23 +171,23 @@ export class PayService {
       data,
     )
 
-    const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
+    // const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
 
-    await this.prisma.transaction.update({
-      where: {
-        id: existTransaction.id,
-      },
-      data: {
-        terminalId: terminalId,
-        bankTransactionId: bank_transaction_id,
-        amount: amount,
-        merchantId: merchantId,
-        partnerTransactionId: transaction_id,
-        request: data,
-        response: result.getResponse(),
-        updatedAt: new Date(),
-      },
-    })
+    // await this.prisma.transaction.update({
+    //   where: {
+    //     id: existTransaction.id,
+    //   },
+    //   data: {
+    //     terminalId: terminalId,
+    //     bankTransactionId: bank_transaction_id,
+    //     amount: amount,
+    //     merchantId: merchantId,
+    //     partnerTransactionId: transaction_id,
+    //     request: data,
+    //     response: result.getResponse(),
+    //     updatedAt: new Date(),
+    //   },
+    // })
 
     return result.getResponse()
   }
@@ -241,7 +243,7 @@ export class PayService {
 
     const vendor_form = {
       anketa_id: existInsurance.anketaId,
-      amount: 40000,
+      amount: existInsurance.insuranceCost,
       vendor_id: existInsurance.vendorId,
     }
 

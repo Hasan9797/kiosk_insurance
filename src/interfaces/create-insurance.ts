@@ -42,6 +42,11 @@ export interface StepTwoRequest {
 export interface StepThreeRequest {
   company_id: number
   service_id: number
+  driverNumberRestriction: string
+}
+export interface StepFourRequest {
+  company_id: number
+  service_id: number
   step_status: number
   relative?: number
   seria?: string

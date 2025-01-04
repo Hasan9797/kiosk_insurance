@@ -39,20 +39,21 @@ model User {
 }
 
 model Insurance {
-  id          Int       @id @default(autoincrement())
-  anketaId    String?
-  amount      BigInt?
-  status      Int       @default(0)
-  createResId Int?      @map("create_res_id")
-  polisId     Int?      @map("polis_id")
-  orderId     String?   @map("order_id")
-  vendorId    Int?      @map("vendor_id")
-  request     Json?
-  response    Json?
-  data        Json?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id            Int       @id @default(autoincrement())
+  anketaId      String?
+  amount        BigInt?
+  insuranceCost String?
+  status        Int       @default(0)
+  createResId   Int?      @map("create_res_id")
+  polisId       Int?      @map("polis_id")
+  orderId       String?   @map("order_id")
+  vendorId      Int?      @map("vendor_id")
+  request       Json?
+  response      Json?
+  data          Json?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime? @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
 
   userId    Int  @map("user_id")
   companyId Int? @map("company_id")
@@ -227,17 +228,6 @@ model Notify {
   deletedAt DateTime? @map("deleted_at")
 
   user User @relation(fields: [userId], references: [id])
-}
-
-model Vendor {
-  id           Int       @id @default(autoincrement())
-  title        String
-  vendorId     Int       @map("vendor_id")
-  type         Int
-  numberPrefix String[]  @map("start_number")
-  createdAt    DateTime? @default(now())
-  updatedAt    DateTime? @updatedAt
-  deletedAt    DateTime? @map("deleted_at")
 }
 
 model CashbackSettings {

@@ -5,6 +5,8 @@ export type {
   StepOneRequest,
   StepTwoRequest,
   StepThreeRequest,
+  StepFourRequest,
+  CreateInsuranceRequest,
 } from './create-insurance'
 
 export type {
@@ -14,6 +16,7 @@ export type {
   PrepareToPayRequest,
   ConfirmPaymentRequest,
   RefundCashRequest,
+  BankTransactionId,
 } from './request.interface'
 export type { LoginResponse, LoginRequest, RefreshTokenRequest } from './auth.interface'
 export type { JwtModel } from './jwt.interaface'
@@ -44,7 +47,7 @@ export type {
 export type { QueryParams, Filter, Sort } from './filter.interface'
 export type { Changer } from './status.interface'
 export type { Pagination } from './pagination.interface'
-export type { CreateInsuranceRequest } from './create-insurance.interface'
+// export type { CreateInsuranceRequest } from './create-insurance.interface'
 export type {
   CreatePartnerRequest,
   UpdatePartnerRequest,
