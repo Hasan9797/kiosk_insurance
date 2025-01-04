@@ -138,7 +138,7 @@ export class InfinityRequestService {
       reference_number: this.response.result.details.reference_number,
       amount: this.response.result.details.amount,
       merchantId: this.response.result.details.merchantId,
-      terminalId: this.response.result.details.terurlminalId,
+      terminalId: this.response.result.details.terminalId,
     }
     return result
   }

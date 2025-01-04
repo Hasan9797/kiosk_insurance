@@ -47,14 +47,14 @@ export class PayService {
       { vendor_form },
     )
 
-    await this.prisma.transaction.create({
-      data: {
-        userId: userId,
-        request: JSON.stringify(data),
-        response: result?.getResponse(),
-        status: TransactionStatus.NEW,
-      },
-    })
+    // await this.prisma.transaction.create({
+    //   data: {
+    //     userId: userId,
+    //     request: JSON.stringify(data),
+    //     response: result?.getResponse(),
+    //     status: TransactionStatus.NEW,
+    //   },
+    // })
 
     return result.getResponse()
   }
@@ -90,10 +90,13 @@ export class PayService {
       { vendor_form, pay_form },
     )
 
+    console.log(result.getResponse())
+
     const bankTransactionId = result.getBankTransactionId(result.getResponse())
 
     await this.prisma.transaction.create({
       data: {
+        userId: userId,
         amount: BigInt(existInsurance.insuranceCost),
         anketaId: existInsurance.anketaId,
         cardExpire: data.card_expire,
@@ -137,18 +140,18 @@ export class PayService {
       { confirm_form },
     )
 
-    const { transaction_id, bank_transaction_id, amount, merchantId, terminalId } = result.getIdsPreparePayCard()
+    const { transaction_id, merchantId, terminalId } = result.getIdsPreparePayCard()
 
     await this.prisma.transaction.update({
       where: {
         id: existTransaction.id,
       },
       data: {
-        terminalId: terminalId,
-        merchantId: merchantId,
         partnerTransactionId: transaction_id,
         request: JSON.stringify(data),
         response: result.getResponse(),
+        merchantId: merchantId,
+        terminalId: terminalId,
         updatedAt: new Date(),
       },
     })
@@ -160,10 +163,19 @@ export class PayService {
       where: {
         userId: userId,
         status: TransactionStatus.NEW,
+        paymentType: TransactionType.BY_CARD,
+        deletedAt: {
+          equals: null,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     })
 
-    const data = existTransaction.bankTransactionId
+    const data = {
+      bank_transaction_id: existTransaction.bankTransactionId,
+    }
 
     const result = await this.payGateService.resendSms(
       process.env.QUICKPAY_SERVICE_ID,
