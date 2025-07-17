@@ -28,7 +28,7 @@ jobs:
             git pull origin main || { echo "git pull failed"; exit 1; }
             pnpm install
             pnpm build  # Loyiha build qilish
-            npx prisma migrate dev --name migrated  # Prisma migratsiya
+            npx prisma migrate deploy --name migrated  # Prisma migratsiya
             npx prisma generate  # Prisma fayllarini generatsiya qilish
             pm2 restart 0
 
